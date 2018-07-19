@@ -1,7 +1,6 @@
 import React from "react";
 import { css } from "emotion";
 import { mapProps } from "recompose";
-// import { DraggableCore } from 'react-draggable';
 import { Draggable } from "./Draggable";
 import { observer } from "mobx-react";
 
@@ -16,26 +15,23 @@ const CanvasWindowEl = mapProps(({ width, height, ...rest }) => ({
   ...rest
 }))("div");
 
-const CanvasEl = mapProps(
-  ({ width, height, onWheel, scale, translate, ...rest }) => ({
-    ...rest,
-    style: {
-      // display: 'none'
-      transform:
-        `translate(${translate.x * 100}%, ${translate.y * 100}%)` +
-        `scale(${scale})`
-    },
-    className: css({
-      width: `${width}px`,
-      height: `${height}px`,
-      background: "#ccc",
-      position: "relative",
-      overflow: "hidden",
-      transformOrigin: "50% 50%",
-      transition: "0.05s ease"
-    })
-  })
-)("div");
+const CanvasEl = mapProps(({ width, height, scale, translate, ...rest }) => ({
+  style: {
+    transform:
+      `translate(${translate.x * 100}%, ${translate.y * 100}%)` +
+      `scale(${scale})`
+  },
+  className: css({
+    width: `${width}px`,
+    height: `${height}px`,
+    background: "#ccc",
+    position: "relative",
+    overflow: "hidden",
+    transformOrigin: "50% 50%",
+    transition: "0.05s ease"
+  }),
+  ...rest
+}))("div");
 
 const draggableStore = Draggable.CreateStore();
 
@@ -53,8 +49,6 @@ export const Canvas = observer(
       x: canvas.width / 2,
       y: canvas.height / 2
     };
-
-    console.log(canvas);
 
     return (
       <CanvasWindowEl

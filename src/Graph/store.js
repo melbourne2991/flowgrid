@@ -109,10 +109,12 @@ export class GraphNode {
 }
 
 export class CanvasStore {
-  canvasWidth = 1000;
+  canvasWidth = 2100;
+  canvasHeight = 2100;
+
   canvasWindowWidth = 1500;
-  canvasHeight = 1000;
   canvasWindowHeight = 800;
+
   canvasCenterX = this.canvasWidth / 2;
   canvasCenterY = this.canvasHeight / 2;
 
@@ -126,7 +128,27 @@ export class CanvasStore {
 
   @action
   windowPointToCanvas(windowX, windowY) {
-    return windowX - this.translate.x * this.canvasWidth;
+    return {
+      x: windowX - this.translate.x * this.canvasWidth
+    };
+  }
+
+  @action
+  panCanvas(deltaX, deltaY) {
+    console.log(deltaX, this.canvasWidth);
+
+    this.translate.x += deltaX / this.canvasWidth;
+    this.translate.y += deltaY / this.canvasHeight;
+  }
+
+  @action
+  scaleCanvas(deltaY) {
+    if (deltaY < 0) {
+      this.scaleUp();
+    } else {
+      // scrolled down
+      this.scaleDown();
+    }
   }
 
   @action

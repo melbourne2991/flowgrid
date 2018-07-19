@@ -53,12 +53,7 @@ export class Draggable extends React.Component {
     const { onStart, onStop, onDrag, store, ...rest } = this.props;
 
     return (
-      <div
-        {...rest}
-        style={{ display: "flex" }}
-        onMouseDown={this._onStart}
-        onDragStart={preventDefault}
-      />
+      <div {...rest} onMouseDown={this._onStart} onDragStart={preventDefault} />
     );
   }
 }

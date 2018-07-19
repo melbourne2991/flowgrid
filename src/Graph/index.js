@@ -31,19 +31,11 @@ export class Graph extends React.Component {
   }
 
   handleScroll = e => {
-    if (e.deltaY < 0) {
-      this.props.store.canvas.scaleUp();
-    } else {
-      // scrolled down
-      this.props.store.canvas.scaleDown();
-    }
+    this.props.store.canvas.scaleCanvas(e.deltaY);
   };
 
   handleDrag = (e, data) => {
-    this.props.store.canvas.translate.x +=
-      data.deltaX / this.props.store.canvas.canvasWidth;
-    this.props.store.canvas.translate.y +=
-      data.deltaY / this.props.store.canvas.canvasWidth;
+    this.props.store.canvas.panCanvas(data.deltaX, data.deltaY);
   };
 
   render() {
@@ -52,10 +44,10 @@ export class Graph extends React.Component {
     return (
       <Canvas
         onMouseMove={e => {
-          const posInWindowX =
-            e.clientX - e.currentTarget.getBoundingClientRect().left;
-          const posInWindowY =
-            e.clientY - e.currentTarget.getBoundingClientRect().top;
+          // const posInWindowX =
+          //   e.clientX - e.currentTarget.getBoundingClientRect().left;
+          // const posInWindowY =
+          //   e.clientY - e.currentTarget.getBoundingClientRect().top;
         }}
         canvas={{
           width: this.props.store.canvas.canvasWidth,

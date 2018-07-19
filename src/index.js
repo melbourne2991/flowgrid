@@ -6,7 +6,9 @@ import "./styles.css";
 
 const store = Graph.CreateStore();
 const node = store.addNode();
-const port = node.addPort();
+const port1 = node.addPort();
+const port2 = node.addPort();
+const port3 = node.addPort();
 
 function App() {
   return (

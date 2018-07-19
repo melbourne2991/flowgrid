@@ -1,9 +1,14 @@
 import React from "react";
 import { Draggable } from "./Draggable";
-import { css } from "emotion";
 import { observer } from "mobx-react";
+import { withStyle } from "../util";
 
 @observer
+@withStyle({
+  width: "10px",
+  height: "10px",
+  background: "#000"
+})
 export class Port extends React.Component {
   handleStart = (e, data) => {
     e.stopPropagation();
@@ -24,13 +29,7 @@ export class Port extends React.Component {
         onDrag={this.handleDrag}
         onStop={this.handleStop}
       >
-        <div
-          className={css({
-            width: "50px",
-            height: "50px",
-            background: "#000"
-          })}
-        />
+        <div {...this.props} />
       </Draggable>
     );
   }
