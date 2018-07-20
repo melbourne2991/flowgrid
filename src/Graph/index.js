@@ -44,12 +44,6 @@ export class Graph extends React.Component {
 
     return (
       <Canvas
-        // onMouseMove={e => {
-        //   // const posInWindowX =
-        //   //   e.clientX - e.currentTarget.getBoundingClientRect().left;
-        //   // const posInWindowY =
-        //   //   e.clientY - e.currentTarget.getBoundingClientRect().top;
-        // }}
         canvas={{
           width: this.props.store.canvas.canvasWidth,
           height: this.props.store.canvas.canvasHeight,
