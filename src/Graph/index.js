@@ -3,6 +3,7 @@ import { Node } from "./Node";
 import { observer } from "mobx-react";
 import { GraphStore } from "./store";
 import { Canvas } from "./Canvas";
+import { FlexLine } from "./FlexLine";
 
 @observer
 export class Graph extends React.Component {
@@ -64,21 +65,35 @@ export class Graph extends React.Component {
         }}
         onDrag={this.handleDrag}
         onWheel={this.handleScroll}
-        renderSvg={({ canvasCenter }) => (
-          <rect
-            x={this.props.store.canvas.canvasCenterX}
-            y={this.props.store.canvas.canvasCenterY}
-            width="300"
-            height="100"
-            style={{
-              fill: "rgb(0,0,255)"
-            }}
-          />
-        )}
+        renderSvg={({ canvasCenter }) =>
+          newConnectionToFlexLine(this.props.store.newConnection)
+        }
         renderNodes={() => this.mapNodes()}
       />
     );
   }
+}
+
+function newConnectionToFlexLine(newConnection) {
+  if (!newConnection) return null;
+
+  const { node, index } = newConnection.sourcePort;
+
+  const xOffset = 0;
+  const yOffset = 50 * index + 25;
+
+  const x = node.position.x + xOffset;
+  const y = node.position.y + yOffset;
+
+  return (
+    <FlexLine
+      a={{ x, y }}
+      b={{
+        x: newConnection.delta.x + x,
+        y: newConnection.delta.y + y
+      }}
+    />
+  );
 }
 
 // function getCanvasWindowToCanvas(canvasWindowDimensions, canvasDimensions) {

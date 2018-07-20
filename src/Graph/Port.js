@@ -12,6 +12,8 @@ import { withStyle } from "../util";
 export class Port extends React.Component {
   handleStart = (e, data) => {
     e.stopPropagation();
+
+    this.props.port.beginNewConnection();
   };
 
   handleStop = (e, data) => {
@@ -19,8 +21,10 @@ export class Port extends React.Component {
   };
 
   handleDrag = (e, data) => {
+    this.props.port.updateNewConnection(data.deltaX, data.deltaY);
     e.stopPropagation();
   };
+
   render() {
     return (
       <Draggable
