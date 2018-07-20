@@ -5,10 +5,18 @@ import { Graph } from "./Graph";
 import "./styles.css";
 
 const store = Graph.CreateStore();
-const node = store.addNode();
-const port1 = node.addPort();
-const port2 = node.addPort();
-const port3 = node.addPort();
+
+const node1 = store.addNode();
+
+const node1Port1 = node1.addPort();
+const node1Port2 = node1.addPort();
+const node1Port3 = node1.addPort();
+
+const node2 = store.addNode();
+
+const node2Port1 = node2.addPort();
+const node2Port2 = node2.addPort();
+const node2Port3 = node2.addPort();
 
 function App() {
   return (

@@ -48,7 +48,8 @@ export class Node extends React.Component {
       >
         <div
           style={{
-            transform
+            transform,
+            position: "absolute"
           }}
         >
           <div className={"ports"}>

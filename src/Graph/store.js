@@ -54,7 +54,12 @@ export class DraggableStore {
 
 export class NewConnection {
   constructor(sourcePort) {
+    this.id = shortid.generate();
     this.sourcePort = sourcePort;
+    this.delta = {
+      x: 0,
+      y: 0
+    };
   }
 
   @observable sourcePort = null;
@@ -69,17 +74,30 @@ export class GraphNodePort {
   id;
   node;
 
-  @observable connections = [];
+  @observable connectedPorts = [];
   @observable newConnection = null;
   @observable index = null;
 
+  @action
   beginNewConnection = () => {
     this.newConnection = this.node.graph.beginNewConnection(this);
   };
 
+  @action
   updateNewConnection = (deltaX, deltaY) => {
     this.newConnection.delta.x += deltaX / this.node.graph.canvas.scale;
     this.newConnection.delta.y += deltaY / this.node.graph.canvas.scale;
+  };
+
+  @action
+  cancelNewConnection = () => {
+    this.node.graph.cancelNewConnection();
+    this.newConnection = null;
+  };
+
+  @action
+  handlePotentialConnection = () => {
+    this.node.graph.handlePotentialConnection(this);
   };
 
   constructor(node, id, index) {
@@ -111,17 +129,17 @@ export class GraphNode {
   }
 
   @action
-  addPort() {
+  addPort = () => {
     const port = new GraphNodePort(this, shortid.generate(), this.ports.length);
     this.ports.push(port);
     return port;
-  }
+  };
 
   @action
-  updatePosition(deltaX, deltaY) {
+  updatePosition = (deltaX, deltaY) => {
     this.position.x += deltaX / this.graph.canvas.scale;
     this.position.y += deltaY / this.graph.canvas.scale;
-  }
+  };
 }
 
 export class CanvasStore {
@@ -151,8 +169,6 @@ export class CanvasStore {
 
   @action
   panCanvas(deltaX, deltaY) {
-    console.log(deltaX, this.canvasWidth);
-
     this.translate.x += deltaX / this.canvasWidth;
     this.translate.y += deltaY / this.canvasHeight;
   }
@@ -186,10 +202,19 @@ export class CanvasStore {
   }
 }
 
+class Connection {
+  @observable ports = [];
+
+  constructor(...ports) {
+    this.ports = ports;
+  }
+}
+
 export class GraphStore {
   @observable nodes = [];
   @observable canvas = new CanvasStore();
   @observable newConnection = null;
+  @observable connections = [];
 
   @action
   addNode() {
@@ -203,5 +228,24 @@ export class GraphStore {
     const newConnection = new NewConnection(sourcePort);
     this.newConnection = newConnection;
     return newConnection;
+  }
+
+  @action
+  handlePotentialConnection(destinationPort) {
+    if (!this.newConnection) return; // User is just mousing over, not an incoming connection
+
+    this.connections.push(
+      new Connection(this.newConnection.sourcePort, destinationPort)
+    );
+
+    this.newConnection.sourcePort.connectedPorts.push(destinationPort);
+    destinationPort.connectedPorts.push(sourcePort);
+
+    this.newConnection = null;
+  }
+
+  @action
+  cancelNewConnection() {
+    this.newConnection = null;
   }
 }
