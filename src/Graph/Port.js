@@ -17,7 +17,7 @@ export class Port extends React.Component {
   };
 
   handleStop = (e, data) => {
-    // e.stopPropagation();
+    e.stopPropagation();
 
     this.props.port.cancelNewConnection();
   };
@@ -29,7 +29,6 @@ export class Port extends React.Component {
   };
 
   handleMouseUp = e => {
-    console.log("Mouse is over!");
     e.stopPropagation();
 
     this.props.port.handlePotentialConnection();

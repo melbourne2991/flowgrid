@@ -244,19 +244,8 @@ export class GraphStore {
 
   @action
   handlePotentialConnection(destinationPort) {
-    console.log("Handling potential connection!");
-
     if (!this.newConnection) return; // User is just mousing over, not an incoming connection
-
     this.connectPorts(this.newConnection.sourcePort, destinationPort);
-
-    // this.connections.push(
-    //   new Connection(this.newConnection.sourcePort, destinationPort)
-    // );
-
-    // this.newConnection.sourcePort.connectedPorts.push(destinationPort);
-    // destinationPort.connectedPorts.push(this.newConnection.sourcePort);
-
     this.newConnection = null;
   }
 
