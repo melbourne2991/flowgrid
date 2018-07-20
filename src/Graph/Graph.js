@@ -1,9 +1,10 @@
 import React from "react";
-import { Node } from "./Node";
+
 import { observer } from "mobx-react";
 import { GraphStore } from "./store";
 import { Canvas } from "./Canvas";
 import { FlexLine } from "./FlexLine";
+import { NodeWrapper } from "./NodeWrapper";
 
 @observer
 export class Graph extends React.Component {
@@ -14,14 +15,10 @@ export class Graph extends React.Component {
   mapNodes() {
     return this.props.store.nodes.map(node => {
       return (
-        <Node
+        <NodeWrapper
           node={node}
           key={node.id}
-          canvasCenter={{
-            x: this.props.store.canvas.canvasCenterX,
-            y: this.props.store.canvas.canvasCenterY
-          }}
-          canvasScale={this.props.store.canvas.scale}
+          renderNode={this.props.nodeTypes[node.type].renderNode}
         />
       );
     });
@@ -37,6 +34,7 @@ export class Graph extends React.Component {
 
   render() {
     const { scale } = this.props.store.canvas;
+    const getPortBounds = getPortBoundsFn(this.props.nodeTypes);
 
     return (
       <Canvas
@@ -57,8 +55,11 @@ export class Graph extends React.Component {
         onWheel={this.handleScroll}
         renderSvg={({ canvasCenter }) => (
           <React.Fragment>
-            {newConnectionToFlexLine(this.props.store.newConnection)}
-            {connectionsToFlexLine(this.props.store.connections)}
+            {newConnectionToFlexLine(
+              this.props.store.newConnection,
+              getPortBounds
+            )}
+            {connectionsToFlexLine(this.props.store.connections, getPortBounds)}
           </React.Fragment>
         )}
         renderNodes={() => this.mapNodes()}
@@ -67,41 +68,35 @@ export class Graph extends React.Component {
   }
 }
 
-function connectionsToFlexLine(connections) {
-  return connections.map(({ ports }) => {
+function getPortBoundsFn(nodeTypes) {
+  return port => nodeTypes[port.node.type].getPortBounds(port);
+}
+
+function connectionsToFlexLine(connections, getPortBounds) {
+  return connections.map(({ ports, id }) => {
     return (
-      <FlexLine a={getPortPosition(ports[0])} b={getPortPosition(ports[1])} />
+      <FlexLine
+        key={id}
+        a={getPortBounds(ports[0])}
+        b={getPortBounds(ports[1])}
+      />
     );
   });
 }
 
-function newConnectionToFlexLine(newConnection) {
+function newConnectionToFlexLine(newConnection, getPortBounds) {
   if (!newConnection) return null;
 
-  const { x, y } = getPortPosition(newConnection.sourcePort);
+  const bounds = getPortBounds(newConnection.sourcePort);
 
   return (
     <FlexLine
-      a={{ x, y }}
+      key={newConnection.id}
+      a={bounds}
       b={{
-        x: newConnection.delta.x + x,
-        y: newConnection.delta.y + y
+        x: newConnection.delta.x + bounds.position.x,
+        y: newConnection.delta.y + bounds.position.y
       }}
     />
   );
-}
-
-function getPortPosition(port) {
-  const { node, index } = port;
-
-  const xOffset = 0;
-  const yOffset = 50 * index + 25;
-
-  const x = node.position.x + xOffset;
-  const y = node.position.y + yOffset;
-
-  return {
-    x,
-    y
-  };
 }

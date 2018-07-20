@@ -18,6 +18,8 @@ export class FlexLine extends React.PureComponent {
   calculateCurve() {
     const { a, b } = this.props;
 
+    console.log(a, b);
+
     const aIsSnapbox = isSnapbox(a);
     const bIsSnapbox = isSnapbox(b);
 
@@ -75,7 +77,7 @@ export class FlexLine extends React.PureComponent {
     const cpBX = finalPosBX - posSideX * (multiplier * Math.abs(diffX));
     const cpBY = finalPosBY - posSideY * (multiplier * Math.abs(diffY));
 
-    return {
+    const curve = {
       a: {
         x: finalPosAX,
         y: finalPosAY
@@ -96,6 +98,8 @@ export class FlexLine extends React.PureComponent {
         y: cpBY
       }
     };
+
+    return curve;
   }
 
   render() {

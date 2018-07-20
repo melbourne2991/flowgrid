@@ -1,18 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Graph } from "./Graph";
+import { CreateGraph } from "./Graph";
 
 import "./styles.css";
 
-const store = Graph.CreateStore();
+const { store, Graph } = CreateGraph();
 
-const node1 = store.addNode();
+const node1 = store.addNode("basic");
 
 const node1Port1 = node1.addPort();
 const node1Port2 = node1.addPort();
 const node1Port3 = node1.addPort();
 
-const node2 = store.addNode();
+const node2 = store.addNode("basic");
 
 const node2Port1 = node2.addPort();
 const node2Port2 = node2.addPort();

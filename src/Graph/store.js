@@ -53,8 +53,8 @@ export class DraggableStore {
 }
 
 export class NewConnection {
-  constructor(sourcePort) {
-    this.id = shortid.generate();
+  constructor(id, sourcePort) {
+    this.id = id;
     this.sourcePort = sourcePort;
     this.delta = {
       x: 0,
@@ -77,6 +77,17 @@ export class GraphNodePort {
   @observable connectedPorts = [];
   @observable newConnection = null;
   @observable index = null;
+  @observable data = {};
+
+  constructor(id, node, index, type = "basic", data = {}) {
+    this.index = index;
+    this.node = node;
+    this.id = id;
+    this.type = type;
+    this.data = data;
+
+    this.draggable = new DraggableStore();
+  }
 
   @action
   beginNewConnection = () => {
@@ -99,13 +110,6 @@ export class GraphNodePort {
   handlePotentialConnection = () => {
     this.node.graph.handlePotentialConnection(this);
   };
-
-  constructor(node, id, index) {
-    this.index = index;
-    this.node = node;
-    this.id = id;
-    this.draggable = new DraggableStore();
-  }
 }
 
 export class GraphNode {
@@ -119,9 +123,13 @@ export class GraphNode {
     y: 0
   };
 
-  constructor(graph, id) {
+  @observable data = {};
+
+  constructor(id, graph, type = "basic", data = {}) {
+    this.type = type;
     this.graph = graph;
     this.id = id;
+    this.data = data;
 
     this.position.x = this.graph.canvas.canvasCenterX;
     this.position.y = this.graph.canvas.canvasCenterY;
@@ -129,8 +137,14 @@ export class GraphNode {
   }
 
   @action
-  addPort = () => {
-    const port = new GraphNodePort(this, shortid.generate(), this.ports.length);
+  addPort = (type, data) => {
+    const port = new GraphNodePort(
+      shortid.generate(),
+      this,
+      this.ports.length,
+      type,
+      data
+    );
     this.ports.push(port);
     return port;
   };
@@ -153,6 +167,18 @@ export class CanvasStore {
   canvasCenterY = this.canvasHeight / 2;
 
   @observable scale = 1;
+
+  constructor({
+    canvasWidth,
+    canvasHeight,
+    canvasWindowWidth,
+    canvasWindowHeight
+  }) {
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
+    this.canvasWindowWidth = canvasWindowWidth;
+    this.canvasWindowHeight = canvasWindowHeight;
+  }
 
   @observable
   translate = {
@@ -205,34 +231,38 @@ export class CanvasStore {
 class Connection {
   @observable ports = [];
 
-  constructor(...ports) {
+  constructor(id, ...ports) {
+    this.id = id;
     this.ports = ports;
   }
 }
 
 export class GraphStore {
   @observable nodes = [];
-  @observable canvas = new CanvasStore();
   @observable newConnection = null;
   @observable connections = [];
 
+  constructor({ canvas }) {
+    this.canvas = canvas;
+  }
+
   @action
-  addNode() {
-    const node = new GraphNode(this, shortid.generate());
+  addNode(type, data) {
+    const node = new GraphNode(shortid.generate(), this, type, data);
     this.nodes.push(node);
     return node;
   }
 
   @action
   beginNewConnection(sourcePort) {
-    const newConnection = new NewConnection(sourcePort);
+    const newConnection = new NewConnection(shortid.generate(), sourcePort);
     this.newConnection = newConnection;
     return newConnection;
   }
 
   @action
   connectPorts(portA, portB) {
-    const connection = new Connection(portA, portB);
+    const connection = new Connection(shortid.generate(), portA, portB);
 
     this.connections.push(connection);
 
