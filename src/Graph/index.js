@@ -44,12 +44,12 @@ export class Graph extends React.Component {
 
     return (
       <Canvas
-        onMouseMove={e => {
-          // const posInWindowX =
-          //   e.clientX - e.currentTarget.getBoundingClientRect().left;
-          // const posInWindowY =
-          //   e.clientY - e.currentTarget.getBoundingClientRect().top;
-        }}
+        // onMouseMove={e => {
+        //   // const posInWindowX =
+        //   //   e.clientX - e.currentTarget.getBoundingClientRect().left;
+        //   // const posInWindowY =
+        //   //   e.clientY - e.currentTarget.getBoundingClientRect().top;
+        // }}
         canvas={{
           width: this.props.store.canvas.canvasWidth,
           height: this.props.store.canvas.canvasHeight,
@@ -65,25 +65,30 @@ export class Graph extends React.Component {
         }}
         onDrag={this.handleDrag}
         onWheel={this.handleScroll}
-        renderSvg={({ canvasCenter }) =>
-          newConnectionToFlexLine(this.props.store.newConnection)
-        }
+        renderSvg={({ canvasCenter }) => (
+          <React.Fragment>
+            {newConnectionToFlexLine(this.props.store.newConnection)}
+            {connectionsToFlexLine(this.props.store.connections)}
+          </React.Fragment>
+        )}
         renderNodes={() => this.mapNodes()}
       />
     );
   }
 }
 
+function connectionsToFlexLine(connections) {
+  return connections.map(({ ports }) => {
+    return (
+      <FlexLine a={getPortPosition(ports[0])} b={getPortPosition(ports[1])} />
+    );
+  });
+}
+
 function newConnectionToFlexLine(newConnection) {
   if (!newConnection) return null;
 
-  const { node, index } = newConnection.sourcePort;
-
-  const xOffset = 0;
-  const yOffset = 50 * index + 25;
-
-  const x = node.position.x + xOffset;
-  const y = node.position.y + yOffset;
+  const { x, y } = getPortPosition(newConnection.sourcePort);
 
   return (
     <FlexLine
@@ -96,10 +101,17 @@ function newConnectionToFlexLine(newConnection) {
   );
 }
 
-// function getCanvasWindowToCanvas(canvasWindowDimensions, canvasDimensions) {
-//   return (pos) => {
-//     return {
-//       x: canvasDimensions.width / 2 - canvasWindowDimensions.width / 2,
-//     }
-//   }
-// }
+function getPortPosition(port) {
+  const { node, index } = port;
+
+  const xOffset = 0;
+  const yOffset = 50 * index + 25;
+
+  const x = node.position.x + xOffset;
+  const y = node.position.y + yOffset;
+
+  return {
+    x,
+    y
+  };
+}

@@ -231,15 +231,31 @@ export class GraphStore {
   }
 
   @action
+  connectPorts(portA, portB) {
+    const connection = new Connection(portA, portB);
+
+    this.connections.push(connection);
+
+    portA.connectedPorts.push(portA);
+    portB.connectedPorts.push(portB);
+
+    return connection;
+  }
+
+  @action
   handlePotentialConnection(destinationPort) {
+    console.log("Handling potential connection!");
+
     if (!this.newConnection) return; // User is just mousing over, not an incoming connection
 
-    this.connections.push(
-      new Connection(this.newConnection.sourcePort, destinationPort)
-    );
+    this.connectPorts(this.newConnection.sourcePort, destinationPort);
 
-    this.newConnection.sourcePort.connectedPorts.push(destinationPort);
-    destinationPort.connectedPorts.push(sourcePort);
+    // this.connections.push(
+    //   new Connection(this.newConnection.sourcePort, destinationPort)
+    // );
+
+    // this.newConnection.sourcePort.connectedPorts.push(destinationPort);
+    // destinationPort.connectedPorts.push(this.newConnection.sourcePort);
 
     this.newConnection = null;
   }

@@ -17,7 +17,7 @@ export class Port extends React.Component {
   };
 
   handleStop = (e, data) => {
-    e.stopPropagation();
+    // e.stopPropagation();
 
     this.props.port.cancelNewConnection();
   };
@@ -28,7 +28,8 @@ export class Port extends React.Component {
     this.props.port.updateNewConnection(data.deltaX, data.deltaY);
   };
 
-  handleMouseOver = () => {
+  handleMouseUp = e => {
+    console.log("Mouse is over!");
     e.stopPropagation();
 
     this.props.port.handlePotentialConnection();
@@ -41,9 +42,9 @@ export class Port extends React.Component {
         onStart={this.handleStart}
         onDrag={this.handleDrag}
         onStop={this.handleStop}
-        onMouseOver={this.handleIncomingConnection}
+        onMouseUp={this.handleMouseUp}
       >
-        <div {...this.props} />
+        <div className={this.props.className} />
       </Draggable>
     );
   }
