@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action } from "mobx";
 import shortid from "shortid";
 
 export class DraggableStore {
@@ -10,8 +10,13 @@ export class DraggableStore {
   @observable x = null;
   @observable y = null;
 
+  constructor(canvas) {
+    this.canvas = canvas;
+  }
+
   @action
   start(x, y) {
+    this.canvas.locked = true;
     this.dragging = true;
 
     this.lastX = x;
@@ -44,6 +49,7 @@ export class DraggableStore {
 
   @action
   stop() {
+    this.canvas.locked = false;
     this.dragging = false;
     this.lastX = null;
     this.lastY = null;
@@ -63,6 +69,7 @@ export class NewConnection {
   }
 
   @observable sourcePort = null;
+
   @observable
   delta = {
     x: 0,
@@ -86,7 +93,7 @@ export class GraphNodePort {
     this.type = type;
     this.data = data;
 
-    this.draggable = new DraggableStore();
+    this.draggable = new DraggableStore(this.node.graph.canvas);
   }
 
   @action
@@ -96,8 +103,8 @@ export class GraphNodePort {
 
   @action
   updateNewConnection = (deltaX, deltaY) => {
-    this.newConnection.delta.x += deltaX / this.node.graph.canvas.scale;
-    this.newConnection.delta.y += deltaY / this.node.graph.canvas.scale;
+    this.newConnection.delta.x += deltaX / this.node.graph.canvas.CTM.a;
+    this.newConnection.delta.y += deltaY / this.node.graph.canvas.CTM.d;
   };
 
   @action
@@ -133,7 +140,7 @@ export class GraphNode {
 
     this.position.x = this.graph.canvas.canvasCenterX;
     this.position.y = this.graph.canvas.canvasCenterY;
-    this.draggable = new DraggableStore();
+    this.draggable = new DraggableStore(this.graph.canvas);
   }
 
   @action
@@ -151,22 +158,29 @@ export class GraphNode {
 
   @action
   updatePosition = (deltaX, deltaY) => {
-    this.position.x += deltaX / this.graph.canvas.scale;
-    this.position.y += deltaY / this.graph.canvas.scale;
+    this.position.x += deltaX / this.graph.canvas.CTM.a;
+    this.position.y += deltaY / this.graph.canvas.CTM.d;
   };
 }
 
 export class CanvasStore {
-  canvasWidth = 50000;
-  canvasHeight = 50000;
-
-  canvasWindowWidth = 1500;
-  canvasWindowHeight = 800;
-
-  canvasCenterX = this.canvasWidth / 2;
-  canvasCenterY = this.canvasHeight / 2;
-
+  @observable translate;
   @observable scale = 1;
+
+  // Had to introduce this as a means
+  // of getting panning to play nicely with dragging
+  // elements around - stopPropagation / stopImmediatePop
+  // was not working.
+  locked = false;
+
+  CTM = {
+    a: 1,
+    b: 0,
+    c: 0,
+    d: 1,
+    e: 0,
+    f: 0
+  };
 
   constructor({
     canvasWidth,
@@ -178,53 +192,9 @@ export class CanvasStore {
     this.canvasHeight = canvasHeight;
     this.canvasWindowWidth = canvasWindowWidth;
     this.canvasWindowHeight = canvasWindowHeight;
-  }
 
-  @observable
-  translate = {
-    x: (this.canvasWindowWidth - this.canvasWidth) / 2 / this.canvasWidth,
-    y: (this.canvasWindowHeight - this.canvasHeight) / 2 / this.canvasHeight
-  };
-
-  @action
-  windowPointToCanvas(windowX, windowY) {
-    return {
-      x: windowX - this.translate.x * this.canvasWidth
-    };
-  }
-
-  @action
-  panCanvas(deltaX, deltaY) {
-    this.translate.x += deltaX / this.canvasWidth;
-    this.translate.y += deltaY / this.canvasHeight;
-  }
-
-  @action
-  scaleCanvas(deltaY) {
-    if (deltaY < 0) {
-      this.scaleUp();
-    } else {
-      // scrolled down
-      this.scaleDown();
-    }
-  }
-
-  @action
-  scaleDown() {
-    const minScale = 0.5;
-
-    if (this.scale > minScale) {
-      this.scale -= 0.05;
-    }
-  }
-
-  @action
-  scaleUp() {
-    const maxScale = 2;
-
-    if (this.scale < maxScale) {
-      this.scale += 0.05;
-    }
+    this.canvasCenterX = this.canvasWidth / 2;
+    this.canvasCenterY = this.canvasHeight / 2;
   }
 }
 

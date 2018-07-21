@@ -18,8 +18,6 @@ export class FlexLine extends React.PureComponent {
   calculateCurve() {
     const { a, b } = this.props;
 
-    console.log(a, b);
-
     const aIsSnapbox = isSnapbox(a);
     const bIsSnapbox = isSnapbox(b);
 

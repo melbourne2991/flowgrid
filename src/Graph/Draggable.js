@@ -2,12 +2,16 @@ import React from "react";
 import { observer } from "mobx-react";
 import { DraggableStore } from "./store";
 
-const preventDefault = e => {
-  e.preventDefault();
-};
-
 @observer
 export class Draggable extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.draggableHandlers = {
+      onMouseDown: this._onStart
+    };
+  }
+
   static CreateStore() {
     return new DraggableStore();
   }
@@ -44,16 +48,17 @@ export class Draggable extends React.Component {
 
   _onStop = e => {
     if (this.props.store.dragging) {
-      const result = this.props.store.stop(e.clientX, e.clientY);
+      this.props.store.stop(e.clientX, e.clientY);
       this.props.onStop && this.props.onStop(e);
     }
   };
 
   render() {
-    const { onStart, onStop, onDrag, store, ...rest } = this.props;
+    const { onStart, onStop, onDrag, store, render, ...rest } = this.props;
 
-    return (
-      <div {...rest} onMouseDown={this._onStart} onDragStart={preventDefault} />
-    );
+    return this.props.render({
+      draggableHandlers: this.draggableHandlers,
+      ...rest
+    });
   }
 }

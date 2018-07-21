@@ -6,6 +6,27 @@ import { Canvas } from "./Canvas";
 import { FlexLine } from "./FlexLine";
 import { NodeWrapper } from "./NodeWrapper";
 
+const NewConnection = observer(({ store, getPortBounds }) => {
+  const { newConnection } = store;
+
+  if (!newConnection) return null;
+
+  const bounds = getPortBounds(newConnection.sourcePort);
+
+  return (
+    <svg>
+      <FlexLine
+        key={newConnection.id}
+        a={bounds}
+        b={{
+          x: newConnection.delta.x + bounds.position.x,
+          y: newConnection.delta.y + bounds.position.y
+        }}
+      />
+    </svg>
+  );
+});
+
 @observer
 export class Graph extends React.Component {
   static CreateStore(...args) {
@@ -25,7 +46,12 @@ export class Graph extends React.Component {
   }
 
   handleScroll = e => {
-    this.props.store.canvas.scaleCanvas(e.deltaY);
+    const posInWindowX =
+      e.clientX - e.currentTarget.getBoundingClientRect().left;
+    const posInWindowY =
+      e.clientY - e.currentTarget.getBoundingClientRect().top;
+
+    this.props.store.canvas.scaleCanvas(e.deltaY, posInWindowX, posInWindowY);
   };
 
   handleDrag = (e, data) => {
@@ -37,33 +63,11 @@ export class Graph extends React.Component {
     const getPortBounds = getPortBoundsFn(this.props.nodeTypes);
 
     return (
-      <Canvas
-        canvas={{
-          width: this.props.store.canvas.canvasWidth,
-          height: this.props.store.canvas.canvasHeight,
-          scale,
-          translate: {
-            x: this.props.store.canvas.translate.x,
-            y: this.props.store.canvas.translate.y
-          }
-        }}
-        canvasWindow={{
-          width: this.props.store.canvas.canvasWindowWidth,
-          height: this.props.store.canvas.canvasWindowHeight
-        }}
-        onDrag={this.handleDrag}
-        onWheel={this.handleScroll}
-        renderSvg={({ canvasCenter }) => (
-          <React.Fragment>
-            {newConnectionToFlexLine(
-              this.props.store.newConnection,
-              getPortBounds
-            )}
-            {connectionsToFlexLine(this.props.store.connections, getPortBounds)}
-          </React.Fragment>
-        )}
-        renderNodes={() => this.mapNodes()}
-      />
+      <Canvas canvas={this.props.store.canvas}>
+        <NewConnection store={this.props.store} getPortBounds={getPortBounds} />
+        {connectionsToFlexLine(this.props.store.connections, getPortBounds)}
+        {this.mapNodes()}
+      </Canvas>
     );
   }
 }
@@ -85,9 +89,12 @@ function connectionsToFlexLine(connections, getPortBounds) {
 }
 
 function newConnectionToFlexLine(newConnection, getPortBounds) {
+  console.log("ina");
   if (!newConnection) return null;
 
   const bounds = getPortBounds(newConnection.sourcePort);
+
+  console.log("in");
 
   return (
     <FlexLine

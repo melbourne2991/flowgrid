@@ -6,8 +6,8 @@ import { BasicNode } from "./builtins/BasicNode";
 export { GraphComponent as Graph };
 
 const defaultCanvasConfig = {
-  canvasWidth: 50000,
-  canvasHeight: 50000,
+  canvasWidth: 1500,
+  canvasHeight: 1500,
 
   canvasWindowWidth: 1500,
   canvasWindowHeight: 800
@@ -15,34 +15,35 @@ const defaultCanvasConfig = {
 
 const defaultNodeTypes = {
   basic: BasicNode
-}
-
-const defaultHandlers = {
 };
 
-export function CreateGraph(config = {
-  canvas = {},
-  nodeTypes = {},
-  handlers = {}
-}) {
-  const config = {
+const defaultHandlers = {};
+
+export function CreateGraph(
+  config = {
+    canvas: {},
+    nodeTypes: {},
+    handlers: {}
+  }
+) {
+  const mergedConfig = {
     canvas: {
       ...defaultCanvasConfig,
-      ...canvas
+      ...config.canvas
     },
 
     nodeTypes: {
       ...defaultNodeTypes,
-      ...nodeTypes
+      ...config.nodeTypes
     },
 
     handlers: {
       ...defaultHandlers,
-      ...handlers
+      ...config.handlers
     }
   };
 
-  const canvas = new CanvasStore(config.canvas);
+  const canvas = new CanvasStore(mergedConfig.canvas);
   const store = new GraphStore({
     canvas
   });
@@ -50,7 +51,7 @@ export function CreateGraph(config = {
   return {
     store,
     Graph: withProps({
-      nodeTypes: config.nodeTypes
+      nodeTypes: mergedConfig.nodeTypes
     })(GraphComponent)
   };
 }

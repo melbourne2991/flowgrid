@@ -6,39 +6,37 @@ import { observer } from "mobx-react";
 export class PortWrapper extends React.Component {
   handleStart = (e, data) => {
     e.stopPropagation();
-
     this.props.port.beginNewConnection();
   };
 
   handleStop = (e, data) => {
-    e.stopPropagation();
-
     this.props.port.cancelNewConnection();
   };
 
   handleDrag = (e, data) => {
-    e.stopPropagation();
-
     this.props.port.updateNewConnection(data.deltaX, data.deltaY);
   };
 
   handleMouseUp = e => {
-    e.stopPropagation();
-
     this.props.port.handlePotentialConnection();
+  };
+
+  renderPort = ({ draggableHandlers }) => {
+    return this.props.renderPort(this.props.port, {
+      ...draggableHandlers,
+      onMouseUp: this.handleMouseUp
+    });
   };
 
   render() {
     return (
       <Draggable
+        render={this.renderPort}
         store={this.props.port.draggable}
         onStart={this.handleStart}
         onDrag={this.handleDrag}
         onStop={this.handleStop}
-        onMouseUp={this.handleMouseUp}
-      >
-        {this.props.renderPort(this.props.port)}
-      </Draggable>
+      />
     );
   }
 }

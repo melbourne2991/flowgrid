@@ -1,81 +1,46 @@
 import React from "react";
 import { css } from "emotion";
-import { mapProps } from "recompose";
-import { Draggable } from "./Draggable";
-import { observer } from "mobx-react";
+import svgPanZoom from "svg-pan-zoom";
 
-const CanvasWindowEl = mapProps(({ width, height, ...rest }) => ({
-  className: css({
-    margin: "0 auto",
-    width: `${width}px`,
-    height: `${height}px`,
-    border: "1px solid #000",
-    overflow: "hidden"
-  }),
-  ...rest
-}))("div");
+export class Canvas extends React.Component {
+  constructor(props) {
+    super(props);
+    this.svgRef = React.createRef();
+  }
 
-const CanvasEl = mapProps(({ width, height, scale, translate, ...rest }) => ({
-  style: {
-    transform:
-      `translate(${translate.x * 100}%, ${translate.y * 100}%)` +
-      `scale(${scale})`
-  },
-  className: css({
-    width: `${width}px`,
-    height: `${height}px`,
-    background: "#ccc",
-    position: "relative",
-    overflow: "hidden",
-    transformOrigin: "50% 50%",
-    transition: "0.05s ease"
-  }),
-  ...rest
-}))("div");
+  componentDidMount() {
+    svgPanZoom(this.svgRef.current, {
+      beforePan: () => {
+        if (this.props.canvas.locked) {
+          return false;
+        }
 
-const draggableStore = Draggable.CreateStore();
+        return true;
+      },
 
-export const Canvas = observer(
-  ({
-    canvas,
-    canvasWindow,
-    renderSvg,
-    renderNodes,
-    onDrag,
-    onWheel,
-    onMouseMove
-  }) => {
-    const canvasCenter = {
-      x: canvas.width / 2,
-      y: canvas.height / 2
-    };
+      onUpdatedCTM: CTM => {
+        this.props.canvas.CTM = CTM;
+      }
+    });
+  }
 
+  render() {
     return (
-      <CanvasWindowEl
-        {...canvasWindow}
-        onWheel={onWheel}
-        onMouseMove={onMouseMove}
+      <svg
+        id={"canvas"}
+        ref={this.svgRef}
+        width={this.props.canvas.canvasWidth}
+        height={this.props.canvas.canvasHeight}
+        viewBox={`0 0 ${this.props.canvas.canvasWidth} ${
+          this.props.canvas.canvasHeight
+        }`}
+        className={css({
+          border: "1px solid #000"
+        })}
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <Draggable onDrag={onDrag} store={draggableStore}>
-          <CanvasEl {...canvas}>
-            <svg
-              width={canvas.width}
-              height={canvas.height}
-              viewBox={`0 0 ${canvas.width} ${canvas.height}`}
-              xmlns="http://www.w3.org/2000/svg"
-              className={css({ position: "absolute", left: 0, top: 0 })}
-              children={renderSvg({ canvasCenter })}
-            />
-
-            <div
-              className={css({
-                position: "absolute"
-              })}
-              children={renderNodes({ canvasCenter })}
-            />
-          </CanvasEl>
-        </Draggable>
-      </CanvasWindowEl>
+        <g>{this.props.children}</g>
+      </svg>
     );
   }
-);
+}

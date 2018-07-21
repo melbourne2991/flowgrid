@@ -1,47 +1,55 @@
 import React from "react";
-import { PortWrapper } from "../PortWrapper";
-import { withStyle } from "../../util";
+import { PortWrapper } from "../../PortWrapper";
+import { withStyle } from "../../../util";
+import { css } from "emotion";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 25;
 const portSize = 10;
-
-const NodeRow = withStyle({
-  display: "flex",
-  alignItems: "center",
-  background: "rgba(0,0,0,.05)",
-  borderBottom: "1px solid rgba(34,36,38,.15)",
-  width: `${nodeRowWidth}px`,
-  height: `${nodeRowHeight}px`
-})("div");
+const nodeRowOffset = nodeRowHeight / 2 - portSize / 2;
 
 const Port = withStyle({
   width: `${portSize}px`,
   height: `${portSize}px`,
   background: "#000"
-})("div");
+})("rect");
 
 export const BasicNode = {
-  renderNode: node => {
-    const transform = `translate(${node.position.x}px, ${node.position.y}px)`;
-
+  renderNode: (node, draggableHandlers) => {
     return (
-      <div
-        style={{
-          transform,
-          position: "absolute"
-        }}
+      <svg
+        {...draggableHandlers}
+        xmlns="http://www.w3.org/2000/svg"
+        x={node.position.x}
+        y={node.position.y}
       >
-        <div className={"ports"}>
-          {node.ports.map(port => {
-            return (
-              <NodeRow key={port.id}>
-                <PortWrapper port={port} renderPort={() => <Port />} />
-              </NodeRow>
-            );
+        <rect
+          x={0}
+          width={nodeRowWidth}
+          height={node.ports.length * nodeRowHeight}
+          className={css({
+            fill: "#ccc",
+            zIndex: -1
           })}
-        </div>
-      </div>
+        />
+
+        {node.ports.map((port, i) => {
+          return (
+            <React.Fragment key={port.id}>
+              <PortWrapper
+                port={port}
+                renderPort={(port, draggableHandlers) => (
+                  <Port
+                    x={0}
+                    y={i * nodeRowHeight + nodeRowOffset}
+                    {...draggableHandlers}
+                  />
+                )}
+              />
+            </React.Fragment>
+          );
+        })}
+      </svg>
     );
   },
 
