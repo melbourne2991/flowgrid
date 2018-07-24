@@ -7,7 +7,7 @@ export { GraphComponent as Graph };
 
 const defaultCanvasConfig = {
   canvasWidth: 1500,
-  canvasHeight: 1500,
+  canvasHeight: 800,
 
   canvasWindowWidth: 1500,
   canvasWindowHeight: 800
@@ -44,7 +44,9 @@ export function CreateGraph(
   };
 
   const canvas = new CanvasStore(mergedConfig.canvas);
+
   const store = new GraphStore({
+    config: mergedConfig,
     canvas
   });
 

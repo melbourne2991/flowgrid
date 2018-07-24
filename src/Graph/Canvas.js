@@ -35,7 +35,8 @@ export class Canvas extends React.Component {
           this.props.canvas.canvasHeight
         }`}
         className={css({
-          border: "1px solid #000"
+          border: "1px solid #000",
+          background: "rgba(0,0,0,0.1)"
         })}
         xmlns="http://www.w3.org/2000/svg"
       >

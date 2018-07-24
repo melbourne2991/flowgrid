@@ -83,11 +83,9 @@ export class GraphNodePort {
 
   @observable connectedPorts = [];
   @observable newConnection = null;
-  @observable index = null;
   @observable data = {};
 
-  constructor(id, node, index, type = "basic", data = {}) {
-    this.index = index;
+  constructor(id, node, type = "basic", data = {}) {
     this.node = node;
     this.id = id;
     this.type = type;
@@ -145,13 +143,7 @@ export class GraphNode {
 
   @action
   addPort = (type, data) => {
-    const port = new GraphNodePort(
-      shortid.generate(),
-      this,
-      this.ports.length,
-      type,
-      data
-    );
+    const port = new GraphNodePort(shortid.generate(), this, type, data);
     this.ports.push(port);
     return port;
   };
@@ -212,8 +204,9 @@ export class GraphStore {
   @observable newConnection = null;
   @observable connections = [];
 
-  constructor({ canvas }) {
+  constructor({ canvas, config }) {
     this.canvas = canvas;
+    this.config = config;
   }
 
   @action
@@ -245,7 +238,18 @@ export class GraphStore {
   @action
   handlePotentialConnection(destinationPort) {
     if (!this.newConnection) return; // User is just mousing over, not an incoming connection
-    this.connectPorts(this.newConnection.sourcePort, destinationPort);
+
+    const { sourcePort } = this.newConnection;
+
+    if (sourcePort === destinationPort) return; // Trying to connect to itself, abort!
+
+    const connectionCancelled =
+      this.config.handlers.onNewConnection &&
+      !this.config.handlers.onNewConnection(sourcePort, destinationPort);
+
+    if (connectionCancelled) return; // Connection rejected by consumer
+
+    this.connectPorts(sourcePort, destinationPort);
     this.newConnection = null;
   }
 

@@ -87,23 +87,3 @@ function connectionsToFlexLine(connections, getPortBounds) {
     );
   });
 }
-
-function newConnectionToFlexLine(newConnection, getPortBounds) {
-  console.log("ina");
-  if (!newConnection) return null;
-
-  const bounds = getPortBounds(newConnection.sourcePort);
-
-  console.log("in");
-
-  return (
-    <FlexLine
-      key={newConnection.id}
-      a={bounds}
-      b={{
-        x: newConnection.delta.x + bounds.position.x,
-        y: newConnection.delta.y + bounds.position.y
-      }}
-    />
-  );
-}
