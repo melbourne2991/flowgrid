@@ -1,60 +1,24 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { CreateGraph } from "./Graph";
-
 import "./styles.css";
 
-const { store, Graph } = CreateGraph({
-  handlers: {
-    onNewConnection(sourcePort, destinationPort) {
-      if (sourcePort.type === "input" && destinationPort.type === "output") {
-        return true;
-      }
+import React from "react";
+import ReactDOM from "react-dom";
+import { App } from "./containers/App";
+import { Provider } from "mobx-react";
+import { createStores } from "./stores";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import { theme } from "./theme";
 
-      if (destinationPort.type === "input" && sourcePort.type === "output") {
-        return true;
-      }
-
-      return false;
-    }
-  }
-});
-
-const node1 = store.addNode("basic");
-
-const node1Port1 = node1.addPort("input", {
-  index: 0
-});
-
-const node1Port2 = node1.addPort("input", {
-  index: 1
-});
-
-const node1Port3 = node1.addPort("output", {
-  index: 0
-});
-
-const node2 = store.addNode("basic");
-
-const node2Port1 = node2.addPort("input", {
-  index: 0
-});
-
-const node2Port2 = node2.addPort("output", {
-  index: 0
-});
-
-const node2Port3 = node2.addPort("output", {
-  index: 1
-});
-
-function App() {
+function Root() {
   return (
-    <div className="App">
-      <Graph store={store} />
-    </div>
+    <Provider {...createStores()}>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </MuiThemeProvider>
+    </Provider>
   );
 }
 
 const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+ReactDOM.render(<Root />, rootElement);

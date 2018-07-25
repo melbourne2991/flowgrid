@@ -1,4 +1,14 @@
-.App {
+* {
+  box-sizing: border-box;
+}
+
+body,
+html,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
   font-family: sans-serif;
-  text-align: center;
 }

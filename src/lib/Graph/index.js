@@ -1,9 +1,6 @@
-import { Graph as GraphComponent } from "./Graph";
 import { GraphStore, CanvasStore } from "./store";
-import { withProps } from "recompose";
 import { BasicNode } from "./builtins/BasicNode";
-
-export { GraphComponent as Graph };
+export { Graph } from "./Graph";
 
 const defaultCanvasConfig = {
   canvasWidth: 1500,
@@ -19,7 +16,7 @@ const defaultNodeTypes = {
 
 const defaultHandlers = {};
 
-export function CreateGraph(
+export function CreateGraphStore(
   config = {
     canvas: {},
     nodeTypes: {},
@@ -50,10 +47,5 @@ export function CreateGraph(
     canvas
   });
 
-  return {
-    store,
-    Graph: withProps({
-      nodeTypes: mergedConfig.nodeTypes
-    })(GraphComponent)
-  };
+  return store;
 }

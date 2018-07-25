@@ -26,22 +26,23 @@ export class Canvas extends React.Component {
 
   render() {
     return (
-      <svg
-        id={"canvas"}
-        ref={this.svgRef}
-        width={this.props.canvas.canvasWidth}
-        height={this.props.canvas.canvasHeight}
-        viewBox={`0 0 ${this.props.canvas.canvasWidth} ${
-          this.props.canvas.canvasHeight
-        }`}
-        className={css({
-          border: "1px solid #000",
-          background: "rgba(0,0,0,0.1)"
-        })}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g>{this.props.children}</g>
-      </svg>
+      <div className={this.props.className}>
+        <svg
+          id={"canvas"}
+          ref={this.svgRef}
+          viewBox={`0 0 ${this.props.canvas.canvasWidth} ${
+            this.props.canvas.canvasHeight
+          }`}
+          style={{
+            display: "inline",
+            width: "100%",
+            height: "100%"
+          }}
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g>{this.props.children}</g>
+        </svg>
+      </div>
     );
   }
 }

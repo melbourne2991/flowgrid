@@ -39,7 +39,7 @@ export class Graph extends React.Component {
         <NodeWrapper
           node={node}
           key={node.id}
-          renderNode={this.props.nodeTypes[node.type].renderNode}
+          renderNode={this.props.store.config.nodeTypes[node.type].renderNode}
         />
       );
     });
@@ -59,11 +59,10 @@ export class Graph extends React.Component {
   };
 
   render() {
-    const { scale } = this.props.store.canvas;
-    const getPortBounds = getPortBoundsFn(this.props.nodeTypes);
+    const getPortBounds = getPortBoundsFn(this.props.store.config.nodeTypes);
 
     return (
-      <Canvas canvas={this.props.store.canvas}>
+      <Canvas canvas={this.props.store.canvas} className={this.props.className}>
         <NewConnection store={this.props.store} getPortBounds={getPortBounds} />
         {connectionsToFlexLine(this.props.store.connections, getPortBounds)}
         {this.mapNodes()}
