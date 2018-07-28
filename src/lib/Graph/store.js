@@ -149,13 +149,23 @@ export class GraphNode {
   };
 
   @action
-  updatePosition = (deltaX, deltaY) => {
+  updatePositionWithDelta = (deltaX, deltaY) => {
     this.position.x += deltaX / this.graph.canvas.CTM.a;
     this.position.y += deltaY / this.graph.canvas.CTM.d;
+  };
+
+  @action
+  updatePositionWithClientOffset = (clientX, clientY) => {
+    const svgPos = this.graph.canvas.clientToSVGPoint(clientX, clientY);
+
+    this.position.x = svgPos.x;
+    this.position.y = svgPos.y;
   };
 }
 
 export class CanvasStore {
+  SVGPoint = null;
+
   @observable translate;
   @observable scale = 1;
 
@@ -187,6 +197,13 @@ export class CanvasStore {
 
     this.canvasCenterX = this.canvasWidth / 2;
     this.canvasCenterY = this.canvasHeight / 2;
+  }
+
+  clientToSVGPoint(clientX, clientY) {
+    this.SVGPoint.x = clientX;
+    this.SVGPoint.y = clientY;
+
+    return this.SVGPoint.matrixTransform(this.CTM.inverse());
   }
 }
 

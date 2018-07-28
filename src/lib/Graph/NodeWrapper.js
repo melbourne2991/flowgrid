@@ -5,7 +5,7 @@ import { Draggable } from "./Draggable";
 @observer
 export class NodeWrapper extends React.Component {
   handleDrag = (e, data) => {
-    this.props.node.updatePosition(data.deltaX, data.deltaY);
+    this.props.node.updatePositionWithDelta(data.deltaX, data.deltaY);
   };
 
   renderNode = ({ draggableHandlers }) => {

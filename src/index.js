@@ -8,10 +8,11 @@ import { createStores } from "./stores";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { theme } from "./theme";
+import nodeTypes from "./nodeTypes";
 
 function Root() {
   return (
-    <Provider {...createStores()}>
+    <Provider {...createStores({ nodeTypes })}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <App />

@@ -1,6 +1,7 @@
 import { GraphStore, CanvasStore } from "./store";
-import { BasicNode } from "./builtins/BasicNode";
 export { Graph } from "./Graph";
+export { PortWrapper } from "./PortWrapper";
+export { NodeWrapper } from "./NodeWrapper";
 
 const defaultCanvasConfig = {
   canvasWidth: 1500,
@@ -10,10 +11,7 @@ const defaultCanvasConfig = {
   canvasWindowHeight: 800
 };
 
-const defaultNodeTypes = {
-  basic: BasicNode
-};
-
+const defaultNodeTypes = {};
 const defaultHandlers = {};
 
 export function CreateGraphStore(

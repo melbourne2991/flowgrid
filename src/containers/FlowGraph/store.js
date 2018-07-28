@@ -1,6 +1,12 @@
 import { CreateGraphStore } from "../../lib/Graph";
+import { defaultNodeTemplate } from "./defaultNodeTemplate";
+import { computed, action, observable } from "mobx";
 
 const graphConfig = {
+  nodeTypes: {
+    basic: defaultNodeTemplate
+  },
+
   handlers: {
     onNewConnection(sourcePort, destinationPort) {
       if (sourcePort.type === "input" && destinationPort.type === "output") {
@@ -16,36 +22,38 @@ const graphConfig = {
   }
 };
 
+class SidebarStore {
+  @observable activeTab = 1;
+}
+
 export class FlowGraphStore {
+  @observable sidebar;
+
   graphStore = CreateGraphStore(graphConfig);
 
-  constructor() {
-    const node1 = this.graphStore.addNode("basic");
+  get nodeTypes() {
+    return this.rootStore.nodeTypes;
+  }
 
-    const node1Port1 = node1.addPort("input", {
-      index: 0
+  constructor(rootStore) {
+    this.sidebar = new SidebarStore();
+    this.rootStore = rootStore;
+  }
+
+  @action.bound
+  addNode(nodeType, pos) {
+    const node = this.graphStore.addNode("basic", {
+      nodeType
     });
 
-    const node1Port2 = node1.addPort("input", {
-      index: 1
-    });
+    Object.keys(nodeType.config.outputs).forEach((key, index) => {
+      node.addPort("output", {
+        index,
+        label: nodeType.config.outputs[key].label,
+        outputName: key
+      });
 
-    const node1Port3 = node1.addPort("output", {
-      index: 0
-    });
-
-    const node2 = this.graphStore.addNode("basic");
-
-    const node2Port1 = node2.addPort("input", {
-      index: 0
-    });
-
-    const node2Port2 = node2.addPort("output", {
-      index: 0
-    });
-
-    const node2Port3 = node2.addPort("output", {
-      index: 1
+      node.updatePositionWithClientOffset(pos.x, pos.y);
     });
   }
 }

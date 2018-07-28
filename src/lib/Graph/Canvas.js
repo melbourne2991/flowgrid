@@ -1,5 +1,4 @@
 import React from "react";
-import { css } from "emotion";
 import svgPanZoom from "svg-pan-zoom";
 
 export class Canvas extends React.Component {
@@ -9,6 +8,10 @@ export class Canvas extends React.Component {
   }
 
   componentDidMount() {
+    const svgEl = this.svgRef.current;
+
+    this.props.canvas.SVGPoint = svgEl.createSVGPoint();
+
     svgPanZoom(this.svgRef.current, {
       beforePan: () => {
         if (this.props.canvas.locked) {

@@ -1,7 +1,7 @@
 import React from "react";
-import { PortWrapper } from "../../PortWrapper";
-import { withStyle } from "../../../util";
-import { css } from "emotion";
+import { PortWrapper } from "../../lib/Graph";
+import { withStyles } from "@material-ui/core/styles";
+import { observer } from "mobx-react";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 25;
@@ -11,17 +11,31 @@ const borderRadius = 3;
 const inPortXOffset = 0;
 const outPortXOffset = nodeRowWidth - portSize;
 
-const Port = withStyle({
-  width: `${portSize}px`,
-  height: `${portSize}px`,
-  background: "#000"
-})("rect");
+@withStyles({
+  node: {
+    fill: "#fff",
+    opacity: 0.5,
+    zIndex: -1
+  },
 
-export const BasicNode = {
-  renderNode: (node, draggableHandlers) => {
+  port: {
+    width: `${portSize}px`,
+    height: `${portSize}px`,
+    background: "#000"
+  },
+
+  portLabel: {
+    fontSize: "10px",
+    lineHeight: `1`,
+    fontWeight: "bolder"
+  }
+})
+@observer
+class DefaultNodeTemplate extends React.Component {
+  render() {
+    const { node, draggableHandlers, classes } = this.props;
     const inPorts = node.ports.filter(port => port.type === "input");
     const outPorts = node.ports.filter(port => port.type === "output");
-
     const verticalPortCount = Math.max(inPorts.length, outPorts.length);
 
     return (
@@ -37,11 +51,7 @@ export const BasicNode = {
           ry={borderRadius}
           width={nodeRowWidth}
           height={verticalPortCount * nodeRowHeight}
-          className={css({
-            fill: "#fff",
-            opacity: 0.5,
-            zIndex: -1
-          })}
+          className={classes.node}
         />
 
         {inPorts.map((port, i) => {
@@ -50,13 +60,23 @@ export const BasicNode = {
               <PortWrapper
                 port={port}
                 renderPort={(port, draggableHandlers) => (
-                  <Port
+                  <rect
+                    className={classes.port}
                     x={inPortXOffset}
                     y={i * nodeRowHeight + nodeRowOffset}
                     {...draggableHandlers}
                   />
                 )}
               />
+
+              <text
+                x={inPortXOffset + portSize * 2}
+                y={i * nodeRowHeight + nodeRowOffset + 9}
+                className={classes.portLabel}
+                textAnchor="start"
+              >
+                {port.data.label || ""}
+              </text>
             </React.Fragment>
           );
         })}
@@ -67,17 +87,35 @@ export const BasicNode = {
               <PortWrapper
                 port={port}
                 renderPort={(port, draggableHandlers) => (
-                  <Port
+                  <rect
+                    className={classes.port}
                     x={outPortXOffset}
                     y={i * nodeRowHeight + nodeRowOffset}
                     {...draggableHandlers}
                   />
                 )}
               />
+
+              <text
+                x={outPortXOffset - portSize}
+                y={i * nodeRowHeight + (nodeRowOffset + 9)}
+                className={classes.portLabel}
+                textAnchor="end"
+              >
+                {port.data.label || ""}
+              </text>
             </React.Fragment>
           );
         })}
       </svg>
+    );
+  }
+}
+
+export const defaultNodeTemplate = {
+  renderNode: (node, draggableHandlers) => {
+    return (
+      <DefaultNodeTemplate node={node} draggableHandlers={draggableHandlers} />
     );
   },
 

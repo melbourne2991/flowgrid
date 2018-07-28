@@ -1,6 +1,5 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { DraggableStore } from "./store";
 
 @observer
 export class Draggable extends React.Component {
@@ -10,10 +9,6 @@ export class Draggable extends React.Component {
     this.draggableHandlers = {
       onMouseDown: this._onStart
     };
-  }
-
-  static CreateStore() {
-    return new DraggableStore();
   }
 
   componentDidMount() {

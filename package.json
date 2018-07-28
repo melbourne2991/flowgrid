@@ -6,16 +6,20 @@
   "main": "src/index.js",
   "dependencies": {
     "@material-ui/core": "^1.4.1",
-    "emotion": "9.2.6",
+    "@material-ui/icons": "^2.0.0",
     "mobx": "5.0.3",
     "mobx-react": "5.2.3",
     "react": "16.3.2",
+    "react-dnd": "^5.0.0",
+    "react-dnd-html5-backend": "^5.0.1",
     "react-dom": "16.3.2",
     "react-draggable": "3.0.5",
     "react-scripts": "1.1.4",
     "recompose": "0.27.1",
     "shortid": "2.2.12",
-    "svg-pan-zoom": "github:ariutta/svg-pan-zoom"
+    "svg-pan-zoom": "^3.5.3",
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

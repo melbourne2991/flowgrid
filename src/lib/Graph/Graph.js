@@ -14,16 +14,14 @@ const NewConnection = observer(({ store, getPortBounds }) => {
   const bounds = getPortBounds(newConnection.sourcePort);
 
   return (
-    <svg>
-      <FlexLine
-        key={newConnection.id}
-        a={bounds}
-        b={{
-          x: newConnection.delta.x + bounds.position.x,
-          y: newConnection.delta.y + bounds.position.y
-        }}
-      />
-    </svg>
+    <FlexLine
+      key={newConnection.id}
+      a={bounds}
+      b={{
+        x: newConnection.delta.x + bounds.position.x,
+        y: newConnection.delta.y + bounds.position.y
+      }}
+    />
   );
 });
 
