@@ -25,9 +25,12 @@ export class PortWrapper extends React.Component {
   };
 
   render() {
-    return this.props.renderPort(this.props.port, {
-      ...this.props.draggableHandlers,
-      onMouseUp: this.handleMouseUp
+    return this.props.renderPort({
+      port: this.props.port,
+      handlers: {
+        ...this.props.draggableHandlers,
+        onMouseUp: this.handleMouseUp
+      }
     });
   }
 }

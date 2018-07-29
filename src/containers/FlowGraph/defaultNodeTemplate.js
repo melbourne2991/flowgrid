@@ -33,14 +33,14 @@ const outPortXOffset = nodeRowWidth - portSize;
 @observer
 class DefaultNodeTemplate extends React.Component {
   render() {
-    const { node, draggableHandlers, classes } = this.props;
+    const { node, handlers, classes } = this.props;
     const inPorts = node.ports.filter(port => port.type === "input");
     const outPorts = node.ports.filter(port => port.type === "output");
     const verticalPortCount = Math.max(inPorts.length, outPorts.length);
 
     return (
       <svg
-        {...draggableHandlers}
+        {...handlers}
         xmlns="http://www.w3.org/2000/svg"
         x={node.position.x}
         y={node.position.y}
@@ -86,12 +86,12 @@ class DefaultNodeTemplate extends React.Component {
             <React.Fragment key={port.id}>
               <PortWrapper
                 port={port}
-                renderPort={(port, draggableHandlers) => (
+                renderPort={({ port, handlers }) => (
                   <rect
                     className={classes.port}
                     x={outPortXOffset}
                     y={i * nodeRowHeight + nodeRowOffset}
-                    {...draggableHandlers}
+                    {...handlers}
                   />
                 )}
               />
@@ -113,10 +113,8 @@ class DefaultNodeTemplate extends React.Component {
 }
 
 export const defaultNodeTemplate = {
-  renderNode: (node, draggableHandlers) => {
-    return (
-      <DefaultNodeTemplate node={node} draggableHandlers={draggableHandlers} />
-    );
+  renderNode: props => {
+    return <DefaultNodeTemplate {...props} />;
   },
 
   getPortBounds(port) {

@@ -13,6 +13,8 @@ export class Canvas extends React.Component {
     this.props.canvas.SVGPoint = svgEl.createSVGPoint();
 
     svgPanZoom(this.svgRef.current, {
+      dblClickZoomEnabled: false,
+
       beforePan: () => {
         if (this.props.canvas.locked) {
           return false;

@@ -1,6 +1,22 @@
 import { observable, action } from "mobx";
 import shortid from "shortid";
 
+export class SelectableStore {
+  @observable selected = false;
+
+  constructor() {}
+
+  @action.bound
+  select() {
+    this.selected = true;
+  }
+
+  @action.bound
+  deselect() {
+    this.selected = false;
+  }
+}
+
 export class DraggableStore {
   @observable dragging = false;
 
@@ -139,6 +155,7 @@ export class GraphNode {
     this.position.x = this.graph.canvas.canvasCenterX;
     this.position.y = this.graph.canvas.canvasCenterY;
     this.draggable = new DraggableStore(this.graph.canvas);
+    this.selectable = new SelectableStore();
   }
 
   @action
