@@ -1,7 +1,12 @@
 import * as React from "react";
-import { nodeDefinition } from "../core/nodeDefinition";
+import { defineNodeType } from "../core/defineNodeType";
+import { SetConfigFn } from "../core/types";
 
-class TextInputNodeUI extends React.Component {
+export interface TextInputNodeUIProps {
+  setConfig: SetConfigFn;
+}
+
+export class TextInputNodeUI extends React.Component<TextInputNodeUIProps> {
   render() {
     return (
       <React.Fragment>
@@ -11,7 +16,7 @@ class TextInputNodeUI extends React.Component {
   }
 }
 
-export const TextInputNode = nodeDefinition({
+export const TextInputNode = defineNodeType({
   name: "TextInputNode",
   render: setConfig => <TextInputNodeUI setConfig={setConfig} />,
 
