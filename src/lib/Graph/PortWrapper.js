@@ -1,42 +1,33 @@
 import React from "react";
-import { Draggable } from "./Draggable";
+import { makeDraggable } from "./Draggable";
 import { observer } from "mobx-react";
 
+@makeDraggable(props => ({
+  store: props.port.draggable,
+
+  onStart: (e, data) => {
+    e.stopPropagation();
+    props.port.beginNewConnection();
+  },
+
+  onDrag: (e, data) => {
+    props.port.updateNewConnection(data.deltaX, data.deltaY);
+  },
+
+  onStop: (e, data) => {
+    props.port.cancelNewConnection();
+  }
+}))
 @observer
 export class PortWrapper extends React.Component {
-  handleStart = (e, data) => {
-    e.stopPropagation();
-    this.props.port.beginNewConnection();
-  };
-
-  handleStop = (e, data) => {
-    this.props.port.cancelNewConnection();
-  };
-
-  handleDrag = (e, data) => {
-    this.props.port.updateNewConnection(data.deltaX, data.deltaY);
-  };
-
   handleMouseUp = e => {
     this.props.port.handlePotentialConnection();
   };
 
-  renderPort = ({ draggableHandlers }) => {
+  render() {
     return this.props.renderPort(this.props.port, {
-      ...draggableHandlers,
+      ...this.props.draggableHandlers,
       onMouseUp: this.handleMouseUp
     });
-  };
-
-  render() {
-    return (
-      <Draggable
-        render={this.renderPort}
-        store={this.props.port.draggable}
-        onStart={this.handleStart}
-        onDrag={this.handleDrag}
-        onStop={this.handleStop}
-      />
-    );
   }
 }

@@ -1,59 +1,81 @@
 import React from "react";
 import { observer } from "mobx-react";
 
-@observer
-export class Draggable extends React.Component {
-  constructor(props) {
-    super(props);
+export const makeDraggable = propsMapper => Component => {
+  @observer
+  class Draggable extends React.Component {
+    constructor(props) {
+      super(props);
 
-    this.draggableHandlers = {
-      onMouseDown: this._onStart
-    };
-  }
-
-  componentDidMount() {
-    this.mouseUpListener = e => {
-      this._onStop(e);
-    };
-
-    this.mouseMoveListener = e => {
-      this._onDrag(e);
-    };
-
-    window.addEventListener("mouseup", this.mouseUpListener);
-    window.addEventListener("mousemove", this.mouseMoveListener);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("mouseup", this.mouseUpListener);
-    window.removeEventListener("mousemove", this.mouseMoveListener);
-  }
-
-  _onStart = e => {
-    this.props.store.start(e.clientX, e.clientY);
-    this.props.onStart && this.props.onStart(e);
-  };
-
-  _onDrag = e => {
-    if (this.props.store.dragging) {
-      const result = this.props.store.drag(e.clientX, e.clientY);
-      this.props.onDrag && this.props.onDrag(e, result);
+      this.draggableHandlers = {
+        onMouseDown: this._onStart
+      };
     }
-  };
 
-  _onStop = e => {
-    if (this.props.store.dragging) {
-      this.props.store.stop(e.clientX, e.clientY);
-      this.props.onStop && this.props.onStop(e);
+    componentDidMount() {
+      this.mouseUpListener = e => {
+        this._onStop(e);
+      };
+
+      this.mouseMoveListener = e => {
+        this._onDrag(e);
+      };
+
+      window.addEventListener("mouseup", this.mouseUpListener);
+      window.addEventListener("mousemove", this.mouseMoveListener);
     }
-  };
 
-  render() {
-    const { onStart, onStop, onDrag, store, render, ...rest } = this.props;
+    componentWillUnmount() {
+      window.removeEventListener("mouseup", this.mouseUpListener);
+      window.removeEventListener("mousemove", this.mouseMoveListener);
+    }
 
-    return this.props.render({
-      draggableHandlers: this.draggableHandlers,
-      ...rest
-    });
+    get store() {
+      return propsMapper(this.props).store;
+    }
+
+    get onStart() {
+      return propsMapper(this.props).onStart;
+    }
+
+    get onStop() {
+      return propsMapper(this.props).onStop;
+    }
+
+    get onDrag() {
+      return propsMapper(this.props).onDrag;
+    }
+
+    _onStart = e => {
+      this.store.start(e.clientX, e.clientY);
+      this.onStart && this.onStart(e);
+    };
+
+    _onDrag = e => {
+      if (this.store.dragging) {
+        const result = this.store.drag(e.clientX, e.clientY);
+        this.onDrag && this.onDrag(e, result);
+      }
+    };
+
+    _onStop = e => {
+      if (this.store.dragging) {
+        this.store.stop(e.clientX, e.clientY);
+        this.onStop && this.onStop(e);
+      }
+    };
+
+    render() {
+      const { ...rest } = this.props;
+
+      return <Component {...rest} draggableHandlers={this.draggableHandlers} />;
+
+      // return this.props.render({
+      //   draggableHandlers: this.draggableHandlers,
+      //   ...rest
+      // });
+    }
   }
-}
+
+  return Draggable;
+};
