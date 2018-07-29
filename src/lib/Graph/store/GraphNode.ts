@@ -28,7 +28,7 @@ export class GraphNode {
     this.position.x = this.graph.canvas.canvasCenterX;
     this.position.y = this.graph.canvas.canvasCenterY;
 
-    this.draggable = new DraggableStore(this.graph);
+    this.draggable = new DraggableStore(this);
     this.selectable = new SelectableStore(this);
   }
 
