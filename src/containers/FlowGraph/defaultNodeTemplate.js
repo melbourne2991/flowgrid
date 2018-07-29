@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { PortWrapper } from "../../lib/Graph";
 import { withStyles } from "@material-ui/core/styles";
 import { observer } from "mobx-react";

@@ -8,7 +8,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "babel-loader"
+        loader: "ts-loader"
       },
       {
         test: /\.css$/,
@@ -16,6 +16,14 @@ module.exports = {
       }
     ]
   },
+
+  devtool: "source-map",
+
+  resolve: {
+    // Add '.ts' and '.tsx' as resolvable extensions.
+    extensions: [".ts", ".tsx", ".js"]
+  },
+
   plugins: [
     new HtmlWebpackPlugin({
       template: __dirname + "/index.html"

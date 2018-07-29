@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { makeDraggable } from "./Draggable";
 import { observer } from "mobx-react";
 

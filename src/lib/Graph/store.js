@@ -1,6 +1,5 @@
 import { observable, action, computed } from "mobx";
-import shortid from "shortid";
-import EventEmitter from "eventemitter3";
+import * as shortid from "shortid";
 
 export class SelectableStore {
   @computed
@@ -235,7 +234,7 @@ class Connection {
   }
 }
 
-export class GraphStore extends EventEmitter {
+export class GraphStore {
   @observable activeSelection = null;
   @observable nodes = [];
   @observable newConnection = null;
@@ -243,7 +242,6 @@ export class GraphStore extends EventEmitter {
   @observable selectedNode = null;
 
   constructor({ canvas, config }) {
-    super();
     this.canvas = canvas;
     this.config = config;
   }

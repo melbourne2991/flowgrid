@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { nodeDefinition } from "../core/nodeDefinition";
 
 class TextInputNodeUI extends React.Component {

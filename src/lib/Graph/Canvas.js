@@ -1,5 +1,5 @@
-import React from "react";
-import svgPanZoom from "svg-pan-zoom";
+import * as React from "react";
+import * as svgPanZoom from "svg-pan-zoom";
 import { observer } from "mobx-react";
 
 @observer

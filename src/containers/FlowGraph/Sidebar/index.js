@@ -1,10 +1,9 @@
-import React from "react";
+import * as React from "react";
 import { observer, inject } from "mobx-react";
 import { withStyles } from "@material-ui/core";
 import { NodeType } from "../NodeType";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import Divider from "@material-ui/core/Divider";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import InfoIcon from "@material-ui/icons/Info";
