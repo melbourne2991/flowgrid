@@ -3,10 +3,6 @@ import { observable } from "mobx";
 export class CanvasStore {
   canvasWidth: number;
   canvasHeight: number;
-  canvasWindowWidth: number;
-  canvasWindowHeight: number;
-  canvasCenterX: number;
-  canvasCenterY: number;
 
   SVGPoint = null;
 
@@ -28,19 +24,9 @@ export class CanvasStore {
     f: 0
   };
 
-  constructor({
-    canvasWidth,
-    canvasHeight,
-    canvasWindowWidth,
-    canvasWindowHeight
-  }) {
+  constructor({ canvasWidth, canvasHeight }) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
-    this.canvasWindowWidth = canvasWindowWidth;
-    this.canvasWindowHeight = canvasWindowHeight;
-
-    this.canvasCenterX = this.canvasWidth / 2;
-    this.canvasCenterY = this.canvasHeight / 2;
   }
 
   clientToSVGPoint(clientX, clientY) {

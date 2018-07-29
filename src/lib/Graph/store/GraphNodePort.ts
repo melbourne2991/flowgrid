@@ -17,7 +17,7 @@ export class GraphNodePort {
     this.type = type;
     this.data = data;
 
-    this.draggable = new DraggableStore(this.node.graph);
+    this.draggable = new DraggableStore(this.node);
   }
 
   @action

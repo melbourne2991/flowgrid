@@ -10,23 +10,20 @@ export class GraphNode {
   draggable: DraggableStore;
   selectable: SelectableStore;
 
+  @observable data = {};
   @observable ports = [];
+
   @observable
   position = {
     x: 0,
     y: 0
   };
 
-  @observable data = {};
-
   constructor(id, graph, type = "basic", data = {}) {
     this.type = type;
     this.graph = graph;
     this.id = id;
     this.data = data;
-
-    this.position.x = this.graph.canvas.canvasCenterX;
-    this.position.y = this.graph.canvas.canvasCenterY;
 
     this.draggable = new DraggableStore(this);
     this.selectable = new SelectableStore(this);
