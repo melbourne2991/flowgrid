@@ -36,6 +36,7 @@ import LibraryAddIcon from "@material-ui/icons/LibraryAdd";
 export class Sidebar extends React.Component {
   renderNodeTypes() {
     const { flowGraphStore } = this.props;
+
     const nodes = flowGraphStore.nodeTypes.map(nodeType => (
       <NodeType key={nodeType.config.name} nodeType={nodeType} />
     ));
@@ -44,6 +45,16 @@ export class Sidebar extends React.Component {
   }
 
   renderNodeInfo() {
+    const { flowGraphStore } = this.props;
+
+    if (flowGraphStore.selectedNode) {
+      return (
+        <React.Fragment>
+          {flowGraphStore.selectedNode.nodeType.config.name}
+        </React.Fragment>
+      );
+    }
+
     return (
       <React.Fragment>
         <Typography>Select a node to see more information about it</Typography>
@@ -52,15 +63,12 @@ export class Sidebar extends React.Component {
   }
 
   updateTab = (e, tab) => {
-    console.log("upd");
     const { flowGraphStore } = this.props;
     flowGraphStore.sidebar.activeTab = tab;
   };
 
   render() {
     const { flowGraphStore, classes } = this.props;
-
-    console.log(flowGraphStore.sidebar.activeTab);
 
     return (
       <div className={classes.sidebarWrapper}>

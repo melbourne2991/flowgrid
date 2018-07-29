@@ -68,7 +68,13 @@ export const makeDraggable = propsMapper => Component => {
     render() {
       const { ...rest } = this.props;
 
-      return <Component {...rest} draggableHandlers={this.draggableHandlers} />;
+      return (
+        <Component
+          {...rest}
+          draggableHandlers={this.draggableHandlers}
+          dragging={this.store.dragging}
+        />
+      );
     }
   }
 

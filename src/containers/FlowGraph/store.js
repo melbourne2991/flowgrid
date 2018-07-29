@@ -1,6 +1,6 @@
-import { CreateGraphStore } from "../../lib/Graph";
+import { CreateGraphStore, graphEvents } from "../../lib/Graph";
 import { defaultNodeTemplate } from "./defaultNodeTemplate";
-import { computed, action, observable } from "mobx";
+import { action, observable, observe, computed } from "mobx";
 
 const graphConfig = {
   nodeTypes: {
@@ -29,31 +29,43 @@ class SidebarStore {
 export class FlowGraphStore {
   @observable sidebar;
 
-  graphStore = CreateGraphStore(graphConfig);
-
   get nodeTypes() {
     return this.rootStore.nodeTypes;
   }
 
+  @computed
+  get selectedNode() {
+    if (!this.graphStore.activeSelection) return null;
+
+    return this.graphStore.activeSelection.data;
+  }
+
   constructor(rootStore) {
-    this.sidebar = new SidebarStore();
     this.rootStore = rootStore;
+    this.sidebar = new SidebarStore();
+    this.graphStore = CreateGraphStore(graphConfig);
+
+    observe(this.graphStore, "activeSelection", change => {
+      if (change.newValue) {
+        this.sidebar.activeTab = 0;
+      }
+    });
   }
 
   @action.bound
   addNode(nodeType, pos) {
-    const node = this.graphStore.addNode("basic", {
+    const graphNode = this.graphStore.addNode("basic", {
       nodeType
     });
 
     Object.keys(nodeType.config.outputs).forEach((key, index) => {
-      node.addPort("output", {
+      graphNode.addPort("output", {
         index,
         label: nodeType.config.outputs[key].label,
         outputName: key
       });
 
-      node.updatePositionWithClientOffset(pos.x, pos.y);
+      graphNode.updatePositionWithClientOffset(pos.x, pos.y);
     });
   }
 }

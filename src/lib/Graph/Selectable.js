@@ -7,11 +7,8 @@ export const makeSelectable = propsMapper => Component => {
     constructor(props) {
       super(props);
 
-      this.ref = React.createRef();
-
       this.selectableHandlers = {
-        onMouseDown: this._onSelect,
-        ref: this.ref
+        onMouseDown: this._onSelect
       };
     }
 
@@ -19,17 +16,8 @@ export const makeSelectable = propsMapper => Component => {
       return propsMapper(this.props).store;
     }
 
-    componentDidMount() {
-      window.addEventListener("mousedown", e => {
-        if (!this.ref.current.contains(e.target)) {
-          this.store.deselect();
-        }
-      });
-    }
-
-    componentWillUnmount() {}
-
-    _onSelect = () => {
+    _onSelect = e => {
+      e.stopPropagation();
       this.store.select();
     };
 
@@ -37,9 +25,9 @@ export const makeSelectable = propsMapper => Component => {
       const { ...rest } = this.props;
       return (
         <Component
+          {...rest}
           selectableHandlers={this.selectableHandlers}
           selected={this.store.selected}
-          {...rest}
         />
       );
     }

@@ -1,6 +1,8 @@
 import React from "react";
 import svgPanZoom from "svg-pan-zoom";
+import { observer } from "mobx-react";
 
+@observer
 export class Canvas extends React.Component {
   constructor(props) {
     super(props);
@@ -30,14 +32,14 @@ export class Canvas extends React.Component {
   }
 
   render() {
+    const { className, canvas, children, ...rest } = this.props;
+
     return (
-      <div className={this.props.className}>
+      <div className={className} {...rest}>
         <svg
           id={"canvas"}
           ref={this.svgRef}
-          viewBox={`0 0 ${this.props.canvas.canvasWidth} ${
-            this.props.canvas.canvasHeight
-          }`}
+          viewBox={`0 0 ${canvas.canvasWidth} ${canvas.canvasHeight}`}
           style={{
             display: "inline",
             width: "100%",
@@ -45,7 +47,7 @@ export class Canvas extends React.Component {
           }}
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g>{this.props.children}</g>
+          <g>{children}</g>
         </svg>
       </div>
     );

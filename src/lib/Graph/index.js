@@ -14,6 +14,8 @@ const defaultCanvasConfig = {
 const defaultNodeTypes = {};
 const defaultHandlers = {};
 
+export { graphEvents } from "./events";
+
 export function CreateGraphStore(
   config = {
     canvas: {},

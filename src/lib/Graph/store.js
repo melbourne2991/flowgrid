@@ -1,19 +1,20 @@
-import { observable, action } from "mobx";
+import { observable, action, computed } from "mobx";
 import shortid from "shortid";
+import EventEmitter from "eventemitter3";
 
 export class SelectableStore {
-  @observable selected = false;
+  @computed
+  get selected() {
+    return this.node.graph.activeSelection === this.node;
+  }
 
-  constructor() {}
-
-  @action.bound
-  select() {
-    this.selected = true;
+  constructor(node) {
+    this.node = node;
   }
 
   @action.bound
-  deselect() {
-    this.selected = false;
+  select() {
+    this.node.graph.activeSelection = this.node;
   }
 }
 
@@ -26,8 +27,8 @@ export class DraggableStore {
   @observable x = null;
   @observable y = null;
 
-  constructor(canvas) {
-    this.canvas = canvas;
+  constructor(graph, callbacks = {}) {
+    this.canvas = graph.canvas;
   }
 
   @action
@@ -107,7 +108,7 @@ export class GraphNodePort {
     this.type = type;
     this.data = data;
 
-    this.draggable = new DraggableStore(this.node.graph.canvas);
+    this.draggable = new DraggableStore(this.node.graph);
   }
 
   @action
@@ -154,8 +155,9 @@ export class GraphNode {
 
     this.position.x = this.graph.canvas.canvasCenterX;
     this.position.y = this.graph.canvas.canvasCenterY;
-    this.draggable = new DraggableStore(this.graph.canvas);
-    this.selectable = new SelectableStore();
+
+    this.draggable = new DraggableStore(this.graph);
+    this.selectable = new SelectableStore(this);
   }
 
   @action
@@ -233,12 +235,15 @@ class Connection {
   }
 }
 
-export class GraphStore {
+export class GraphStore extends EventEmitter {
+  @observable activeSelection = null;
   @observable nodes = [];
   @observable newConnection = null;
   @observable connections = [];
+  @observable selectedNode = null;
 
   constructor({ canvas, config }) {
+    super();
     this.canvas = canvas;
     this.config = config;
   }

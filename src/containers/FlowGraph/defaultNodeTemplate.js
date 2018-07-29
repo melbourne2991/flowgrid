@@ -2,6 +2,7 @@ import React from "react";
 import { PortWrapper } from "../../lib/Graph";
 import { withStyles } from "@material-ui/core/styles";
 import { observer } from "mobx-react";
+import classnames from "classnames";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 25;
@@ -11,17 +12,29 @@ const borderRadius = 3;
 const inPortXOffset = 0;
 const outPortXOffset = nodeRowWidth - portSize;
 
-@withStyles({
+@withStyles(theme => ({
   node: {
     fill: "#fff",
-    opacity: 0.5,
-    zIndex: -1
+    fillOpacity: 0.5,
+    zIndex: -1,
+    stroke: theme.palette.grey[800],
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    cursor: "grab"
+  },
+
+  nodeSelected: {
+    stroke: theme.palette.primary.main
+  },
+
+  nodeDragging: {
+    cursor: "grabbing"
   },
 
   port: {
     width: `${portSize}px`,
     height: `${portSize}px`,
-    background: "#000"
+    fill: theme.palette.grey[800]
   },
 
   portLabel: {
@@ -29,11 +42,11 @@ const outPortXOffset = nodeRowWidth - portSize;
     lineHeight: `1`,
     fontWeight: "bolder"
   }
-})
+}))
 @observer
 class DefaultNodeTemplate extends React.Component {
   render() {
-    const { node, handlers, classes } = this.props;
+    const { node, handlers, classes, selected, dragging } = this.props;
     const inPorts = node.ports.filter(port => port.type === "input");
     const outPorts = node.ports.filter(port => port.type === "output");
     const verticalPortCount = Math.max(inPorts.length, outPorts.length);
@@ -46,12 +59,15 @@ class DefaultNodeTemplate extends React.Component {
         y={node.position.y}
       >
         <rect
-          x={0}
           rx={borderRadius}
           ry={borderRadius}
+          x={0}
           width={nodeRowWidth}
           height={verticalPortCount * nodeRowHeight}
-          className={classes.node}
+          className={classnames(classes.node, {
+            [classes.nodeSelected]: selected,
+            [classes.nodeDragging]: dragging
+          })}
         />
 
         {inPorts.map((port, i) => {

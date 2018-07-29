@@ -18,9 +18,13 @@ export class NodeWrapper extends React.Component {
   render() {
     return this.props.renderNode({
       node: this.props.node,
+      selected: this.props.selected,
+      dragging: this.props.dragging,
       handlers: {
-        ...this.props.draggableHandlers,
-        ...this.props.selectableHandlers
+        onMouseDown: (...args) => {
+          this.props.draggableHandlers.onMouseDown(...args);
+          this.props.selectableHandlers.onMouseDown(...args);
+        }
       }
     });
   }

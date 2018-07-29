@@ -35,7 +35,7 @@ const sourceSpec = {
 @observer
 export class NodeType extends React.Component {
   render() {
-    const { classes, nodeType, addNode, connectDragSource } = this.props;
+    const { classes, nodeType, connectDragSource } = this.props;
 
     return connectDragSource(
       <div className={classes.nodeContainer} key={nodeType.config.name}>

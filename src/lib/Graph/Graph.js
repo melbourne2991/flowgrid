@@ -43,24 +43,19 @@ export class Graph extends React.Component {
     });
   }
 
-  handleScroll = e => {
-    const posInWindowX =
-      e.clientX - e.currentTarget.getBoundingClientRect().left;
-    const posInWindowY =
-      e.clientY - e.currentTarget.getBoundingClientRect().top;
-
-    this.props.store.canvas.scaleCanvas(e.deltaY, posInWindowX, posInWindowY);
-  };
-
-  handleDrag = (e, data) => {
-    this.props.store.canvas.panCanvas(data.deltaX, data.deltaY);
+  handleMouseDown = () => {
+    this.props.store.activeSelection = null;
   };
 
   render() {
     const getPortBounds = getPortBoundsFn(this.props.store.config.nodeTypes);
 
     return (
-      <Canvas canvas={this.props.store.canvas} className={this.props.className}>
+      <Canvas
+        canvas={this.props.store.canvas}
+        className={this.props.className}
+        onMouseDown={this.handleMouseDown}
+      >
         <NewConnection store={this.props.store} getPortBounds={getPortBounds} />
         {connectionsToFlexLine(this.props.store.connections, getPortBounds)}
         {this.mapNodes()}
