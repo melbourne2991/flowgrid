@@ -4,9 +4,8 @@ import { action, observable, observe, computed } from "mobx";
 import { RootStore } from "../../stores/RootStore";
 import { GraphStore, SerializedGraphStore } from "../../lib/Graph/store";
 import { GraphConfig } from "../../lib/Graph/types";
-import { Serializeable } from "../../types";
-import { NodeTypeDefinition } from "../../core/types";
-import { toSerializeable } from "../../lib/toSerializeable";
+import { SerializeableObject } from "../../types";
+import { NodeTypeDefinition } from "../../lib/types";
 
 const graphConfig: Partial<GraphConfig> = {
   nodeTemplates: {
@@ -36,7 +35,8 @@ export interface SerializedFlowGraphStore {
   graphStore: SerializedGraphStore;
 }
 
-export class FlowGraphStore implements Serializeable<SerializedFlowGraphStore> {
+export class FlowGraphStore
+  implements SerializeableObject<SerializedFlowGraphStore> {
   @observable sidebar;
 
   rootStore: RootStore;
@@ -66,12 +66,9 @@ export class FlowGraphStore implements Serializeable<SerializedFlowGraphStore> {
 
   @action.bound
   addNode(nodeType: NodeTypeDefinition, pos) {
-    const graphNode = this.graphStore.addNode(
-      "basic",
-      toSerializeable({
-        nodeType: nodeType.config.name
-      })
-    );
+    const graphNode = this.graphStore.addNode("basic", {
+      nodeType: nodeType.config.name
+    });
 
     if (nodeType.config.outputs) {
       Object.keys(nodeType.config.outputs).forEach((key, index) => {

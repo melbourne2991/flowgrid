@@ -7,17 +7,16 @@ import {
 } from "./";
 import { action, observable } from "mobx";
 import * as shortid from "shortid";
-import { Serializeable } from "../../../types";
+import { SerializeableObject, Serializeable } from "../../../types";
 import { SerializedGraphNode } from "./GraphNode";
 import { SerializedConnection } from "./Connection";
 import { GraphConfig } from "../types";
 
-export class GraphStore implements Serializeable<SerializedGraphStore> {
+export class GraphStore implements SerializeableObject<SerializedGraphStore> {
   @observable activeSelection = null;
-  @observable nodes = [];
-  @observable newConnection = null;
-  @observable connections = [];
-  @observable selectedNode = null;
+  @observable nodes: GraphNode[] = [];
+  @observable newConnection: NewConnection = null;
+  @observable connections: Connection[] = [];
 
   canvas: CanvasStore;
   config: GraphConfig;
@@ -28,7 +27,7 @@ export class GraphStore implements Serializeable<SerializedGraphStore> {
   }
 
   @action
-  addNode(template: string, data: Serializeable<any>) {
+  addNode(template: string, data: Serializeable) {
     const node = new GraphNode(shortid.generate(), this, template, data);
     this.nodes.push(node);
     return node;
@@ -83,7 +82,17 @@ export class GraphStore implements Serializeable<SerializedGraphStore> {
     };
   }
 
-  deserialize(serialized: SerializedGraphStore) {}
+  deserialize(serialized: SerializedGraphStore) {
+    this.nodes = serialized.nodes.map(serializedNode => {
+      const graphNode = new GraphNode(
+        serializedNode.id,
+        this,
+        serializedNode.template,
+        serializedNode.data
+      );
+      return graphNode;
+    });
+  }
 }
 
 export interface SerializedGraphStore {

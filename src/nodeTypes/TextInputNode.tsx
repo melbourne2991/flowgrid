@@ -1,6 +1,6 @@
 import * as React from "react";
-import { defineNodeType } from "../core/defineNodeType";
-import { SetConfigFn } from "../core/types";
+import { defineNodeType } from "../lib/defineNodeType";
+import { SetConfigFn } from "../lib/types";
 
 export interface TextInputNodeUIProps {
   setConfig: SetConfigFn;

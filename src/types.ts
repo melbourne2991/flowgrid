@@ -6,7 +6,9 @@ export type SerializeableDict = {
   [key: string]: string | number | SerializeableDict;
 };
 
-export interface Serializeable<T> {
+export interface SerializeableObject<T> {
   serialize(): T;
   deserialize(serializedObject: T): void;
 }
+
+export type Serializeable = SerializeableObject<any> | SerializeableDict;

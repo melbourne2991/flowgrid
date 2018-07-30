@@ -1,5 +1,5 @@
-import { NodeTypeDefinition } from "../core/types";
-import { Serializeable } from "../types";
+import { NodeTypeDefinition } from "../lib/types";
+import { SerializeableObject } from "../types";
 import {
   FlowGraphStore,
   SerializedFlowGraphStore
@@ -15,7 +15,7 @@ export interface SerializedRootStore {
   };
 }
 
-export class RootStore implements Serializeable<SerializedRootStore> {
+export class RootStore implements SerializeableObject<SerializedRootStore> {
   stores: { flowGraphStore: FlowGraphStore };
   nodeTypes: NodeTypeDefinition[];
 

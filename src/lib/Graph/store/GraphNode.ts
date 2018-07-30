@@ -2,22 +2,19 @@ import * as shortid from "shortid";
 
 import { GraphStore, DraggableStore, SelectableStore, GraphNodePort } from "./";
 import { observable, action } from "mobx";
-import { Serializeable } from "../../../types";
+import { SerializeableObject, SerializeableDict } from "../../../types";
 import { SerializedGraphNodePort } from "./GraphNodePort";
 
-const defaultData = {
-  serialize: () => ({}),
-  deserialize: (serializedObject: any) => {}
-};
+const defaultData = {};
 
-export class GraphNode implements Serializeable<SerializedGraphNode> {
+export class GraphNode implements SerializeableObject<SerializedGraphNode> {
   id: string;
   graph: GraphStore;
   template: string;
   draggable: DraggableStore;
   selectable: SelectableStore;
 
-  @observable data: Serializeable<any>;
+  @observable data: SerializeableDict;
   @observable ports: GraphNodePort[] = [];
 
   @observable
@@ -26,7 +23,12 @@ export class GraphNode implements Serializeable<SerializedGraphNode> {
     y: 0
   };
 
-  constructor(id, graph, template = "basic", data = defaultData) {
+  constructor(
+    id: string,
+    graph: GraphStore,
+    template: string,
+    data = defaultData
+  ) {
     this.template = template;
     this.graph = graph;
     this.id = id;
@@ -60,8 +62,12 @@ export class GraphNode implements Serializeable<SerializedGraphNode> {
   serialize() {
     return {
       id: this.id,
-      position: this.position,
-      data: this.data.serialize(),
+      position: {
+        x: this.position.x,
+        y: this.position.y
+      },
+      template: this.template,
+      data: this.data,
       ports: this.ports.map(port => port.serialize())
     };
   }
@@ -76,5 +82,6 @@ export interface SerializedGraphNode {
     y: number;
   };
   data: {};
+  template: string;
   ports: SerializedGraphNodePort[];
 }

@@ -1,8 +1,8 @@
 import { observable } from "mobx";
-import { Serializeable } from "../../../types";
+import { SerializeableObject } from "../../../types";
 import { SerializedGraphNodePort } from "./GraphNodePort";
 
-export class Connection implements Serializeable<SerializedConnection> {
+export class Connection implements SerializeableObject<SerializedConnection> {
   @observable ports = [];
 
   id: string;
