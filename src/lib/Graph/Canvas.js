@@ -12,6 +12,7 @@ export class Canvas extends React.Component {
   componentDidMount() {
     const svgEl = this.svgRef.current;
 
+    this.props.canvas.svgEl = svgEl;
     this.props.canvas.SVGPoint = svgEl.createSVGPoint();
 
     svgPanZoom(this.svgRef.current, {
@@ -39,7 +40,7 @@ export class Canvas extends React.Component {
         <svg
           id={"canvas"}
           ref={this.svgRef}
-          viewBox={`0 0 ${canvas.canvasWidth} ${canvas.canvasHeight}`}
+          viewBox={`0 0 1500 1500`}
           style={{
             display: "inline",
             width: "100%",

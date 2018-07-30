@@ -1,23 +1,17 @@
 import { GraphStore, CanvasStore } from "./store";
+import { GraphConfig } from "./types";
 export { Graph } from "./Graph";
 export { PortWrapper } from "./PortWrapper";
 export { NodeWrapper } from "./NodeWrapper";
 
-const defaultCanvasConfig = {
-  canvasWidth: 1500,
-  canvasHeight: 800,
-
-  canvasWindowWidth: 1500,
-  canvasWindowHeight: 800
-};
-
+const defaultCanvasConfig = {};
 const defaultNodeTypes = {};
 const defaultHandlers = {};
 
 export { graphEvents } from "./events";
 
 export function CreateGraphStore(
-  config = {
+  config: Partial<GraphConfig> = {
     canvas: {},
     nodeTypes: {},
     handlers: {}
@@ -40,7 +34,7 @@ export function CreateGraphStore(
     }
   };
 
-  const canvas = new CanvasStore(mergedConfig.canvas);
+  const canvas = new CanvasStore();
 
   const store = new GraphStore({
     config: mergedConfig,

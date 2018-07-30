@@ -8,14 +8,16 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import InfoIcon from "@material-ui/icons/Info";
 import LibraryAddIcon from "@material-ui/icons/LibraryAdd";
+import * as mixins from "../../../style/mixins";
 
 @withStyles(theme => ({
   sidebarWrapper: {
-    ...theme.mixins.boxSpacing(),
+    ...mixins.boxSpacing(theme),
     display: "flex",
     position: "absolute",
     right: 0,
-    height: "100%",
+    top: 0,
+    bottom: 0,
     maxWidth: `${theme.spacing.unit * 60}px`
   },
 

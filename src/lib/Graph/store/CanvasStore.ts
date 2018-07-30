@@ -1,10 +1,9 @@
 import { observable } from "mobx";
 
 export class CanvasStore {
-  canvasWidth: number;
-  canvasHeight: number;
-
   SVGPoint = null;
+
+  svgEl: SVGElement;
 
   @observable translate;
   @observable scale = 1;
@@ -24,14 +23,14 @@ export class CanvasStore {
     f: 0
   };
 
-  constructor({ canvasWidth, canvasHeight }) {
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-  }
+  constructor() {}
 
   clientToSVGPoint(clientX, clientY) {
-    this.SVGPoint.x = clientX;
-    this.SVGPoint.y = clientY;
+    // Find out where SVG is on the page.
+    const { top, left } = this.svgEl.getBoundingClientRect();
+
+    this.SVGPoint.x = clientX - left;
+    this.SVGPoint.y = clientY - top;
 
     return this.SVGPoint.matrixTransform(this.CTM.inverse());
   }

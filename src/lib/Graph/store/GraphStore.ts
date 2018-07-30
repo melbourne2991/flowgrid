@@ -7,8 +7,11 @@ import {
 } from "./";
 import { action, observable } from "mobx";
 import * as shortid from "shortid";
+import { Serializeable } from "../../../types";
+import { SerializedGraphNode } from "./GraphNode";
+import { SerializedConnection } from "./Connection";
 
-export class GraphStore {
+export class GraphStore implements Serializeable<SerializedGraphStore> {
   @observable activeSelection = null;
   @observable nodes = [];
   @observable newConnection = null;
@@ -78,4 +81,18 @@ export class GraphStore {
   cancelNewConnection() {
     this.newConnection = null;
   }
+
+  serialize() {
+    return {
+      nodes: this.nodes.map(node => node.serialize()),
+      connections: this.connections.map(connection => connection.serialize())
+    };
+  }
+
+  deserialize(serialized: SerializedGraphStore) {}
+}
+
+export interface SerializedGraphStore {
+  nodes: SerializedGraphNode[];
+  connections: SerializedConnection[];
 }

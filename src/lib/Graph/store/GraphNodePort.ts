@@ -1,7 +1,8 @@
 import { observable, action } from "mobx";
 import { DraggableStore, NewConnection, GraphNode } from "./";
+import { Serializeable } from "../../../types";
 
-export class GraphNodePort {
+export class GraphNodePort implements Serializeable<SerializedGraphNodePort> {
   id: string;
   node: GraphNode;
   type: string;
@@ -41,4 +42,18 @@ export class GraphNodePort {
   handlePotentialConnection = () => {
     this.node.graph.handlePotentialConnection(this);
   };
+
+  serialize() {
+    return {
+      id: this.id
+    };
+  }
+
+  deserialize(serialized) {
+    this.id = serialized.id;
+  }
+}
+
+export interface SerializedGraphNodePort {
+  id: string;
 }

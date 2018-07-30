@@ -1,7 +1,13 @@
 import { FlowGraphStore } from "../containers/FlowGraph/store";
 import { RootStore } from "./RootStore";
+import { NodeTypeDefinition } from "../core/types";
+import { Dict } from "../types";
 
-export const createStores = ({ nodeTypes } = {}) => {
+interface CreateStoresParams {
+  nodeTypes: NodeTypeDefinition[];
+}
+
+export const createStores = ({ nodeTypes }: CreateStoresParams) => {
   const root = new RootStore({
     nodeTypes
   });
