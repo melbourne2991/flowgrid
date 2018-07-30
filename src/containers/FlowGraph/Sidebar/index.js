@@ -38,9 +38,9 @@ export class Sidebar extends React.Component {
   renderNodeTypes() {
     const { flowGraphStore } = this.props;
 
-    const nodes = flowGraphStore.nodeTypes.map(nodeType => (
-      <NodeType key={nodeType.config.name} nodeType={nodeType} />
-    ));
+    const nodes = flowGraphStore.nodeTypes.map(nodeType => {
+      return <NodeType key={nodeType.config.name} nodeType={nodeType} />;
+    });
 
     return <React.Fragment>{nodes}</React.Fragment>;
   }
@@ -50,9 +50,7 @@ export class Sidebar extends React.Component {
 
     if (flowGraphStore.selectedNode) {
       return (
-        <React.Fragment>
-          {flowGraphStore.selectedNode.nodeType.config.name}
-        </React.Fragment>
+        <React.Fragment>{flowGraphStore.selectedNode.nodeType}</React.Fragment>
       );
     }
 

@@ -1,7 +1,7 @@
 import { GraphNode } from "./store/GraphNode";
 import { GraphNodePort } from "./store";
 
-export type GraphNodeType = {
+export type GraphNodeTemplate = {
   renderNode(props: {
     node: GraphNode;
     handlers: any;
@@ -22,8 +22,8 @@ export type GraphNodeType = {
 
 export interface GraphConfig {
   canvas: {};
-  nodeTypes: {
-    [nodeType: string]: GraphNodeType;
+  nodeTemplates: {
+    [nodeTemplate: string]: GraphNodeTemplate;
   };
   handlers: {
     onNewConnection?(

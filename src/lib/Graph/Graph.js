@@ -37,7 +37,9 @@ export class Graph extends React.Component {
         <NodeWrapper
           node={node}
           key={node.id}
-          renderNode={this.props.store.config.nodeTypes[node.type].renderNode}
+          renderNode={
+            this.props.store.config.nodeTemplates[node.template].renderNode
+          }
         />
       );
     });
@@ -48,7 +50,9 @@ export class Graph extends React.Component {
   };
 
   render() {
-    const getPortBounds = getPortBoundsFn(this.props.store.config.nodeTypes);
+    const getPortBounds = getPortBoundsFn(
+      this.props.store.config.nodeTemplates
+    );
 
     return (
       <Canvas
@@ -64,8 +68,8 @@ export class Graph extends React.Component {
   }
 }
 
-function getPortBoundsFn(nodeTypes) {
-  return port => nodeTypes[port.node.type].getPortBounds(port);
+function getPortBoundsFn(nodeTemplates) {
+  return port => nodeTemplates[port.node.template].getPortBounds(port);
 }
 
 function connectionsToFlexLine(connections, getPortBounds) {

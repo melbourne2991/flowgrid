@@ -7,13 +7,13 @@ import { SerializedGraphNodePort } from "./GraphNodePort";
 
 const defaultData = {
   serialize: () => ({}),
-  deserialize: () => {}
+  deserialize: (serializedObject: any) => {}
 };
 
 export class GraphNode implements Serializeable<SerializedGraphNode> {
   id: string;
   graph: GraphStore;
-  type: string;
+  template: string;
   draggable: DraggableStore;
   selectable: SelectableStore;
 
@@ -26,8 +26,8 @@ export class GraphNode implements Serializeable<SerializedGraphNode> {
     y: 0
   };
 
-  constructor(id, graph, type = "basic", data = defaultData) {
-    this.type = type;
+  constructor(id, graph, template = "basic", data = defaultData) {
+    this.template = template;
     this.graph = graph;
     this.id = id;
     this.data = data;

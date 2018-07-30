@@ -10,6 +10,7 @@ import * as shortid from "shortid";
 import { Serializeable } from "../../../types";
 import { SerializedGraphNode } from "./GraphNode";
 import { SerializedConnection } from "./Connection";
+import { GraphConfig } from "../types";
 
 export class GraphStore implements Serializeable<SerializedGraphStore> {
   @observable activeSelection = null;
@@ -19,14 +20,7 @@ export class GraphStore implements Serializeable<SerializedGraphStore> {
   @observable selectedNode = null;
 
   canvas: CanvasStore;
-  config: {
-    handlers: {
-      onNewConnection(
-        sourcePort: GraphNodePort,
-        destinationPort: GraphNodePort
-      );
-    };
-  };
+  config: GraphConfig;
 
   constructor({ canvas, config }) {
     this.canvas = canvas;
@@ -34,21 +28,21 @@ export class GraphStore implements Serializeable<SerializedGraphStore> {
   }
 
   @action
-  addNode(type, data) {
-    const node = new GraphNode(shortid.generate(), this, type, data);
+  addNode(template: string, data: Serializeable<any>) {
+    const node = new GraphNode(shortid.generate(), this, template, data);
     this.nodes.push(node);
     return node;
   }
 
   @action
-  beginNewConnection(sourcePort) {
+  beginNewConnection(sourcePort: GraphNodePort) {
     const newConnection = new NewConnection(shortid.generate(), sourcePort);
     this.newConnection = newConnection;
     return newConnection;
   }
 
   @action
-  connectPorts(portA, portB) {
+  connectPorts(portA: GraphNodePort, portB: GraphNodePort) {
     const connection = new Connection(shortid.generate(), portA, portB);
 
     this.connections.push(connection);

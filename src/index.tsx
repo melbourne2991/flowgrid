@@ -10,9 +10,11 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import { theme } from "./theme";
 import nodeTypes from "./nodeTypes";
 
+const stores = createStores({ nodeTypes });
+
 function Root() {
   return (
-    <Provider {...createStores({ nodeTypes })}>
+    <Provider {...stores}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <App />
@@ -20,6 +22,11 @@ function Root() {
     </Provider>
   );
 }
+
+(window as any).runSerialize = () => {
+  const serialized = stores.rootStore.serialize();
+  console.log(serialized);
+};
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(<Root />, rootElement);
