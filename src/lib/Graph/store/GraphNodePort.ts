@@ -56,16 +56,20 @@ export class GraphNodePort extends GraphObject
   serialize() {
     return {
       id: this.id,
-      data: this.data
+      data: this.data,
+      type: this.type
     };
   }
 
   deserialize(serialized) {
     this.id = serialized.id;
+    this.data = serialized.data;
+    this.type = serialized.type;
   }
 }
 
 export interface SerializedGraphNodePort {
   id: string;
   data: SerializeableDict;
+  type: string;
 }

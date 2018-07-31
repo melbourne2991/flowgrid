@@ -21,6 +21,10 @@ export class RootStore implements SerializeableObject<SerializedRootStore> {
 
   constructor({ nodeTypes }: RootStoreParams) {
     this.nodeTypes = nodeTypes;
+
+    this.stores = {
+      flowGraphStore: new FlowGraphStore(this)
+    };
   }
 
   serialize() {

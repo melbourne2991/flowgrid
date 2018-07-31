@@ -80,7 +80,21 @@ export class GraphNode extends GraphObject
     };
   }
 
-  deserialize(serialized) {}
+  deserialize(serialized: SerializedGraphNode) {
+    this.id = serialized.id;
+    this.position.x = serialized.position.x;
+    this.position.y = serialized.position.y;
+    this.template = serialized.template;
+    this.data = serialized.data;
+
+    this.ports = serialized.ports.map(serializedPort => {
+      return this.graph.create("GraphNodePort", serializedPort.id, {
+        node: this,
+        type: serializedPort.type,
+        data: serializedPort.data
+      });
+    });
+  }
 }
 
 export interface SerializedGraphNode {

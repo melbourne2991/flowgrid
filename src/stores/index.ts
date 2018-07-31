@@ -12,12 +12,6 @@ export const createStores = ({ nodeTypes }: CreateStoresParams) => {
     nodeTypes
   });
 
-  const flowGraphStore = new FlowGraphStore(root);
-
-  root.stores = {
-    flowGraphStore
-  };
-
   return {
     rootStore: root,
     ...root.stores
