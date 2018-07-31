@@ -1,3 +1,4 @@
+import "@babel/polyfill";
 import "./styles.css";
 
 import * as React from "react";
@@ -10,23 +11,34 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import { theme } from "./theme";
 import nodeTypes from "./nodeTypes";
 
-const stores = createStores({ nodeTypes });
+const rootElement = document.getElementById("root");
+let stores = createStores({ nodeTypes });
 
-function Root() {
-  return (
-    <Provider {...stores}>
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </MuiThemeProvider>
-    </Provider>
-  );
-}
+let serialized;
 
 (window as any).runSerialize = () => {
-  const serialized = stores.rootStore.serialize();
-  console.log(serialized);
+  serialized = stores.rootStore.serialize();
 };
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<Root />, rootElement);
+(window as any).runDeserialize = () => {
+  stores = createStores({ nodeTypes });
+  stores.rootStore.deserialize(serialized);
+  render(stores);
+};
+
+render(stores);
+
+function render(stores) {
+  function Root() {
+    return (
+      <Provider {...stores}>
+        <MuiThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+        </MuiThemeProvider>
+      </Provider>
+    );
+  }
+
+  ReactDOM.render(<Root />, rootElement);
+}

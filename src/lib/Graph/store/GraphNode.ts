@@ -87,13 +87,19 @@ export class GraphNode extends GraphObject
     this.template = serialized.template;
     this.data = serialized.data;
 
-    this.ports = serialized.ports.map(serializedPort => {
-      return this.graph.create("GraphNodePort", serializedPort.id, {
-        node: this,
-        type: serializedPort.type,
-        data: serializedPort.data
-      });
-    });
+    this.ports = observable(
+      serialized.ports.map(serializedPort => {
+        const port = this.graph.create("GraphNodePort", serializedPort.id, {
+          node: this,
+          type: serializedPort.type,
+          data: serializedPort.data
+        });
+
+        port.deserialize(serializedPort);
+
+        return port;
+      })
+    );
   }
 }
 

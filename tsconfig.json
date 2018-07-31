@@ -6,7 +6,8 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "lib": ["dom", "esnext"]
   },
   "include": ["./src/**/*"]
 }

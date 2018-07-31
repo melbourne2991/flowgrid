@@ -8,7 +8,6 @@ export type SerializeableDict = {
 
 export interface SerializeableObject<T> {
   serialize(): T;
-  // deserialize(serializedObject: T): void;
 }
 
 export type Serializeable = SerializeableObject<any> | SerializeableDict;

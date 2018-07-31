@@ -13,6 +13,8 @@ import { SerializedConnection } from "./Connection";
 import { GraphConfig } from "../types";
 import { GraphObject } from "./GraphObject";
 
+import flatten = require("lodash/flatten");
+
 import { createFactories, GraphObjectFactories } from "./GraphObjectFactories";
 
 export class GraphStore implements SerializeableObject<SerializedGraphStore> {
@@ -109,7 +111,21 @@ export class GraphStore implements SerializeableObject<SerializedGraphStore> {
         template: serializedNode.template
       });
 
+      graphNode.deserialize(serializedNode);
+
       return graphNode;
+    });
+
+    const ports = flatten(this.nodes.map(node => node.ports));
+
+    this.connections = serialized.connections.map(serializedConnection => {
+      const connection = this.create("Connection", serializedConnection.id, {
+        ports: serializedConnection.ports.map(serializedPort =>
+          ports.find(port => port.id === serializedPort.id)
+        )
+      });
+
+      return connection;
     });
   }
 }

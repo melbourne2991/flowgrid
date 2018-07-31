@@ -26,8 +26,6 @@ export class Connection extends GraphObject
       ports: this.ports.map(port => port.serialize())
     };
   }
-
-  deserialize() {}
 }
 
 export interface SerializedConnection {

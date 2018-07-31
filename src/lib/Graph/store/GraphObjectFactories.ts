@@ -6,7 +6,6 @@ import { NewConnection } from "./NewConnection";
 import * as shortid from "shortid";
 
 import { GraphObjectTypes } from "../types";
-import { GraphObject } from "./GraphObject";
 
 const typeMap = {
   GraphNode,
