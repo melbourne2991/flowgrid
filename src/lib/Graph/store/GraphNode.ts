@@ -4,10 +4,16 @@ import { GraphStore, DraggableStore, SelectableStore, GraphNodePort } from "./";
 import { observable, action } from "mobx";
 import { SerializeableObject, SerializeableDict } from "../../../types";
 import { SerializedGraphNodePort } from "./GraphNodePort";
+import { Point } from "../types";
+import { GraphObject } from "../GraphObject";
 
-const defaultData = {};
+export interface GraphNodeParams {
+  template: string;
+  data: SerializeableDict;
+}
 
-export class GraphNode implements SerializeableObject<SerializedGraphNode> {
+export class GraphNode extends GraphObject
+  implements SerializeableObject<SerializedGraphNode> {
   id: string;
   graph: GraphStore;
   template: string;
@@ -18,21 +24,18 @@ export class GraphNode implements SerializeableObject<SerializedGraphNode> {
   @observable ports: GraphNodePort[] = [];
 
   @observable
-  position = {
+  position: Point = {
     x: 0,
     y: 0
   };
 
-  constructor(
-    id: string,
-    graph: GraphStore,
-    template: string,
-    data = defaultData
-  ) {
-    this.template = template;
+  constructor(graph: GraphStore, id: string, params: GraphNodeParams) {
+    super(graph);
+
+    this.template = params.template;
     this.graph = graph;
     this.id = id;
-    this.data = data;
+    this.data = params.data;
 
     this.draggable = new DraggableStore(this);
     this.selectable = new SelectableStore(this);
@@ -40,7 +43,12 @@ export class GraphNode implements SerializeableObject<SerializedGraphNode> {
 
   @action
   addPort = (type, data) => {
-    const port = new GraphNodePort(shortid.generate(), this, type, data);
+    const port = this.graph.createWithId("GraphNodePort", {
+      node: this,
+      type,
+      data
+    });
+
     this.ports.push(port);
     return port;
   };
@@ -77,11 +85,8 @@ export class GraphNode implements SerializeableObject<SerializedGraphNode> {
 
 export interface SerializedGraphNode {
   id: string;
-  position: {
-    x: number;
-    y: number;
-  };
-  data: {};
+  position: Point;
   template: string;
+  data: SerializeableDict;
   ports: SerializedGraphNodePort[];
 }

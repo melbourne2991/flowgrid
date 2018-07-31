@@ -5,15 +5,20 @@ import {
   Connection,
   CanvasStore
 } from "./";
-import { action, observable } from "mobx";
+
 import * as shortid from "shortid";
-import { SerializeableObject, Serializeable } from "../../../types";
+
+import { action, observable } from "mobx";
+import { SerializeableObject, SerializeableDict } from "../../../types";
 import { SerializedGraphNode } from "./GraphNode";
 import { SerializedConnection } from "./Connection";
 import { GraphConfig } from "../types";
+import { GraphObject } from "../GraphObject";
+
+import { createFactories, GraphObjectFactories } from "./GraphObjectFactories";
 
 export class GraphStore implements SerializeableObject<SerializedGraphStore> {
-  @observable activeSelection = null;
+  @observable activeSelection: GraphObject = null;
   @observable nodes: GraphNode[] = [];
   @observable newConnection: NewConnection = null;
   @observable connections: Connection[] = [];
@@ -21,28 +26,45 @@ export class GraphStore implements SerializeableObject<SerializedGraphStore> {
   canvas: CanvasStore;
   config: GraphConfig;
 
+  create: GraphObjectFactories["create"];
+  createWithId: GraphObjectFactories["createWithId"];
+
   constructor({ canvas, config }) {
     this.canvas = canvas;
     this.config = config;
+
+    const graphObjectFactories = createFactories(this);
+
+    this.create = graphObjectFactories.create;
+    this.createWithId = graphObjectFactories.createWithId;
   }
 
   @action
-  addNode(template: string, data: Serializeable) {
-    const node = new GraphNode(shortid.generate(), this, template, data);
+  addNode(template: string, data: SerializeableDict) {
+    const node = this.createWithId("GraphNode", {
+      template,
+      data
+    });
+
     this.nodes.push(node);
     return node;
   }
 
   @action
   beginNewConnection(sourcePort: GraphNodePort) {
-    const newConnection = new NewConnection(shortid.generate(), sourcePort);
+    const newConnection = this.createWithId("NewConnection", {
+      sourcePort
+    });
+
     this.newConnection = newConnection;
     return newConnection;
   }
 
   @action
   connectPorts(portA: GraphNodePort, portB: GraphNodePort) {
-    const connection = new Connection(shortid.generate(), portA, portB);
+    const connection = this.createWithId("Connection", {
+      ports: [portA, portB]
+    });
 
     this.connections.push(connection);
 
@@ -84,12 +106,11 @@ export class GraphStore implements SerializeableObject<SerializedGraphStore> {
 
   deserialize(serialized: SerializedGraphStore) {
     this.nodes = serialized.nodes.map(serializedNode => {
-      const graphNode = new GraphNode(
-        serializedNode.id,
-        this,
-        serializedNode.template,
-        serializedNode.data
-      );
+      const graphNode = this.create("GraphNode", serializedNode.id, {
+        data: serializedNode.data,
+        template: serializedNode.template
+      });
+
       return graphNode;
     });
   }

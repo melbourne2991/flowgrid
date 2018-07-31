@@ -1,20 +1,20 @@
 import { computed, action } from "mobx";
-import { GraphNode } from "./";
+import { GraphObject } from "../GraphObject";
 
 export class SelectableStore {
-  node: GraphNode;
+  graphObject: GraphObject;
 
   @computed
   get selected() {
-    return this.node.graph.activeSelection === this.node;
+    return this.graphObject.graph.activeSelection === this.graphObject;
   }
 
-  constructor(node) {
-    this.node = node;
+  constructor(graphObject: GraphObject) {
+    this.graphObject = graphObject;
   }
 
   @action.bound
   select() {
-    this.node.graph.activeSelection = this.node;
+    this.graphObject.graph.activeSelection = this.graphObject;
   }
 }

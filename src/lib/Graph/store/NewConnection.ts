@@ -1,7 +1,13 @@
 import { observable } from "mobx";
 import { GraphNodePort } from "./";
+import { GraphObject } from "./GraphObject";
+import { GraphStore } from "./GraphStore";
 
-export class NewConnection {
+export interface NewConnectionParams {
+  sourcePort: GraphNodePort;
+}
+
+export class NewConnection extends GraphObject {
   id: string;
 
   @observable sourcePort: GraphNodePort = null;
@@ -12,9 +18,11 @@ export class NewConnection {
     y: 0
   };
 
-  constructor(id, sourcePort) {
+  constructor(graph: GraphStore, id: string, params: NewConnectionParams) {
+    super(graph);
+
     this.id = id;
-    this.sourcePort = sourcePort;
+    this.sourcePort = params.sourcePort;
     this.delta = {
       x: 0,
       y: 0

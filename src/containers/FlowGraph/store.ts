@@ -2,7 +2,11 @@ import { CreateGraphStore } from "../../lib/Graph";
 import { defaultNodeTemplate } from "./defaultNodeTemplate";
 import { action, observable, observe, computed } from "mobx";
 import { RootStore } from "../../stores/RootStore";
-import { GraphStore, SerializedGraphStore } from "../../lib/Graph/store";
+import {
+  GraphStore,
+  SerializedGraphStore,
+  GraphNode
+} from "../../lib/Graph/store";
 import { GraphConfig } from "../../lib/Graph/types";
 import { SerializeableObject } from "../../types";
 import { NodeTypeDefinition } from "../../lib/types";
@@ -49,7 +53,7 @@ export class FlowGraphStore
   @computed
   get selectedNode() {
     if (!this.graphStore.activeSelection) return null;
-    return this.graphStore.activeSelection.data;
+    return (this.graphStore.activeSelection as GraphNode).data;
   }
 
   constructor(rootStore: RootStore) {

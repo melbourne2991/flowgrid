@@ -32,3 +32,8 @@ export interface GraphConfig {
     ): void;
   };
 }
+
+export type Point = {
+  x: number;
+  y: number;
+};

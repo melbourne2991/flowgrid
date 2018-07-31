@@ -1,15 +1,23 @@
 import { observable } from "mobx";
 import { SerializeableObject } from "../../../types";
-import { SerializedGraphNodePort } from "./GraphNodePort";
+import { SerializedGraphNodePort, GraphNodePort } from "./GraphNodePort";
+import { GraphObject } from "./GraphObject";
 
-export class Connection implements SerializeableObject<SerializedConnection> {
-  @observable ports = [];
+export interface ConnectionParams {
+  ports: GraphNodePort[];
+}
+
+export class Connection extends GraphObject
+  implements SerializeableObject<SerializedConnection> {
+  @observable ports: GraphNodePort[] = [];
 
   id: string;
 
-  constructor(id, ...ports) {
+  constructor(graph, id, params: ConnectionParams) {
+    super(graph);
+
     this.id = id;
-    this.ports = ports;
+    this.ports = params.ports;
   }
 
   serialize() {

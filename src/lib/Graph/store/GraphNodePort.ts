@@ -1,8 +1,15 @@
 import { observable, action } from "mobx";
 import { DraggableStore, NewConnection, GraphNode } from "./";
 import { SerializeableObject, SerializeableDict } from "../../../types";
+import { GraphObject } from "../GraphObject";
 
-export class GraphNodePort
+export interface GraphNodePortParams {
+  node: GraphNode;
+  type: string;
+  data: SerializeableDict;
+}
+
+export class GraphNodePort extends GraphObject
   implements SerializeableObject<SerializedGraphNodePort> {
   id: string;
   node: GraphNode;
@@ -13,11 +20,13 @@ export class GraphNodePort
   @observable newConnection: NewConnection = null;
   @observable data: SerializeableDict = {};
 
-  constructor(id, node, type, data = {}) {
-    this.node = node;
+  constructor(graph, id, params: GraphNodePortParams) {
+    super(graph);
+
+    this.node = params.node;
     this.id = id;
-    this.type = type;
-    this.data = data;
+    this.type = params.type;
+    this.data = params.data;
 
     this.draggable = new DraggableStore(this.node);
   }
