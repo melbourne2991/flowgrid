@@ -1,27 +1,12 @@
-import { GraphNode, GraphNodeParams } from "./GraphNode";
-import { GraphNodePort, GraphNodePortParams } from "./GraphNodePort";
-import { Connection, ConnectionParams } from "./Connection";
-import { NewConnection, NewConnectionParams } from "./NewConnection";
+import { GraphNode } from "./GraphNode";
+import { GraphNodePort } from "./GraphNodePort";
+import { Connection } from "./Connection";
+import { NewConnection } from "./NewConnection";
+
 import * as shortid from "shortid";
 
-type GraphObjectTypes = {
-  GraphNode: {
-    params: GraphNodeParams;
-    type: GraphNode;
-  };
-  GraphNodePort: {
-    params: GraphNodePortParams;
-    type: GraphNodePort;
-  };
-  Connection: {
-    params: ConnectionParams;
-    type: Connection;
-  };
-  NewConnection: {
-    params: NewConnectionParams;
-    type: NewConnection;
-  };
-};
+import { GraphObjectTypes } from "../types";
+import { GraphObject } from "./GraphObject";
 
 const typeMap = {
   GraphNode,
@@ -49,7 +34,15 @@ export function createFactories(graph): GraphObjectFactories {
     id: string,
     params: GraphObjectTypes[K]["params"]
   ): GraphObjectTypes[K]["type"] {
-    return new (typeMap[graphObjectType] as any)(graph, id, params);
+    const obj = new (typeMap[graphObjectType] as any)(
+      graph,
+      id,
+      params
+    ) as GraphObjectTypes[K]["type"];
+
+    obj.graphObjectType = graphObjectType;
+
+    return obj;
   }
 
   function createWithId<K extends keyof GraphObjectTypes>(
@@ -64,47 +57,3 @@ export function createFactories(graph): GraphObjectFactories {
     createWithId
   };
 }
-
-// type GraphObjectFactories = {
-//   [K in keyof GraphObjectTypes]: (id: string, params: GraphObjectTypes[K]['params']) => GraphObjectTypes[K]['type']
-// }
-
-// function graphObjectFactories(graph) {
-//   return {
-//     create: {
-//       GraphNode: (id, params: GraphNodeParams) => {
-//         return new GraphNode(graph, id, params);
-//       },
-
-//       GraphNodePort: (id, params: GraphNodePortParams) => {
-//         return new GraphNodePort(graph, id, params);
-//       },
-
-//       Connection: (id, params: ConnectionParams) => {
-//         return new Connection(graph, id, params);
-//       },
-
-//       NewConnection: (id, params: NewConnectionParams) => {
-//         return new NewConnection(graph, id, params);
-//       }
-//     },
-
-//     createWithId: {
-//       GraphNode: (params: GraphNodeParams)  => {
-//         return graph.create.GraphNode(shortid.generate(), params);
-//       },
-
-//       GraphNodePort: (params: GraphNodePortParams) => {
-//         return graph.create.GraphNodePort(shortid.generate(), params);
-//       },
-
-//       Connection: (params: ConnectionParams) => {
-//         return graph.create.Connection(shortid.generate(), params);
-//       },
-
-//       NewConnection: (params: NewConnectionParams) => {
-//         return graph.create.NewConnection(shortid.generate(), params);
-//       }
-//     };
-//   }
-// }

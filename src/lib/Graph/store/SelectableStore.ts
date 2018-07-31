@@ -1,5 +1,5 @@
 import { computed, action } from "mobx";
-import { GraphObject } from "../GraphObject";
+import { GraphObject } from "./GraphObject";
 
 export class SelectableStore {
   graphObject: GraphObject;

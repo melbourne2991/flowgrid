@@ -1,7 +1,7 @@
 import { observable, action } from "mobx";
 import { DraggableStore, NewConnection, GraphNode } from "./";
 import { SerializeableObject, SerializeableDict } from "../../../types";
-import { GraphObject } from "../GraphObject";
+import { GraphObject } from "./GraphObject";
 
 export interface GraphNodePortParams {
   node: GraphNode;

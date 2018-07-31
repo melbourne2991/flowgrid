@@ -52,8 +52,14 @@ export class FlowGraphStore
 
   @computed
   get selectedNode() {
-    if (!this.graphStore.activeSelection) return null;
-    return (this.graphStore.activeSelection as GraphNode).data;
+    if (
+      this.graphStore.activeSelection &&
+      this.graphStore.activeSelection.isNode
+    ) {
+      return (this.graphStore.activeSelection as GraphNode).data;
+    }
+
+    return null;
   }
 
   constructor(rootStore: RootStore) {

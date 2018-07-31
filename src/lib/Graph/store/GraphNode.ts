@@ -5,7 +5,7 @@ import { observable, action } from "mobx";
 import { SerializeableObject, SerializeableDict } from "../../../types";
 import { SerializedGraphNodePort } from "./GraphNodePort";
 import { Point } from "../types";
-import { GraphObject } from "../GraphObject";
+import { GraphObject } from "./GraphObject";
 
 export interface GraphNodeParams {
   template: string;

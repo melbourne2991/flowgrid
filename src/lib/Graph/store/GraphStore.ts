@@ -6,14 +6,12 @@ import {
   CanvasStore
 } from "./";
 
-import * as shortid from "shortid";
-
 import { action, observable } from "mobx";
 import { SerializeableObject, SerializeableDict } from "../../../types";
 import { SerializedGraphNode } from "./GraphNode";
 import { SerializedConnection } from "./Connection";
 import { GraphConfig } from "../types";
-import { GraphObject } from "../GraphObject";
+import { GraphObject } from "./GraphObject";
 
 import { createFactories, GraphObjectFactories } from "./GraphObjectFactories";
 
