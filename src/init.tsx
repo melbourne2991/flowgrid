@@ -6,7 +6,7 @@ import { CssBaseline } from "@material-ui/core";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { theme } from "./theme";
 
-export function init(rootElement, inectables = {}) {
+export function init(rootElement: HTMLElement, inectables: {} = {}) {
   function Root() {
     return (
       <Provider {...inectables}>
