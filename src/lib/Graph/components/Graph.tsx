@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Canvas } from "./Canvas";
-import { observer } from "mobx-react";
+import { observer, Provider } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { GraphNodes } from "./GraphNodes";
 import { NodeTemplates, IGraphNodePort } from "../types";
@@ -18,6 +18,8 @@ const NewConnection = observer(
     if (!newConnection) return null;
 
     const bounds = props.getPortBounds(newConnection.source);
+
+    console.log(newConnection.position);
 
     return (
       <FlexLine
@@ -40,22 +42,24 @@ export class Graph extends React.Component<GraphProps> {
     const portBoundsFn = getPortBoundsFn(nodeTemplates);
 
     return (
-      <Canvas
-        {...rest}
-        setSvgMatrix={ctm => {
-          store.svgMatrix = ctm.matrix;
-          store.svgPoint = ctm.point;
-        }}
-        locked={store.canvasLocked}
-      >
-        <GraphNodes
-          nodes={store.graph.nodes}
-          nodeTemplates={nodeTemplates}
-          graphStore={store}
-        />
+      <Provider graphStore={this.props.store}>
+        <Canvas
+          {...rest}
+          setSvgMatrix={ctm => {
+            store.svgMatrix = ctm.matrix;
+            store.svgPoint = ctm.point;
+          }}
+          locked={store.canvasLocked}
+        >
+          <GraphNodes
+            nodes={store.graph.nodes}
+            nodeTemplates={nodeTemplates}
+            graphStore={store}
+          />
 
-        <NewConnection store={store} getPortBounds={portBoundsFn} />
-      </Canvas>
+          <NewConnection store={store} getPortBounds={portBoundsFn} />
+        </Canvas>
+      </Provider>
     );
   }
 }

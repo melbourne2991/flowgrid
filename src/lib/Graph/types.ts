@@ -40,6 +40,9 @@ export interface IGraphConnection extends IGraphObject {
 export interface IGraphNewConnection extends IGraphObject {
   source: IGraphNodePort<any>;
 
+  x: number;
+  y: number;
+
   // Current pointer position
   position: {
     x: number;

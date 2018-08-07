@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Graph, createGraphStore } from "../../lib/Graph";
 import { GraphStore } from "../../lib/Graph/GraphStore";
-import { BasicTemplate } from "./template";
+import { basic } from "./template";
 
 export interface AppState {
   graphStore: GraphStore;
@@ -17,15 +17,18 @@ export class App extends React.Component<{}, AppState> {
     const b = graphStore.addNode("basic", {});
 
     graphStore.addPortToNode(a, {
-      type: "input"
+      type: "input",
+      index: 0
     });
 
     graphStore.addPortToNode(b, {
-      type: "output"
+      type: "output",
+      index: 0
     });
 
     graphStore.addPortToNode(b, {
-      type: "output"
+      type: "output",
+      index: 1
     });
 
     a.updatePosition(100, 100);
@@ -42,15 +45,7 @@ export class App extends React.Component<{}, AppState> {
         <Graph
           store={this.state.graphStore}
           nodeTemplates={{
-            basic: {
-              renderNode: BasicTemplate,
-              getPortBounds() {
-                return {
-                  position: { x: 0, y: 0 },
-                  extents: 0
-                };
-              }
-            }
+            basic
           }}
         />
       </div>

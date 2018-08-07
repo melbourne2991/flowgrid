@@ -1,5 +1,5 @@
 import * as React from "react";
-import { observer, inject } from "mobx-react";
+import { observer } from "mobx-react";
 import { NodeTemplates, IGraphNode, NodeTemplate } from "../types";
 import { Draggable } from "../makeDraggable";
 import { GraphStore } from "../GraphStore";

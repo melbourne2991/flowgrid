@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NodeTemplateProps, IGraphNodePort } from "../../lib/Graph";
+import { NodeTemplateProps, IGraphNodePort, IGraph } from "../../lib/Graph";
 import { observer } from "mobx-react";
 import * as classnames from "classnames";
 import { withStyles, StyledComponentProps } from "@material-ui/core";
@@ -116,6 +116,31 @@ class BasicTemplateComponent extends React.Component<
   }
 }
 
-export const BasicTemplate = injectStyles<NodeTemplateProps>(
+const BasicTemplate = injectStyles<NodeTemplateProps>(
   BasicTemplateComponent as any
 );
+
+export const basic = {
+  renderNode: BasicTemplate,
+  getPortBounds(port: IGraphNodePort) {
+    const { node, data } = port;
+
+    // flex line expects position to be center of the port
+    const xOffset =
+      data.type === "input" ? portSize / 2 : outPortXOffset + portSize / 2;
+    const yOffset = nodeRowHeight * data.index + nodeRowHeight / 2;
+
+    const x = node.x + xOffset;
+    const y = node.y + yOffset;
+
+    return {
+      position: {
+        x,
+        y
+      },
+
+      // extents is half size
+      extents: portSize / 2
+    };
+  }
+};

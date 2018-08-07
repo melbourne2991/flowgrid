@@ -58,9 +58,9 @@ const createPortModel = (
     })
     .actions(self => ({
       beginNewConnection() {
-        return (self.newConnection = getGraph(self).addNewConnection(
+        self.newConnection = getGraph(self).addNewConnection(
           self as any
-        ) as any);
+        ) as any;
       },
 
       hasNewConnection() {
@@ -68,9 +68,10 @@ const createPortModel = (
       },
 
       cancelNewConnection() {
+        if (!self.newConnection) {
+          console.warn("Tried to destroy a connection when none existed.");
+        }
         getGraph(self).removeNewConnection();
-
-        console.warn("Tried to destroy non existing connection.");
       }
     }));
 };
@@ -97,10 +98,12 @@ const createNewConnectionModel = (PortModel: any) =>
       }
     }))
     .views(self => ({
-      position: () => ({
-        x: self.x,
-        y: self.y
-      })
+      get position() {
+        return {
+          x: self.x,
+          y: self.y
+        };
+      }
     }));
 
 const createGraphModel = (
@@ -147,6 +150,7 @@ const createGraphModel = (
 
       removeNewConnection() {
         if (self.newConnection) {
+          console.log("Removed new connection");
           destroy(self.newConnection);
           getEnv(self).unlockCanvas();
         }
