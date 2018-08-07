@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Point } from "../types";
+import { PathLike } from "fs";
 
-export interface CubicBezierProps {
+export interface CubicBezierProps extends React.SVGProps<SVGPathElement> {
   a: Point;
   b: Point;
   CPA: Point;
@@ -10,7 +11,7 @@ export interface CubicBezierProps {
 
 export class CubicBezier extends React.PureComponent<CubicBezierProps> {
   render() {
-    const { a, b, CPA, CPB } = this.props;
+    const { a, b, CPA, CPB, ...rest } = this.props;
 
     const d =
       `M${a.x},${a.y} ` +
@@ -18,7 +19,7 @@ export class CubicBezier extends React.PureComponent<CubicBezierProps> {
       `${CPB.x},${CPB.y} ` +
       `${b.x},${b.y}`;
 
-    return <path d={d} stroke="black" fill="transparent" />;
+    return <path d={d} {...rest} />;
   }
 }
 
@@ -27,12 +28,18 @@ export interface Snapbox {
   extents: number;
 }
 
-export interface FlexLineProps {
+export interface FlexLineProps extends React.SVGProps<SVGPathElement> {
   a: Point | Snapbox;
   b: Point | Snapbox;
 }
 
 export class FlexLine extends React.PureComponent<FlexLineProps> {
+  render() {
+    const { a, b, ...rest } = this.props;
+
+    return <CubicBezier {...this.calculateCurve()} {...rest as any} />;
+  }
+
   calculateCurve() {
     const { a, b } = this.props;
 
@@ -116,10 +123,6 @@ export class FlexLine extends React.PureComponent<FlexLineProps> {
     };
 
     return curve;
-  }
-
-  render() {
-    return <CubicBezier {...this.calculateCurve()} />;
   }
 }
 

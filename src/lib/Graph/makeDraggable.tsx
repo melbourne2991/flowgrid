@@ -49,7 +49,8 @@ export class Draggable extends React.Component<DraggableComponentProps> {
 
   @action
   startDragging = (e: React.MouseEvent) => {
-    console.log("dragging!!");
+    e.stopPropagation();
+
     this.dragging = true;
 
     const x = e.clientX;
@@ -65,11 +66,15 @@ export class Draggable extends React.Component<DraggableComponentProps> {
   };
 
   mouseUpListener = (e: MouseEvent) => {
+    e.stopPropagation();
+
     this.dragging = false;
     this.props.onStop && this.props.onStop(e, this);
   };
 
   mouseMoveListener = (e: MouseEvent) => {
+    e.stopPropagation();
+
     if (!this.dragging) return;
 
     this.lastX = this.x;

@@ -3,8 +3,14 @@ import { Canvas } from "./Canvas";
 import { observer, Provider } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { GraphNodes } from "./GraphNodes";
-import { NodeTemplates, IGraphNodePort } from "../types";
-import { FlexLine } from "./FlexLine";
+import {
+  NodeTemplates,
+  IGraphNodePort,
+  IGraphConnection,
+  GetPortBoundsFn
+} from "../types";
+import { FlexLine, Snapbox } from "./FlexLine";
+import { Connection } from "./Connection";
 
 export interface GraphProps {
   className?: string;
@@ -15,19 +21,22 @@ export interface GraphProps {
 const NewConnection = observer(
   (props: { store: GraphStore; getPortBounds: Function }) => {
     const { newConnection } = props.store.graph;
-    if (!newConnection) return null;
+    if (!newConnection || !newConnection.position) return null;
 
     const bounds = props.getPortBounds(newConnection.source);
 
-    console.log(newConnection.position);
-
     return (
       <FlexLine
+        {...{
+          strokeWidth: "4",
+          stroke: "black",
+          fill: "transparent"
+        }}
         key={newConnection.id}
         a={bounds}
         b={{
-          x: newConnection.position.x + bounds.position.x,
-          y: newConnection.position.y + bounds.position.y
+          x: newConnection.position.x,
+          y: newConnection.position.y
         }}
       />
     );
@@ -58,13 +67,32 @@ export class Graph extends React.Component<GraphProps> {
           />
 
           <NewConnection store={store} getPortBounds={portBoundsFn} />
+          {connectionsToFlexLine(
+            this.props.store.graph.connections,
+            portBoundsFn
+          )}
         </Canvas>
       </Provider>
     );
   }
 }
 
-function getPortBoundsFn(nodeTemplates: NodeTemplates) {
+function connectionsToFlexLine(
+  connections: IGraphConnection[],
+  getPortBounds: (port: IGraphNodePort) => Snapbox
+) {
+  return connections.map((connection: IGraphConnection) => {
+    return (
+      <Connection
+        key={connection.id}
+        getPortBounds={getPortBounds}
+        connection={connection}
+      />
+    );
+  });
+}
+
+function getPortBoundsFn(nodeTemplates: NodeTemplates): GetPortBoundsFn {
   return (port: IGraphNodePort<any>) =>
     nodeTemplates[port.node.template].getPortBounds(port);
 }

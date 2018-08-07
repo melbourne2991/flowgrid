@@ -78,6 +78,9 @@ class BasicTemplateComponent extends React.Component<
                   e.stopPropagation();
                   props.startDragging(e);
                 }}
+                onMouseUp={e => {
+                  props.requestConnection(e);
+                }}
               />
             );
           }}

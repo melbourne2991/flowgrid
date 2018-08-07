@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DraggableProps } from "./makeDraggable";
+import { Snapbox } from "./components/FlexLine";
 
 export interface IGraphObject {
   id: string;
@@ -12,6 +13,7 @@ export interface IGraphNodePort<T = any> {
   cancelNewConnection(): void;
   hasNewConnection(): boolean;
   beginNewConnection(): void;
+  requestConnection(): void;
   node: IGraphNode;
   data: T;
 }
@@ -34,7 +36,7 @@ export interface IGraphNode<T = any> {
 
 export interface IGraphConnection extends IGraphObject {
   source: IGraphNodePort<any>;
-  destination: IGraphNodePort<any>;
+  target: IGraphNodePort<any>;
 }
 
 export interface IGraphNewConnection extends IGraphObject {
@@ -49,7 +51,7 @@ export interface IGraphNewConnection extends IGraphObject {
     y: number;
   };
 
-  setDelta(point: Point): void;
+  setPosition(point: Point): void;
 }
 
 export interface IGraph {
@@ -63,6 +65,7 @@ export interface IGraph {
   addPortToNode(node: any, port: any): void;
   addNewConnection<T>(source: IGraphNodePort<T>): IGraphNewConnection;
   removeNewConnection(): void;
+  connectionRequest(port: IGraphNodePort): void;
   removeNode(node: any): void;
   removePort(port: any): void;
   select(obj: any): void;
@@ -94,3 +97,5 @@ export interface Point {
   x: number;
   y: number;
 }
+
+export type GetPortBoundsFn = (port: IGraphNodePort) => Snapbox;

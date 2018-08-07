@@ -1,6 +1,12 @@
-import { types, destroy, getEnv } from "mobx-state-tree";
+import { types, destroy, getEnv, detach } from "mobx-state-tree";
 import * as uniqid from "uniqid";
-import { IGraphNodePort, IGraphNode, IGraph, Point } from "../types";
+import {
+  IGraphNodePort,
+  IGraphNode,
+  IGraph,
+  Point,
+  IGraphConnection
+} from "../types";
 
 function getGraph(self: any): IGraph {
   return getEnv(self).graph;
@@ -67,11 +73,16 @@ const createPortModel = (
         return !!self.newConnection;
       },
 
+      requestConnection() {
+        getGraph(self).connectionRequest(self as any);
+      },
+
       cancelNewConnection() {
         if (!self.newConnection) {
           console.warn("Tried to destroy a connection when none existed.");
+        } else {
+          getGraph(self).removeNewConnection();
         }
-        getGraph(self).removeNewConnection();
       }
     }));
 };
@@ -80,7 +91,7 @@ const createConnectionModel = (PortModel: any) =>
   types.model("Connection", {
     id: types.identifier,
     source: types.reference(PortModel),
-    destination: types.reference(PortModel)
+    target: types.reference(PortModel)
   });
 
 const createNewConnectionModel = (PortModel: any) =>
@@ -88,21 +99,25 @@ const createNewConnectionModel = (PortModel: any) =>
     .model("NewConnection", {
       id: types.identifier,
       source: types.reference(PortModel),
-      x: types.number,
-      y: types.number
+      x: types.maybeNull(types.number),
+      y: types.maybeNull(types.number)
     })
     .actions(self => ({
-      setDelta(delta: Point) {
-        self.x = delta.x;
-        self.y = delta.y;
+      setPosition(pos: Point) {
+        self.x = pos.x;
+        self.y = pos.y;
       }
     }))
     .views(self => ({
       get position() {
-        return {
-          x: self.x,
-          y: self.y
-        };
+        if (self.x && self.y) {
+          return {
+            x: self.x,
+            y: self.y
+          };
+        }
+
+        return null;
       }
     }));
 
@@ -140,9 +155,7 @@ const createGraphModel = (
 
         self.newConnection = NewConnectionModel.create({
           id: uniqid(),
-          source: source,
-          x: 0,
-          y: 0
+          source: source
         });
 
         return self.newConnection;
@@ -150,9 +163,28 @@ const createGraphModel = (
 
       removeNewConnection() {
         if (self.newConnection) {
-          console.log("Removed new connection");
+          self.newConnection.source.newConnection = null;
           destroy(self.newConnection);
           getEnv(self).unlockCanvas();
+        }
+      },
+
+      removeConnection(connection: IGraphConnection) {
+        destroy(connection as any);
+      },
+
+      connectionRequest(port: IGraphNodePort) {
+        if (self.newConnection) {
+          self.connections.push(
+            ConnectionModel.create({
+              id: uniqid(),
+              source: self.newConnection.source,
+              target: port
+            })
+          );
+
+          port.connectedPorts.push(self.newConnection.source);
+          self.newConnection.source.connectedPorts.push(port);
         }
       },
 

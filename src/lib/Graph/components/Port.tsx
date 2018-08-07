@@ -3,6 +3,9 @@ import { Draggable } from "../makeDraggable";
 import { IGraphNodePort } from "../types";
 import { observer, inject } from "mobx-react";
 import { GraphStore } from "../GraphStore";
+import { setLivelynessChecking } from "mobx-state-tree";
+
+setLivelynessChecking("error");
 
 export interface PortProps {
   children: (props: PortInternalProps) => React.ReactElement<any>;
@@ -17,6 +20,7 @@ export interface PortInternalProps {
   dragging: boolean;
   startDragging: (e: React.MouseEvent) => void;
   port: IGraphNodePort<any>;
+  requestConnection: (e: React.MouseEvent) => void;
 }
 
 @inject("graphStore")
@@ -26,23 +30,23 @@ export class Port extends React.Component<
 > {
   onStart = (e: React.MouseEvent) => {
     e.stopPropagation();
+
     this.props.port.beginNewConnection();
   };
 
-  onDrag = (
-    e: MouseEvent,
-    { deltaX, deltaY }: { deltaX: number; deltaY: number }
-  ) => {
-    if (this.props.port.newConnection) {
-      const svgDelta = (this.props as any).graphStore.clientDeltaToSvg(
-        deltaX,
-        deltaY
-      );
-      this.props.port.newConnection.setDelta({
-        x: this.props.port.newConnection.x + svgDelta.x,
-        y: this.props.port.newConnection.y + svgDelta.y
+  onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
+    if (this.props.port.hasNewConnection()) {
+      const svgDelta = (this.props as any).graphStore.clientToSvgPos(x, y);
+
+      this.props.port.newConnection.setPosition({
+        x: svgDelta.x,
+        y: svgDelta.y
       });
     }
+  };
+
+  requestConnection = () => {
+    this.props.port.requestConnection();
   };
 
   componentDidMount() {
@@ -59,7 +63,12 @@ export class Port extends React.Component<
     return (
       <Draggable onStart={this.onStart} onDrag={this.onDrag}>
         {({ dragging, startDragging }) => {
-          return children({ dragging, startDragging, port });
+          return children({
+            dragging,
+            startDragging,
+            port,
+            requestConnection: this.requestConnection
+          });
         }}
       </Draggable>
     );
