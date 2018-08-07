@@ -18,6 +18,8 @@ export interface GraphProps {
   store: GraphStore;
 }
 
+const mouseOffset = 3;
+
 const NewConnection = observer(
   (props: { store: GraphStore; getPortBounds: Function }) => {
     const { newConnection } = props.store.graph;
@@ -35,8 +37,12 @@ const NewConnection = observer(
         key={newConnection.id}
         a={bounds}
         b={{
-          x: newConnection.position.x,
-          y: newConnection.position.y
+          x:
+            newConnection.position.x -
+            mouseOffset * Math.sign(newConnection.position.x),
+          y:
+            newConnection.position.y -
+            mouseOffset * Math.sign(newConnection.position.y)
         }}
       />
     );
