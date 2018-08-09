@@ -1,11 +1,14 @@
 import * as React from "react";
 import * as svgPanZoom from "svg-pan-zoom";
 import { observer } from "mobx-react";
+import { SvgFilters } from "./SvgFilters";
+import { autorun } from "mobx";
 
 export interface CanvasProps {
   className?: string;
   setSvgMatrix?: (svg: { matrix: SVGMatrix; point: SVGPoint }) => void;
   locked?: boolean;
+  style: object;
 }
 
 @observer
@@ -24,6 +27,8 @@ export class Canvas extends React.Component<CanvasProps> {
 
     svgPanZoom(this.svgRef.current!, {
       dblClickZoomEnabled: false,
+      fit: false,
+      center: false,
 
       beforePan: () => {
         if (this.props.locked) {
@@ -41,7 +46,14 @@ export class Canvas extends React.Component<CanvasProps> {
   }
 
   render() {
-    const { className, children, setSvgMatrix, locked, ...rest } = this.props;
+    const {
+      className,
+      children,
+      setSvgMatrix,
+      locked,
+      style,
+      ...rest
+    } = this.props;
 
     return (
       <div
@@ -56,12 +68,18 @@ export class Canvas extends React.Component<CanvasProps> {
           style={{
             display: "inline",
             width: "100%",
-            height: "100%"
+            height: "100%",
+            ...style
           }}
           xmlns="http://www.w3.org/2000/svg"
         >
+          <defs>
+            <SvgFilters />
+          </defs>
           <g>{children}</g>
         </svg>
+
+        <div id={"dom-canvas"} />
       </div>
     );
   }

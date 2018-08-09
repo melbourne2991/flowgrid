@@ -1,12 +1,15 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { NodeTemplateProps, IGraphNodePort, IGraph } from "../../lib/Graph";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import * as classnames from "classnames";
 import { withStyles, StyledComponentProps } from "@material-ui/core";
 import { Port, PortInternalProps } from "../../lib/Graph/components/Port";
+import { GraphStore } from "../../lib/Graph/GraphStore";
+import { trace } from "mobx";
 
 const nodeRowWidth = 200;
-const nodeRowHeight = 25;
+const nodeRowHeight = 50;
 const portSize = 10;
 const nodeRowOffset = nodeRowHeight / 2 - portSize / 2;
 const borderRadius = 3;
@@ -21,37 +24,37 @@ type ClassNames =
   | "port"
   | "portLabel";
 
-const injectStyles = withStyles<ClassNames>((theme: any) => ({
-  node: {
-    fill: "#fff",
-    fillOpacity: 0.5,
-    zIndex: -1,
-    stroke: theme.palette.grey[800],
-    strokeWidth: 2,
-    strokeLinecap: "round",
-    cursor: "grab"
-  },
+const injectStyles = withStyles<ClassNames>((theme: any) => {
+  const borderColor = theme.palette.grey[800];
 
-  nodeSelected: {
-    stroke: theme.palette.primary.main
-  },
+  return {
+    node: {
+      fill: "#e6e6e6",
+      zIndex: -1,
+      cursor: "grab"
+    },
 
-  nodeDragging: {
-    cursor: "grabbing"
-  },
+    nodeSelected: {
+      fill: "#fff"
+    },
 
-  port: {
-    width: `${portSize}px`,
-    height: `${portSize}px`,
-    fill: theme.palette.grey[800]
-  },
+    nodeDragging: {
+      cursor: "grabbing"
+    },
 
-  portLabel: {
-    fontSize: "10px",
-    lineHeight: `1`,
-    fontWeight: "bolder"
-  }
-}));
+    port: {
+      width: `${portSize}px`,
+      height: `${portSize}px`,
+      fill: borderColor
+    },
+
+    portLabel: {
+      fontSize: "10px",
+      lineHeight: `1`,
+      fontWeight: "bolder"
+    }
+  };
+});
 
 @observer
 class BasicTemplateComponent extends React.Component<
@@ -66,22 +69,53 @@ class BasicTemplateComponent extends React.Component<
     const { classes } = this.props;
 
     return ports.map((port: IGraphNodePort, i: number) => {
+      const dimensions = {
+        input: {
+          x: inPortXOffset,
+          y: i * nodeRowHeight + nodeRowOffset,
+          text: {
+            x: inPortXOffset + portSize * 2,
+            y: i * nodeRowHeight + nodeRowOffset + 9,
+            textAnchor: "start"
+          }
+        },
+
+        output: {
+          x: outPortXOffset,
+          y: i * nodeRowHeight + nodeRowOffset,
+          text: {
+            x: outPortXOffset - portSize,
+            y: i * nodeRowHeight + (nodeRowOffset + 9),
+            textAnchor: "end"
+          }
+        }
+      };
+
       return (
         <Port port={port} key={port.id}>
           {(props: PortInternalProps) => {
+            const portDimensions = (dimensions as any)[port.data.type];
+
             return (
-              <rect
-                className={classes!.port}
-                x={offset}
-                y={i * nodeRowHeight + nodeRowOffset}
-                onMouseDown={e => {
-                  e.stopPropagation();
-                  props.startDragging(e);
-                }}
-                onMouseUp={e => {
-                  props.requestConnection(e);
-                }}
-              />
+              <React.Fragment>
+                <rect
+                  shapeRendering="crispEdges"
+                  className={classes!.port}
+                  x={portDimensions.x}
+                  y={portDimensions.y}
+                  onMouseDown={e => {
+                    e.stopPropagation();
+                    props.startDragging(e);
+                  }}
+                  onMouseUp={e => {
+                    props.requestConnection(e);
+                  }}
+                />
+
+                <text className={classes!.portLabel} {...portDimensions.text}>
+                  {port.data.label || "s"}
+                </text>
+              </React.Fragment>
             );
           }}
         </Port>
@@ -114,10 +148,56 @@ class BasicTemplateComponent extends React.Component<
 
         {this.mapPorts(inPorts, inPortXOffset)}
         {this.mapPorts(outPorts, outPortXOffset)}
+
+        <SVGRenderContext x={node.x} y={node.y}>
+          {({ style }) => {
+            return <div style={style}>Hello ello</div>;
+          }}
+        </SVGRenderContext>
       </svg>
     );
   }
 }
+
+const SVGRenderContext: React.SFC<{
+  x: number;
+  y: number;
+  children: (
+    {
+      style: {}
+    }
+  ) => React.ReactElement<any>;
+}> = inject("graphStore")(
+  observer(function SVGRenderContext({ children, graphStore, x, y }) {
+    const domCanvas = document.getElementById("dom-canvas");
+    const clientPos = (graphStore as GraphStore).svgToClientPos(x, y);
+
+    if (domCanvas) {
+      const matrix = clientPos.matrix as SVGMatrix;
+
+      const transform = `matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${
+        matrix.d
+      }, ${clientPos.x}, ${clientPos.y})`;
+
+      const style = {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        transformOrigin: "top left",
+        transform
+      };
+
+      return ReactDOM.createPortal(
+        (children as any)({
+          style
+        }),
+        domCanvas
+      ) as any;
+    }
+
+    return null;
+  })
+) as any;
 
 const BasicTemplate = injectStyles<NodeTemplateProps>(
   BasicTemplateComponent as any

@@ -15,5 +15,7 @@ export { Graph } from "./components/Graph";
 export * from "./types";
 
 export function createGraphStore(): GraphStore {
-  return new GraphStore();
+  const graphStore = new GraphStore();
+
+  return graphStore;
 }

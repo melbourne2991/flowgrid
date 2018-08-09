@@ -4,6 +4,7 @@ import { IGraphNodePort } from "../types";
 import { observer, inject } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { setLivelynessChecking } from "mobx-state-tree";
+import { undoManager } from "../../setUndoManager";
 
 setLivelynessChecking("error");
 
@@ -38,11 +39,17 @@ export class Port extends React.Component<
     if (this.props.port.hasNewConnection()) {
       const svgDelta = (this.props as any).graphStore.clientToSvgPos(x, y);
 
-      this.props.port.newConnection.setPosition({
-        x: svgDelta.x,
-        y: svgDelta.y
+      undoManager.startGroup(() => {
+        this.props.port.newConnection.setPosition({
+          x: svgDelta.x,
+          y: svgDelta.y
+        });
       });
     }
+  };
+
+  onStop = () => {
+    undoManager.stopGroup();
   };
 
   requestConnection = () => {
@@ -61,7 +68,11 @@ export class Port extends React.Component<
     const { children, port } = this.props;
 
     return (
-      <Draggable onStart={this.onStart} onDrag={this.onDrag}>
+      <Draggable
+        onStart={this.onStart}
+        onDrag={this.onDrag}
+        onStop={this.onStop}
+      >
         {({ dragging, startDragging }) => {
           return children({
             dragging,

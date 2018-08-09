@@ -6,6 +6,11 @@ export interface IGraphObject {
   id: string;
 }
 
+export interface IGraphSelectableObject extends IGraphObject {
+  select(): void;
+  selected: boolean;
+}
+
 export interface IGraphNodePort<T = any> {
   id: string;
   connectedPorts: IGraphNodePort<T>[];
@@ -18,12 +23,9 @@ export interface IGraphNodePort<T = any> {
   data: T;
 }
 
-export interface IGraphNode<T = any> {
+export interface IGraphNode<T = any> extends IGraphSelectableObject {
   id: string;
   ports: IGraphNodePort<any>[];
-
-  selected: boolean;
-  select: () => void;
 
   x: number;
   y: number;
@@ -34,7 +36,7 @@ export interface IGraphNode<T = any> {
   addPort(port: IGraphNodePort<any>): void;
 }
 
-export interface IGraphConnection extends IGraphObject {
+export interface IGraphConnection extends IGraphSelectableObject {
   source: IGraphNodePort<any>;
   target: IGraphNodePort<any>;
 }

@@ -12,41 +12,54 @@ function getGraph(self: any): IGraph {
   return getEnv(self).graph;
 }
 
+function selfIsSelected(self: any): boolean {
+  const selectedItem = getEnv(self).graph.selected;
+
+  if (selectedItem && selectedItem.id === self.id) {
+    return true;
+  }
+
+  return false;
+}
+
+const SelectableModel = types
+  .model("Selectable", {})
+  .actions(self => ({
+    select() {
+      getGraph(self).select(self);
+    }
+  }))
+  .views(self => ({
+    get selected() {
+      return selfIsSelected(self);
+    }
+  }));
+
 const createNodeModel = (PortModel: any) => {
   return types
-    .model("Node", {
-      id: types.identifier,
-      template: types.string,
-      ports: types.array(types.reference(PortModel)),
-      x: types.number,
-      y: types.number,
-      data: types.frozen()
-    })
-    .actions(self => ({
-      addPort(port: any) {
-        self.ports.push(port);
-      },
+    .compose(
+      SelectableModel,
+      types
+        .model({
+          id: types.identifier,
+          template: types.string,
+          ports: types.array(types.reference(PortModel)),
+          x: types.number,
+          y: types.number,
+          data: types.frozen()
+        })
+        .actions(self => ({
+          addPort(port: any) {
+            self.ports.push(port);
+          },
 
-      updatePosition(x: number, y: number) {
-        self.x = x;
-        self.y = y;
-      },
-
-      select() {
-        getGraph(self).select(self);
-      }
-    }))
-    .views(self => ({
-      get selected() {
-        const selectedItem = getEnv(self).graph.selected;
-
-        if (selectedItem && selectedItem.id === self.id) {
-          return true;
-        }
-
-        return false;
-      }
-    }));
+          updatePosition(x: number, y: number) {
+            self.x = x;
+            self.y = y;
+          }
+        }))
+    )
+    .named("Node");
 };
 
 const createPortModel = (
@@ -88,11 +101,16 @@ const createPortModel = (
 };
 
 const createConnectionModel = (PortModel: any) =>
-  types.model("Connection", {
-    id: types.identifier,
-    source: types.reference(PortModel),
-    target: types.reference(PortModel)
-  });
+  types
+    .compose(
+      SelectableModel,
+      types.model("Connection", {
+        id: types.identifier,
+        source: types.reference(PortModel),
+        target: types.reference(PortModel)
+      })
+    )
+    .named("Connection");
 
 const createNewConnectionModel = (PortModel: any) =>
   types

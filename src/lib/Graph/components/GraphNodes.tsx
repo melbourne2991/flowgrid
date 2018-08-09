@@ -4,6 +4,8 @@ import { NodeTemplates, IGraphNode, NodeTemplate } from "../types";
 import { Draggable } from "../makeDraggable";
 import { GraphStore } from "../GraphStore";
 
+import { undoManager } from "../../setUndoManager";
+
 export interface GraphNodesProps {
   nodes: IGraphNode<any>[];
   nodeTemplates: NodeTemplates;
@@ -28,10 +30,14 @@ export class GraphNode extends React.Component<GraphNodeProps> {
     const { node } = this.props;
     const svgDelta = this.props.graphStore.clientDeltaToSvg(deltaX, deltaY);
 
-    node.updatePosition(node.x + svgDelta.x, node.y + svgDelta.y);
+    undoManager.startGroup(() => {
+      node.updatePosition(node.x + svgDelta.x, node.y + svgDelta.y);
+    });
   };
 
   onStop = () => {
+    undoManager.stopGroup();
+
     this.props.graphStore.unlockCanvas();
   };
 

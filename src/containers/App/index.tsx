@@ -2,6 +2,7 @@ import * as React from "react";
 import { Graph, createGraphStore } from "../../lib/Graph";
 import { GraphStore } from "../../lib/Graph/GraphStore";
 import { basic } from "./template";
+import { withStyles } from "@material-ui/core";
 
 export interface AppState {
   graphStore: GraphStore;
@@ -18,16 +19,19 @@ export class App extends React.Component<{}, AppState> {
 
     graphStore.addPortToNode(a, {
       type: "input",
+      label: "Hello",
       index: 0
     });
 
     graphStore.addPortToNode(b, {
       type: "output",
+      label: "Hello",
       index: 0
     });
 
     graphStore.addPortToNode(b, {
       type: "output",
+      label: "Hello",
       index: 1
     });
 
@@ -41,14 +45,13 @@ export class App extends React.Component<{}, AppState> {
 
   render() {
     return (
-      <div style={{ width: "1000px", height: "800px", border: "1px solid" }}>
-        <Graph
-          store={this.state.graphStore}
-          nodeTemplates={{
-            basic
-          }}
-        />
-      </div>
+      <Graph
+        style={{ background: "#afafaf" }}
+        store={this.state.graphStore}
+        nodeTemplates={{
+          basic
+        }}
+      />
     );
   }
 }

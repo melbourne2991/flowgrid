@@ -1,4 +1,4 @@
-import { observable, action } from "mobx";
+import { observable, action, computed } from "mobx";
 import { types } from "mobx-state-tree";
 import * as uniqid from "uniqid";
 
@@ -11,6 +11,7 @@ import {
 } from "./models";
 
 import { IGraph, IGraphNode } from "./types";
+import { setUndoManager } from "../setUndoManager";
 
 let GraphModel: any;
 let NodeModel: any;
@@ -37,11 +38,10 @@ GraphModel = createGraphModel(
 
 export class GraphStore {
   @observable graph: IGraph;
-
   @observable canvasLocked: boolean = false;
 
-  svgMatrix: SVGMatrix;
-  svgPoint: SVGPoint;
+  @observable svgMatrix: SVGMatrix;
+  @observable svgPoint: SVGPoint;
 
   constructor() {
     this.graph = GraphModel.create(
@@ -53,6 +53,8 @@ export class GraphStore {
       },
       this
     );
+
+    setUndoManager(this.graph);
   }
 
   @action
@@ -103,11 +105,40 @@ export class GraphStore {
     return port;
   }
 
-  clientToSvgPos = (x: number, y: number): { x: number; y: number } => {
+  clientToSvgPos = (
+    x: number,
+    y: number
+  ): { x: number; y: number; matrix: SVGMatrix | null } => {
+    if (!this.svgPoint) return { x, y, matrix: null };
+
     this.svgPoint.x = x;
     this.svgPoint.y = y;
 
-    return this.svgPoint.matrixTransform(this.svgMatrix.inverse());
+    const point = this.svgPoint.matrixTransform(this.svgMatrix.inverse());
+
+    return {
+      x: point.x,
+      y: point.y,
+      matrix: this.svgMatrix
+    };
+  };
+
+  svgToClientPos = (
+    x: number,
+    y: number
+  ): { x: number; y: number; matrix: SVGMatrix | null } => {
+    if (!this.svgPoint) return { x, y, matrix: null };
+
+    this.svgPoint.x = x;
+    this.svgPoint.y = y;
+
+    const point = this.svgPoint.matrixTransform(this.svgMatrix);
+
+    return {
+      x: point.x,
+      y: point.y,
+      matrix: this.svgMatrix
+    };
   };
 
   clientDeltaToSvg(deltaX: number, deltaY: number) {

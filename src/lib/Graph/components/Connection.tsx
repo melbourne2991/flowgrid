@@ -13,13 +13,17 @@ export interface ConnectionProps {
 const styles = {
   default: {
     strokeWidth: "4",
-
-    stroke: "black",
+    stroke: "#eef0ff",
     fill: "transparent"
   },
 
   mouseOver: {
-    strokeDasharray: "20 2"
+    strokeWidth: "6",
+    stroke: "#3f51b5"
+  },
+
+  selected: {
+    stroke: "#3f51b5"
   }
 };
 
@@ -41,20 +45,43 @@ export class Connection extends React.Component<ConnectionProps> {
   render() {
     const { connection, getPortBounds } = this.props;
 
+    let activeStyle = this.activeStyle;
+
+    // override others with selected
+    if (connection.selected) {
+      activeStyle = "selected";
+    }
+
     const combinedStyles = {
       ...styles.default,
-      ...styles[this.activeStyle]
+      ...styles[activeStyle]
     };
 
     return (
-      <FlexLine
-        onMouseOver={() => this.setActiveStyle("mouseOver")}
-        onMouseOut={() => this.setActiveStyle("default")}
-        key={connection.id}
-        a={getPortBounds(connection.source)}
-        b={getPortBounds(connection.target)}
-        {...combinedStyles}
-      />
+      <React.Fragment>
+        <FlexLine
+          onMouseOver={() => this.setActiveStyle("mouseOver")}
+          onMouseOut={() => this.setActiveStyle("default")}
+          key={connection.id}
+          a={getPortBounds(connection.source)}
+          b={getPortBounds(connection.target)}
+          {...combinedStyles}
+        />
+
+        <FlexLine
+          onMouseDown={() => connection.select()}
+          onMouseOver={() => this.setActiveStyle("mouseOver")}
+          onMouseOut={() => this.setActiveStyle("default")}
+          key={connection.id + "-shadow"}
+          a={getPortBounds(connection.source)}
+          b={getPortBounds(connection.target)}
+          style={{
+            stroke: combinedStyles.stroke,
+            strokeWidth: 10,
+            opacity: 0.05
+          }}
+        />
+      </React.Fragment>
     );
   }
 }

@@ -16,6 +16,7 @@ export interface GraphProps {
   className?: string;
   nodeTemplates: NodeTemplates;
   store: GraphStore;
+  style: Object;
 }
 
 const mouseOffset = 3;

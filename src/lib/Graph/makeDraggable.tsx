@@ -7,13 +7,17 @@ export type DraggableProps<P = {}> = P & {
   startDragging(e: React.MouseEvent<any>): void;
 };
 
+export interface DragState {
+  x: number;
+  y: number;
+  deltaX: number;
+  deltaY: number;
+}
+
 export interface DraggableOptions {
-  onStart?: (e: React.MouseEvent, state: { x: number; y: number }) => void;
-  onStop?: (e: MouseEvent, state: { x: number; y: number }) => void;
-  onDrag?: (
-    e: MouseEvent,
-    state: { x: number; y: number; deltaX: number; deltaY: number }
-  ) => void;
+  onStart?: (e: React.MouseEvent, state: DragState) => void;
+  onStop?: (e: MouseEvent, state: DragState) => void;
+  onDrag?: (e: MouseEvent, state: DragState) => void;
 }
 
 export type DraggableComponentProps = DraggableOptions & {
