@@ -7,6 +7,7 @@ import {
   Point,
   IGraphConnection
 } from "../types";
+import { GraphStore } from "../GraphStore";
 
 function getGraph(self: any): IGraph {
   return getEnv(self).graph;
@@ -73,9 +74,15 @@ const createPortModel = (
       node: types.reference(NodeModel),
       connectedPorts: types.late(() => types.array(types.reference(PortModel))),
       data: types.frozen(),
-      newConnection: types.maybeNull(types.reference(NewConnectionModel))
+      newConnection: types.maybeNull(types.reference(NewConnectionModel)),
+      newConnectionProximity: types.union(types.number, types.boolean)
     })
     .actions(self => ({
+      // how close this is to a new connection endpoint
+      updateNewConnectionProximity(distance: number | false) {
+        self.newConnectionProximity = distance;
+      },
+
       beginNewConnection() {
         self.newConnection = getGraph(self).addNewConnection(
           self as any
@@ -118,12 +125,37 @@ const createNewConnectionModel = (PortModel: any) =>
       id: types.identifier,
       source: types.reference(PortModel),
       x: types.maybeNull(types.number),
-      y: types.maybeNull(types.number)
+      y: types.maybeNull(types.number),
+      closestPort: types.maybeNull(types.reference(PortModel))
     })
     .actions(self => ({
+      beforeDestroy() {
+        if (self.closestPort) {
+          (self.closestPort as any).updateNewConnectionProximity(false);
+        }
+      },
+
       setPosition(pos: Point) {
         self.x = pos.x;
         self.y = pos.y;
+
+        const result = getEnv<GraphStore>(self).findClosestPortToPoint({
+          x: self.x,
+          y: self.y
+        });
+
+        if (
+          self.closestPort &&
+          (!result || result.closestPort.id !== (self.closestPort as any).id)
+        ) {
+          (self.closestPort as any).updateNewConnectionProximity(false);
+          self.closestPort = null;
+        } else if (result) {
+          (self.closestPort as any) = result.closestPort;
+          (self.closestPort as any).updateNewConnectionProximity(
+            result.distance
+          );
+        }
       }
     }))
     .views(self => ({

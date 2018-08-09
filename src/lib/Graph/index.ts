@@ -8,14 +8,14 @@ import {
   createConnectionModel,
   createNewConnectionModel
 } from "./models";
-import { GraphStore } from "./GraphStore";
+import { GraphStore, GraphStoreParams } from "./GraphStore";
 
 export { Graph } from "./components/Graph";
 
 export * from "./types";
 
-export function createGraphStore(): GraphStore {
-  const graphStore = new GraphStore();
+export function createGraphStore(params: GraphStoreParams): GraphStore {
+  const graphStore = new GraphStore(params);
 
   return graphStore;
 }

@@ -12,26 +12,30 @@ export class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
 
-    const graphStore = createGraphStore();
+    const graphStore = createGraphStore({
+      nodeTemplates: {
+        basic
+      }
+    });
 
     const a = graphStore.addNode("basic", {});
     const b = graphStore.addNode("basic", {});
 
     graphStore.addPortToNode(a, {
       type: "input",
-      label: "Hello",
+      label: "Helloaa",
       index: 0
     });
 
     graphStore.addPortToNode(b, {
       type: "output",
-      label: "Hello",
+      label: "Helloba",
       index: 0
     });
 
     graphStore.addPortToNode(b, {
       type: "output",
-      label: "Hello",
+      label: "Hellobb",
       index: 1
     });
 
@@ -45,13 +49,7 @@ export class App extends React.Component<{}, AppState> {
 
   render() {
     return (
-      <Graph
-        style={{ background: "#afafaf" }}
-        store={this.state.graphStore}
-        nodeTemplates={{
-          basic
-        }}
-      />
+      <Graph style={{ background: "#afafaf" }} store={this.state.graphStore} />
     );
   }
 }

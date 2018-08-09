@@ -18,6 +18,7 @@ export interface GraphNodeProps {
   graphStore: GraphStore;
 }
 
+@observer
 export class GraphNode extends React.Component<GraphNodeProps> {
   onStart = () => {
     this.props.graphStore.lockCanvas();
@@ -66,7 +67,7 @@ export class GraphNode extends React.Component<GraphNodeProps> {
 export class GraphNodes extends React.Component<GraphNodesProps> {
   render() {
     return (
-      <React.Fragment>
+      <React.Fragment key={"graph-nodes"}>
         {this.props.nodes.map(node => {
           const template = this.props.nodeTemplates[node.template];
 

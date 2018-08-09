@@ -10,8 +10,15 @@ import {
   createNewConnectionModel
 } from "./models";
 
-import { IGraph, IGraphNode } from "./types";
+import {
+  IGraph,
+  IGraphNode,
+  Point,
+  NodeTemplates,
+  IGraphNodePort
+} from "./types";
 import { setUndoManager } from "../setUndoManager";
+import { pointDistance } from "./util";
 
 let GraphModel: any;
 let NodeModel: any;
@@ -36,14 +43,26 @@ GraphModel = createGraphModel(
   NewConnectionModel
 );
 
+export interface GraphStoreParams {
+  nodeTemplates: NodeTemplates;
+}
+
 export class GraphStore {
-  @observable graph: IGraph;
-  @observable canvasLocked: boolean = false;
+  @observable
+  graph: IGraph;
+  @observable
+  canvasLocked: boolean = false;
 
-  @observable svgMatrix: SVGMatrix;
-  @observable svgPoint: SVGPoint;
+  @observable
+  svgMatrix: SVGMatrix;
+  @observable
+  svgPoint: SVGPoint;
 
-  constructor() {
+  nodeTemplates: NodeTemplates;
+
+  constructor(params: GraphStoreParams) {
+    this.nodeTemplates = params.nodeTemplates;
+
     this.graph = GraphModel.create(
       {
         nodes: [],
@@ -95,6 +114,7 @@ export class GraphStore {
         id: portId,
         node: node.id,
         connectedPorts: [],
+        newConnectionProximity: false,
         data
       },
       this
@@ -121,6 +141,50 @@ export class GraphStore {
       y: point.y,
       matrix: this.svgMatrix
     };
+  };
+
+  findClosestNodeToPoint(point: Point) {
+    return this.graph.nodes.slice().sort((a, b) => {
+      const portADistance = pointDistance(point, a);
+      const portBDistance = pointDistance(point, b);
+
+      return portADistance - portBDistance;
+    })[0];
+  }
+
+  findClosestPortToPoint(point: Point) {
+    const node = this.findClosestNodeToPoint(point);
+
+    const sortedPorts = node.ports
+      .filter(port => port.connectedPorts.length === 0)
+      .slice()
+      .sort((a, b) => {
+        const boundsA = this.getPortBounds(a);
+        const boundsB = this.getPortBounds(b);
+
+        return (
+          pointDistance(boundsA.position, point) -
+          pointDistance(boundsB.position, point)
+        );
+      });
+
+    const closestPort = sortedPorts[0];
+
+    if (!closestPort) return;
+
+    const distance = pointDistance(
+      this.getPortBounds(closestPort).position,
+      point
+    );
+
+    return {
+      closestPort,
+      distance
+    };
+  }
+
+  getPortBounds = (port: IGraphNodePort<any>) => {
+    return this.nodeTemplates[port.node.template].getPortBounds(port);
   };
 
   svgToClientPos = (

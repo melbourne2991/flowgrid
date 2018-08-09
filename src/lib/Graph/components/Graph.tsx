@@ -3,64 +3,67 @@ import { Canvas } from "./Canvas";
 import { observer, Provider } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { GraphNodes } from "./GraphNodes";
-import {
-  NodeTemplates,
-  IGraphNodePort,
-  IGraphConnection,
-  GetPortBoundsFn
-} from "../types";
+
+import { IGraphNodePort, IGraphConnection } from "../types";
+
 import { FlexLine, Snapbox } from "./FlexLine";
 import { Connection } from "./Connection";
 
 export interface GraphProps {
   className?: string;
-  nodeTemplates: NodeTemplates;
   store: GraphStore;
   style: Object;
 }
 
 const mouseOffset = 3;
 
-const NewConnection = observer(
-  (props: { store: GraphStore; getPortBounds: Function }) => {
-    const { newConnection } = props.store.graph;
-    if (!newConnection || !newConnection.position) return null;
+const NewConnection = observer((props: { store: GraphStore }) => {
+  const { newConnection } = props.store.graph;
+  if (!newConnection || !newConnection.position) return null;
 
-    const bounds = props.getPortBounds(newConnection.source);
+  const bounds = props.store.getPortBounds(newConnection.source);
 
-    return (
-      <FlexLine
-        {...{
-          strokeWidth: "4",
-          stroke: "black",
-          fill: "transparent"
-        }}
-        key={newConnection.id}
-        a={bounds}
-        b={{
-          x:
-            newConnection.position.x -
-            mouseOffset * Math.sign(newConnection.position.x),
-          y:
-            newConnection.position.y -
-            mouseOffset * Math.sign(newConnection.position.y)
-        }}
-      />
-    );
-  }
-);
+  return (
+    <FlexLine
+      {...{
+        strokeWidth: "4",
+        stroke: "black",
+        fill: "transparent"
+      }}
+      key={newConnection.id}
+      a={bounds}
+      b={{
+        x:
+          newConnection.position.x -
+          mouseOffset * Math.sign(newConnection.position.x),
+        y:
+          newConnection.position.y -
+          mouseOffset * Math.sign(newConnection.position.y)
+      }}
+    />
+  );
+});
 
 @observer
 export class Graph extends React.Component<GraphProps> {
-  render() {
-    const { nodeTemplates, store, ...rest } = this.props;
+  onMouseUp = () => {
+    if (this.props.store.graph.newConnection) {
+      if (this.props.store.graph.newConnection.closestPort) {
+        this.props.store.graph.newConnection.closestPort.requestConnection();
+      }
 
-    const portBoundsFn = getPortBoundsFn(nodeTemplates);
+      this.props.store.graph.removeNewConnection();
+    }
+  };
+
+  render() {
+    const { store, ...rest } = this.props;
 
     return (
       <Provider graphStore={this.props.store}>
         <Canvas
           {...rest}
+          onMouseUp={this.onMouseUp}
           setSvgMatrix={ctm => {
             store.svgMatrix = ctm.matrix;
             store.svgPoint = ctm.point;
@@ -69,14 +72,14 @@ export class Graph extends React.Component<GraphProps> {
         >
           <GraphNodes
             nodes={store.graph.nodes}
-            nodeTemplates={nodeTemplates}
+            nodeTemplates={store.nodeTemplates}
             graphStore={store}
           />
 
-          <NewConnection store={store} getPortBounds={portBoundsFn} />
+          <NewConnection store={store} />
           {connectionsToFlexLine(
             this.props.store.graph.connections,
-            portBoundsFn
+            this.props.store.getPortBounds
           )}
         </Canvas>
       </Provider>
@@ -97,9 +100,4 @@ function connectionsToFlexLine(
       />
     );
   });
-}
-
-function getPortBoundsFn(nodeTemplates: NodeTemplates): GetPortBoundsFn {
-  return (port: IGraphNodePort<any>) =>
-    nodeTemplates[port.node.template].getPortBounds(port);
 }

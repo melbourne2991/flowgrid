@@ -7,6 +7,7 @@ import { withStyles, StyledComponentProps } from "@material-ui/core";
 import { Port, PortInternalProps } from "../../lib/Graph/components/Port";
 import { GraphStore } from "../../lib/Graph/GraphStore";
 import { trace } from "mobx";
+import * as Color from "color";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 50;
@@ -44,8 +45,7 @@ const injectStyles = withStyles<ClassNames>((theme: any) => {
 
     port: {
       width: `${portSize}px`,
-      height: `${portSize}px`,
-      fill: borderColor
+      height: `${portSize}px`
     },
 
     portLabel: {
@@ -91,6 +91,17 @@ class BasicTemplateComponent extends React.Component<
         }
       };
 
+      let fillOverride = "#ccc";
+
+      if (
+        port.newConnectionProximity !== false &&
+        port.newConnectionProximity < 100
+      ) {
+        fillOverride = Color("#424242")
+          .lighten(port.newConnectionProximity / 100)
+          .hex();
+      }
+
       return (
         <Port port={port} key={port.id}>
           {(props: PortInternalProps) => {
@@ -99,6 +110,7 @@ class BasicTemplateComponent extends React.Component<
             return (
               <React.Fragment>
                 <rect
+                  fill={fillOverride}
                   shapeRendering="crispEdges"
                   className={classes!.port}
                   x={portDimensions.x}

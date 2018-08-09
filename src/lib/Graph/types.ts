@@ -15,10 +15,12 @@ export interface IGraphNodePort<T = any> {
   id: string;
   connectedPorts: IGraphNodePort<T>[];
   newConnection: IGraphNewConnection;
+  newConnectionProximity: number | false;
   cancelNewConnection(): void;
   hasNewConnection(): boolean;
   beginNewConnection(): void;
   requestConnection(): void;
+  updateNewConnectionProximity(distance: number | false): void;
   node: IGraphNode;
   data: T;
 }
@@ -53,6 +55,7 @@ export interface IGraphNewConnection extends IGraphObject {
     y: number;
   };
 
+  closestPort: IGraphNodePort;
   setPosition(point: Point): void;
 }
 

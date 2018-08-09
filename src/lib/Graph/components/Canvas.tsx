@@ -2,13 +2,13 @@ import * as React from "react";
 import * as svgPanZoom from "svg-pan-zoom";
 import { observer } from "mobx-react";
 import { SvgFilters } from "./SvgFilters";
-import { autorun } from "mobx";
 
 export interface CanvasProps {
   className?: string;
   setSvgMatrix?: (svg: { matrix: SVGMatrix; point: SVGPoint }) => void;
   locked?: boolean;
   style: object;
+  onMouseUp?: (e: React.MouseEvent) => void;
 }
 
 @observer

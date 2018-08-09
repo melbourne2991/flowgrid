@@ -5,6 +5,7 @@ import { observer, inject } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { setLivelynessChecking } from "mobx-state-tree";
 import { undoManager } from "../../setUndoManager";
+import { action } from "mobx";
 
 setLivelynessChecking("error");
 
@@ -52,17 +53,10 @@ export class Port extends React.Component<
     undoManager.stopGroup();
   };
 
+  @action
   requestConnection = () => {
     this.props.port.requestConnection();
   };
-
-  componentDidMount() {
-    document.addEventListener("mouseup", e => {
-      if (this.props.port.hasNewConnection()) {
-        this.props.port.cancelNewConnection();
-      }
-    });
-  }
 
   render() {
     const { children, port } = this.props;
