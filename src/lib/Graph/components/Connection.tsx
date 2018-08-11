@@ -35,7 +35,8 @@ export class Connection extends React.Component<ConnectionProps> {
     this.setActiveStyle = throttle(this.setActiveStyle, 100);
   }
 
-  @observable activeStyle: keyof typeof styles;
+  @observable
+  activeStyle: keyof typeof styles;
 
   @action
   setActiveStyle(activeStyle: keyof typeof styles) {
@@ -60,6 +61,7 @@ export class Connection extends React.Component<ConnectionProps> {
     return (
       <React.Fragment>
         <FlexLine
+          onMouseDown={() => connection.select()}
           onMouseOver={() => this.setActiveStyle("mouseOver")}
           onMouseOut={() => this.setActiveStyle("default")}
           key={connection.id}
@@ -68,7 +70,7 @@ export class Connection extends React.Component<ConnectionProps> {
           {...combinedStyles}
         />
 
-        <FlexLine
+        {/* <FlexLine
           onMouseDown={() => connection.select()}
           onMouseOver={() => this.setActiveStyle("mouseOver")}
           onMouseOut={() => this.setActiveStyle("default")}
@@ -80,7 +82,7 @@ export class Connection extends React.Component<ConnectionProps> {
             strokeWidth: 10,
             opacity: 0.05
           }}
-        />
+        /> */}
       </React.Fragment>
     );
   }

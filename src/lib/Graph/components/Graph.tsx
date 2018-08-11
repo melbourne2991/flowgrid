@@ -3,6 +3,7 @@ import { Canvas } from "./Canvas";
 import { observer, Provider } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { GraphNodes } from "./GraphNodes";
+import { NewConnection } from "./NewConnection";
 
 import { IGraphNodePort, IGraphConnection } from "../types";
 
@@ -14,35 +15,6 @@ export interface GraphProps {
   store: GraphStore;
   style: Object;
 }
-
-const mouseOffset = 3;
-
-const NewConnection = observer((props: { store: GraphStore }) => {
-  const { newConnection } = props.store.graph;
-  if (!newConnection || !newConnection.position) return null;
-
-  const bounds = props.store.getPortBounds(newConnection.source);
-
-  return (
-    <FlexLine
-      {...{
-        strokeWidth: "4",
-        stroke: "black",
-        fill: "transparent"
-      }}
-      key={newConnection.id}
-      a={bounds}
-      b={{
-        x:
-          newConnection.position.x -
-          mouseOffset * Math.sign(newConnection.position.x),
-        y:
-          newConnection.position.y -
-          mouseOffset * Math.sign(newConnection.position.y)
-      }}
-    />
-  );
-});
 
 @observer
 export class Graph extends React.Component<GraphProps> {

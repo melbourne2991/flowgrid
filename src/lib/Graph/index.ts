@@ -10,6 +10,7 @@ import {
 } from "./models";
 import { GraphStore, GraphStoreParams } from "./GraphStore";
 
+export { GraphStore, GraphStoreParams };
 export { Graph } from "./components/Graph";
 
 export * from "./types";

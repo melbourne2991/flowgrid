@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action } from "mobx";
 import { types } from "mobx-state-tree";
 import * as uniqid from "uniqid";
 
@@ -86,6 +86,7 @@ export class GraphStore {
     this.canvasLocked = false;
   }
 
+  @action
   addNode(template: string, data: {}): IGraphNode {
     const nodeId = uniqid();
 
@@ -106,6 +107,7 @@ export class GraphStore {
     return node;
   }
 
+  @action
   addPortToNode(node: any, data: {} = {}) {
     const portId = uniqid();
 
@@ -124,24 +126,6 @@ export class GraphStore {
 
     return port;
   }
-
-  clientToSvgPos = (
-    x: number,
-    y: number
-  ): { x: number; y: number; matrix: SVGMatrix | null } => {
-    if (!this.svgPoint) return { x, y, matrix: null };
-
-    this.svgPoint.x = x;
-    this.svgPoint.y = y;
-
-    const point = this.svgPoint.matrixTransform(this.svgMatrix.inverse());
-
-    return {
-      x: point.x,
-      y: point.y,
-      matrix: this.svgMatrix
-    };
-  };
 
   findClosestNodeToPoint(point: Point) {
     return this.graph.nodes.slice().sort((a, b) => {
@@ -197,6 +181,24 @@ export class GraphStore {
     this.svgPoint.y = y;
 
     const point = this.svgPoint.matrixTransform(this.svgMatrix);
+
+    return {
+      x: point.x,
+      y: point.y,
+      matrix: this.svgMatrix
+    };
+  };
+
+  clientToSvgPos = (
+    x: number,
+    y: number
+  ): { x: number; y: number; matrix: SVGMatrix | null } => {
+    if (!this.svgPoint) return { x, y, matrix: null };
+
+    this.svgPoint.x = x;
+    this.svgPoint.y = y;
+
+    const point = this.svgPoint.matrixTransform(this.svgMatrix.inverse());
 
     return {
       x: point.x,

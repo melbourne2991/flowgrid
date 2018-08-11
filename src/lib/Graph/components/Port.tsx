@@ -3,11 +3,8 @@ import { Draggable } from "../makeDraggable";
 import { IGraphNodePort } from "../types";
 import { observer, inject } from "mobx-react";
 import { GraphStore } from "../GraphStore";
-import { setLivelynessChecking } from "mobx-state-tree";
 import { undoManager } from "../../setUndoManager";
 import { action } from "mobx";
-
-setLivelynessChecking("error");
 
 export interface PortProps {
   children: (props: PortInternalProps) => React.ReactElement<any>;

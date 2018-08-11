@@ -1,12 +1,10 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { NodeTemplateProps, IGraphNodePort, IGraph } from "../../lib/Graph";
-import { observer, inject } from "mobx-react";
+import { NodeTemplateProps, IGraphNodePort } from "../lib/Graph";
+import { observer } from "mobx-react";
 import * as classnames from "classnames";
-import { withStyles, StyledComponentProps } from "@material-ui/core";
-import { Port, PortInternalProps } from "../../lib/Graph/components/Port";
-import { GraphStore } from "../../lib/Graph/GraphStore";
-import { trace } from "mobx";
+import { withStyles, Theme, WithStyles } from "@material-ui/core";
+import { Port, PortInternalProps } from "../lib/Graph/components/Port";
+import { SVGRenderContext } from "../lib/Graph/SvgRenderContext";
 import * as Color from "color";
 
 const nodeRowWidth = 200;
@@ -25,9 +23,7 @@ type ClassNames =
   | "port"
   | "portLabel";
 
-const injectStyles = withStyles<ClassNames>((theme: any) => {
-  const borderColor = theme.palette.grey[800];
-
+const injectStyles = withStyles<ClassNames>((theme: Theme) => {
   return {
     node: {
       fill: "#e6e6e6",
@@ -58,7 +54,7 @@ const injectStyles = withStyles<ClassNames>((theme: any) => {
 
 @observer
 class BasicTemplateComponent extends React.Component<
-  NodeTemplateProps & StyledComponentProps<ClassNames>
+  NodeTemplateProps & WithStyles<ClassNames>
 > {
   onMouseDown = (e: React.MouseEvent<SVGRectElement>) => {
     this.props.node.select();
@@ -171,49 +167,7 @@ class BasicTemplateComponent extends React.Component<
   }
 }
 
-const SVGRenderContext: React.SFC<{
-  x: number;
-  y: number;
-  children: (
-    {
-      style: {}
-    }
-  ) => React.ReactElement<any>;
-}> = inject("graphStore")(
-  observer(function SVGRenderContext({ children, graphStore, x, y }) {
-    const domCanvas = document.getElementById("dom-canvas");
-    const clientPos = (graphStore as GraphStore).svgToClientPos(x, y);
-
-    if (domCanvas) {
-      const matrix = clientPos.matrix as SVGMatrix;
-
-      const transform = `matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${
-        matrix.d
-      }, ${clientPos.x}, ${clientPos.y})`;
-
-      const style = {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        transformOrigin: "top left",
-        transform
-      };
-
-      return ReactDOM.createPortal(
-        (children as any)({
-          style
-        }),
-        domCanvas
-      ) as any;
-    }
-
-    return null;
-  })
-) as any;
-
-const BasicTemplate = injectStyles<NodeTemplateProps>(
-  BasicTemplateComponent as any
-);
+const BasicTemplate = injectStyles<NodeTemplateProps>(BasicTemplateComponent);
 
 export const basic = {
   renderNode: BasicTemplate,
