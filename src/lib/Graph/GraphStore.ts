@@ -43,6 +43,8 @@ GraphModel = createGraphModel(
   NewConnectionModel
 );
 
+export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
+
 export interface GraphStoreParams {
   nodeTemplates: NodeTemplates;
 }
@@ -87,12 +89,10 @@ export class GraphStore {
   }
 
   @action
-  addNode(template: string, data: {}): IGraphNode {
-    const nodeId = uniqid();
-
+  addNode(id: string, template: string, data: {}): IGraphNode {
     const node = NodeModel.create(
       {
-        id: nodeId,
+        id,
         ports: [],
         template,
         data,

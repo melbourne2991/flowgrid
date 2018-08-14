@@ -17,7 +17,7 @@ module.exports = {
     ]
   },
 
-  devtool: "source-map",
+  devtool: "inline-source-map",
 
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.

@@ -1,4 +1,4 @@
-import { types, destroy, getEnv, detach } from "mobx-state-tree";
+import { types, destroy, getEnv } from "mobx-state-tree";
 import * as uniqid from "uniqid";
 import {
   IGraphNodePort,
