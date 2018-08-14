@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NodeDefinition } from "../core/types";
+import { NodeDefinition, TemplateCanvasRendererProps } from "../core/types";
 import { of } from "rxjs";
 
 export interface NumberNodeInputTypes {}
@@ -11,7 +11,9 @@ export interface NumberNodeParams {
   value: number;
 }
 
-export const NumberNodeCanvas: React.SFC = () => {
+export const NumberNodeCanvas: React.SFC<
+  TemplateCanvasRendererProps<NumberNodeParams>
+> = ({}) => {
   return <div />;
 };
 
@@ -28,6 +30,10 @@ export const NumberNodeDefinition: NodeDefinition<
     config: {
       render: NumberNodeCanvas
     }
+  },
+
+  initialParams: {
+    value: 0
   },
 
   inputs: {},

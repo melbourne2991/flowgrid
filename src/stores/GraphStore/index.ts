@@ -4,6 +4,8 @@ import {
   Point
 } from "../../lib/Graph";
 import { basic } from "../../nodeTemplates/basic";
+import { canvas } from "../../nodeTemplates/canvas";
+
 import { NodeDefinition } from "../../core/types";
 import * as uniqid from "uniqid";
 import { Runtime } from "../../core/Runtime";
@@ -16,15 +18,13 @@ export interface GraphStoreParams {
 
 export class GraphStore {
   visualGraphStore: VisualGraphStore;
-
   runtime: Runtime;
-  nodeFactories: {};
 
   constructor({ nodeDefinitions }: GraphStoreParams) {
     this.runtime = new Runtime();
 
     this.visualGraphStore = createGraphStore({
-      nodeTemplates: { basic }
+      nodeTemplates: { basic, canvas }
     });
 
     onPatch(this.visualGraphStore.graph.nodes as IAnyStateTreeNode, patch => {
@@ -41,9 +41,13 @@ export class GraphStore {
   ) {
     const id = uniqid();
 
-    const visualNode = this.visualGraphStore.addNode(id, "basic", {
-      nodeDefinitionName: nodeDefinition.name
-    });
+    const visualNode = this.visualGraphStore.addNode(
+      id,
+      nodeDefinition.template.type,
+      {
+        nodeDefinitionName: nodeDefinition.name
+      }
+    );
 
     Object.keys(nodeDefinition.inputs).forEach((key, index) => {
       this.visualGraphStore.addPortToNode(visualNode, {

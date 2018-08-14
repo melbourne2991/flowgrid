@@ -18,12 +18,14 @@ export type OutputUpdateFn<OutputTypes, Params> = (
   params: Params
 ) => ToObservableDict<OutputTypes>;
 
+export interface TemplateCanvasRendererProps<State> {
+  state: State;
+  setState: (state: State) => void;
+}
+
 export interface TemplateConfigTypes<State> {
   canvas: {
-    render: React.ComponentType<{
-      state: State;
-      setState: (state: State) => void;
-    }>;
+    render: React.ComponentType<TemplateCanvasRendererProps<State>>;
   };
 
   basic: {};
@@ -44,7 +46,9 @@ export interface NodeDefinition<
 > {
   name: string;
 
-  template: "basic" | NodeTemplateConfig<TemplateType, State>;
+  template: NodeTemplateConfig<TemplateType, State>;
+
+  initialParams: State;
 
   inputs: Dict<InputConfig>;
   outputs: Dict<OutputConfig>;

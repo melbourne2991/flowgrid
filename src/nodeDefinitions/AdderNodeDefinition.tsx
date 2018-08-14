@@ -17,7 +17,12 @@ export const AdderNodeDefinition: NodeDefinition<
 > = {
   name: "AdderNode",
 
-  template: "basic",
+  template: {
+    type: "basic",
+    config: {}
+  },
+
+  initialParams: {},
 
   inputs: {
     left: {},

@@ -7,7 +7,7 @@ import { NewConnection } from "./NewConnection";
 
 import { IGraphNodePort, IGraphConnection } from "../types";
 
-import { FlexLine, Snapbox } from "./FlexLine";
+import { Snapbox } from "./FlexLine";
 import { Connection } from "./Connection";
 
 export interface GraphProps {

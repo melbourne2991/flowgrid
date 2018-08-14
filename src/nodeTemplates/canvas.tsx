@@ -193,7 +193,7 @@ class BasicTemplateComponent extends React.Component<
 
 const BasicTemplate = injectStyles<NodeTemplateProps>(BasicTemplateComponent);
 
-export const basic = {
+export const canvas = {
   renderNode: BasicTemplate,
   getPortBounds(port: IGraphNodePort) {
     const { node, data } = port;
