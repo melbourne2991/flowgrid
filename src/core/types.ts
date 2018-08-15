@@ -23,9 +23,9 @@ export interface TemplateCanvasRendererProps<State> {
   setState: (state: State) => void;
 }
 
-export interface TemplateConfigTypes<State> {
+export interface TemplateConfigTypes {
   canvas: {
-    render: React.ComponentType<TemplateCanvasRendererProps<State>>;
+    render: React.ComponentType<TemplateCanvasRendererProps<any>>;
   };
 
   basic: {};
@@ -35,7 +35,7 @@ export type TemplateTypes = "basic" | "canvas";
 
 export interface NodeTemplateConfig<T extends TemplateTypes, State> {
   type: T;
-  config: TemplateConfigTypes<State>[T];
+  config: TemplateConfigTypes[T];
 }
 
 export interface NodeDefinition<

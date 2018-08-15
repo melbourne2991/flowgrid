@@ -45,7 +45,8 @@ export class GraphStore {
       id,
       nodeDefinition.template.type,
       {
-        nodeDefinitionName: nodeDefinition.name
+        nodeDefinitionName: nodeDefinition.name,
+        templateConfig: nodeDefinition.template.config
       }
     );
 
