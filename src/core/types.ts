@@ -28,7 +28,9 @@ export interface TemplateConfigTypes {
     render: React.ComponentType<TemplateCanvasRendererProps<any>>;
   };
 
-  basic: {};
+  basic: {
+    setCanvas: (canvas: HTMLElement) => void;
+  };
 }
 
 export type TemplateTypes = "basic" | "canvas";

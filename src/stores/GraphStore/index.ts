@@ -3,13 +3,12 @@ import {
   GraphStore as VisualGraphStore,
   Point
 } from "../../lib/Graph";
+
 import { basic } from "../../nodeTemplates/basic";
 import { canvas } from "../../nodeTemplates/canvas";
-
 import { NodeDefinition } from "../../core/types";
 import * as uniqid from "uniqid";
 import { Runtime } from "../../core/Runtime";
-import { reaction } from "mobx";
 import { onPatch, IAnyStateTreeNode } from "mobx-state-tree";
 
 export interface GraphStoreParams {
@@ -67,7 +66,5 @@ export class GraphStore {
     });
 
     visualNode.updatePosition(position.x, position.y);
-
-    this.runtime.addNode(id, nodeDefinition, initialValue);
   }
 }

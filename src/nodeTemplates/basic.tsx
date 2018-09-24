@@ -162,6 +162,7 @@ class BasicTemplateComponent extends React.Component<
     const outPorts = node.ports.filter(port => port.data.type === "output");
 
     const verticalPortCount = Math.max(inPorts.length, outPorts.length);
+    const hasCanvas = node.data.canvas;
 
     return (
       <svg xmlns="http://www.w3.org/2000/svg" x={node.x} y={node.y}>
@@ -181,11 +182,13 @@ class BasicTemplateComponent extends React.Component<
         {this.mapPorts(inPorts, inPortXOffset)}
         {this.mapPorts(outPorts, outPortXOffset)}
 
-        <SVGRenderContext x={node.x} y={node.y}>
-          {({ style }) => {
-            return <div style={style}>Hello ello</div>;
-          }}
-        </SVGRenderContext>
+        {hasCanvas && (
+          <SVGRenderContext x={node.x} y={node.y}>
+            {({ style }) => {
+              return <div style={style}>Hello ello</div>;
+            }}
+          </SVGRenderContext>
+        )}
       </svg>
     );
   }

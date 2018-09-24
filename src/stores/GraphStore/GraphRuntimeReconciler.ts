@@ -32,6 +32,7 @@ class GraphRuntimeReconciler {
   }
 
   onAddNode(node: IGraphNode) {}
+
   onRemoveNode(index: number) {}
 }
 
