@@ -1,30 +1,34 @@
 import "@babel/polyfill";
 import "./styles.css";
 import { init } from "./init";
-import { GraphStore } from "./stores/GraphStore";
-import { nodeDefinitions } from "./nodeDefinitions";
 
-const rootElement: HTMLElement = document.getElementById("root")!;
+init();
 
-const graphStore = new GraphStore({
-  nodeDefinitions
-});
+// import { GraphStore } from "./stores/GraphStore";
+// import { nodeDefinitions } from "./nodeDefinitions";
+// import * as React from "react";
 
-init(rootElement, {
-  graphStore
-});
+// const rootElement: HTMLElement = document.getElementById("root")!;
 
-graphStore.addNode(nodeDefinitions[0], {
-  x: 100,
-  y: 100
-});
+// const graphStore = new GraphStore({
+//   nodeDefinitions
+// });
 
-graphStore.addNode(nodeDefinitions[1], {
-  x: 300,
-  y: 100
-});
+// init(rootElement, {
+//   graphStore
+// });
 
-graphStore.addNode(nodeDefinitions[1], {
-  x: 500,
-  y: 100
-});
+// graphStore.addNode(nodeDefinitions[0], {
+//   x: 100,
+//   y: 100
+// });
+
+// graphStore.addNode(nodeDefinitions[1], {
+//   x: 300,
+//   y: 100
+// });
+
+// graphStore.addNode(nodeDefinitions[1], {
+//   x: 500,
+//   y: 100
+// });

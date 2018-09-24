@@ -43,7 +43,7 @@ const createNodeModel = (PortModel: any) => {
       types
         .model({
           id: types.identifier,
-          template: types.string,
+          template: types.frozen(),
           ports: types.array(types.reference(PortModel)),
           x: types.number,
           y: types.number,

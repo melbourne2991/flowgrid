@@ -8,7 +8,6 @@ import { undoManager } from "../../setUndoManager";
 
 export interface GraphNodesProps {
   nodes: IGraphNode<any>[];
-  nodeTemplates: NodeTemplates;
   graphStore: GraphStore;
 }
 
@@ -69,13 +68,11 @@ export class GraphNodes extends React.Component<GraphNodesProps> {
     return (
       <React.Fragment key={"graph-nodes"}>
         {this.props.nodes.map(node => {
-          const template = this.props.nodeTemplates[node.template];
-
           return (
             <React.Fragment key={node.id}>
               <GraphNode
                 node={node}
-                template={template}
+                template={node.template}
                 graphStore={this.props.graphStore}
               />
             </React.Fragment>

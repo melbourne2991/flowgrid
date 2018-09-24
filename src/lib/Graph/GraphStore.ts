@@ -15,7 +15,8 @@ import {
   IGraphNode,
   Point,
   NodeTemplates,
-  IGraphNodePort
+  IGraphNodePort,
+  NodeTemplate
 } from "./types";
 import { setUndoManager } from "../setUndoManager";
 import { pointDistance } from "./util";
@@ -89,7 +90,7 @@ export class GraphStore {
   }
 
   @action
-  addNode(id: string, template: string, data: {}): IGraphNode {
+  addNode(id: string, template: NodeTemplate, data: {}): IGraphNode {
     const node = NodeModel.create(
       {
         id,
@@ -168,7 +169,7 @@ export class GraphStore {
   }
 
   getPortBounds = (port: IGraphNodePort<any>) => {
-    return this.nodeTemplates[port.node.template].getPortBounds(port);
+    return port.node.template.getPortBounds(port);
   };
 
   svgToClientPos = (

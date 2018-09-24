@@ -13,7 +13,7 @@ import { Connection } from "./Connection";
 export interface GraphProps {
   className?: string;
   store: GraphStore;
-  style: Object;
+  style?: Object;
 }
 
 @observer
@@ -42,11 +42,7 @@ export class Graph extends React.Component<GraphProps> {
           }}
           locked={store.canvasLocked}
         >
-          <GraphNodes
-            nodes={store.graph.nodes}
-            nodeTemplates={store.nodeTemplates}
-            graphStore={store}
-          />
+          <GraphNodes nodes={store.graph.nodes} graphStore={store} />
 
           <NewConnection store={store} />
           {connectionsToFlexLine(

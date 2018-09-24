@@ -7,7 +7,6 @@ export interface CanvasProps {
   className?: string;
   setSvgMatrix?: (svg: { matrix: SVGMatrix; point: SVGPoint }) => void;
   locked?: boolean;
-  style: object;
   onMouseUp?: (e: React.MouseEvent) => void;
 }
 
@@ -50,14 +49,7 @@ export class Canvas extends React.Component<CanvasProps> {
   }
 
   render() {
-    const {
-      className,
-      children,
-      setSvgMatrix,
-      locked,
-      style,
-      ...rest
-    } = this.props;
+    const { className, children, setSvgMatrix, locked, ...rest } = this.props;
 
     return (
       <div
@@ -71,8 +63,7 @@ export class Canvas extends React.Component<CanvasProps> {
           style={{
             display: "inline",
             width: "100%",
-            height: "100%",
-            ...style
+            height: "100%"
           }}
           xmlns="http://www.w3.org/2000/svg"
         >

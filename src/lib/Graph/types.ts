@@ -33,7 +33,7 @@ export interface IGraphNode<T = any> extends IGraphSelectableObject {
   y: number;
 
   data: T;
-  template: string;
+  template: NodeTemplate;
   updatePosition(x: number, y: number): void;
   addPort(port: IGraphNodePort<any>): void;
 }
