@@ -1,15 +1,21 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Graph, createGraphStore } from "./lib/Graph";
-
 import { basic } from "./nodeTemplates/basic";
-import { canvas } from "./nodeTemplates/canvas";
 
 export function init() {
   const rootElement: HTMLElement = document.getElementById("root")!;
 
   const graphStore = createGraphStore({
-    nodeTemplates: { basic, canvas }
+    // handleSelectNode
+    // handleBeginDragNode
+    // handleDragNode
+    // handleEndDragNode
+    // handleSelectPort
+    // handleKeyEvent
+    // handleEndDragConnection
+    // handleStartDragConnection
+    // handleConnectionRequest
   });
 
   const visualNode = graphStore.addNode(Math.random().toString(), basic, {});

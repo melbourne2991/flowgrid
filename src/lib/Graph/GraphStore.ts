@@ -46,9 +46,7 @@ GraphModel = createGraphModel(
 
 export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
-export interface GraphStoreParams {
-  nodeTemplates: NodeTemplates;
-}
+export interface GraphStoreParams {}
 
 export class GraphStore {
   @observable
@@ -64,8 +62,6 @@ export class GraphStore {
   nodeTemplates: NodeTemplates;
 
   constructor(params: GraphStoreParams) {
-    this.nodeTemplates = params.nodeTemplates;
-
     this.graph = GraphModel.create(
       {
         nodes: [],
