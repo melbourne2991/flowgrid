@@ -7,14 +7,16 @@ import {
   makePort,
   PortInternalProps,
   PortProps
-} from "../lib/Graph/components/Port";
+} from "../lib/Graph/hocs/makePort";
 import { SVGRenderContext } from "../lib/Graph/SvgRenderContext";
 import * as Color from "color";
 import {
   DraggableInnerProps,
   DraggableProps,
   makeDraggable
-} from "../lib/Graph/makeDraggable";
+} from "../lib/Graph/hocs/makeDraggable";
+
+import { makeNode } from "../lib/Graph/hocs/makeNode";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 50;
@@ -227,7 +229,7 @@ class BasicTemplateComponent extends React.Component<
   }
 }
 
-const BasicTemplate = makeDraggable<NodeTemplateProps>(
+const BasicTemplate = makeNode(
   injectStyles<DraggableInnerProps<NodeTemplateProps>>(BasicTemplateComponent)
 );
 

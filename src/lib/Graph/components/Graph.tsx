@@ -2,7 +2,6 @@ import * as React from "react";
 import { Canvas } from "./Canvas";
 import { observer, Provider } from "mobx-react";
 import { GraphStore } from "../GraphStore";
-import { GraphNodes } from "./GraphNodes";
 import { NewConnection } from "./NewConnection";
 
 import { IGraphNodePort, IGraphConnection } from "../types";
@@ -28,6 +27,12 @@ export class Graph extends React.Component<GraphProps> {
     }
   };
 
+  mapNodes() {
+    return this.props.store.graph.nodes.map(node => {
+      return <node.template.renderNode key={node.id} node={node} />;
+    });
+  }
+
   render() {
     const { store, ...rest } = this.props;
 
@@ -42,7 +47,7 @@ export class Graph extends React.Component<GraphProps> {
           }}
           locked={store.canvasLocked}
         >
-          <GraphNodes nodes={store.graph.nodes} graphStore={store} />
+          {this.mapNodes()}
 
           <NewConnection store={store} />
           {connectionsToFlexLine(

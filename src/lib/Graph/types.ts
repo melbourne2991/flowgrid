@@ -1,7 +1,6 @@
 import * as React from "react";
-import { DraggableProps, DraggableInnerProps } from "./makeDraggable";
 import { Snapbox } from "./components/FlexLine";
-import { BlockOverflowProperty } from "csstype";
+import { GraphNodeProps } from "./hocs/makeNode";
 
 export interface IGraphObject {
   id: string;
@@ -82,7 +81,7 @@ export interface IGraph {
 }
 
 export interface NodeTemplate {
-  renderNode: React.ComponentType<DraggableProps<NodeTemplateProps>>;
+  renderNode: React.ComponentType<GraphNodeProps>;
 
   getPortBounds(
     port: any

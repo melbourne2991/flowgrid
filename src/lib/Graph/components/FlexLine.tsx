@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Point } from "../types";
-import { PathLike } from "fs";
 
 export interface CubicBezierProps extends React.SVGProps<SVGPathElement> {
   a: Point;

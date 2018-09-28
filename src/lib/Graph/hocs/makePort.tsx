@@ -1,9 +1,10 @@
 import * as React from "react";
-import { DraggableInnerProps, makeDraggable } from "../makeDraggable";
+import { DraggableInnerProps, makeDraggable } from "../hocs/makeDraggable";
 import { IGraphNodePort } from "../types";
 import { observer, inject } from "mobx-react";
 import { undoManager } from "../../setUndoManager";
 import { action } from "mobx";
+import { GraphStore } from "..";
 
 export type PortProps<T> = T & {
   port: IGraphNodePort<any>;
@@ -13,6 +14,7 @@ export type PortInternalProps<P> = P &
   DraggableInnerProps<PortInternalPropsNoDraggable>;
 
 export type PortInternalPropsNoDraggable = {
+  graphStore: GraphStore;
   dragging: boolean;
   port: IGraphNodePort<any>;
   requestConnection: (e: React.MouseEvent) => void;
@@ -27,17 +29,11 @@ export function makePort<T>(
   class Port extends React.Component<PortInternalProps<T>> {
     onStart = (e: React.MouseEvent) => {
       e.stopPropagation();
-      console.log("on start received");
       this.props.port.beginNewConnection();
     };
 
     onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
-      console.log("on drag received");
-
-      const isDraggable = this.props.port.hasNewConnection;
-      console.log(isDraggable);
-
-      const svgDelta = (this.props as any).graphStore.clientToSvgPos(x, y);
+      const svgDelta = this.props.graphStore.clientToSvgPos(x, y);
 
       undoManager.startGroup(() => {
         this.props.port.newConnection.setPosition({
