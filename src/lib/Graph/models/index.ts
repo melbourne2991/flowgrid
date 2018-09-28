@@ -47,11 +47,16 @@ const createNodeModel = (PortModel: any) => {
           ports: types.array(types.reference(PortModel)),
           x: types.number,
           y: types.number,
+          dragging: types.boolean,
           data: types.frozen()
         })
         .actions(self => ({
           addPort(port: any) {
             self.ports.push(port);
+          },
+
+          updateDragging(isDragging: boolean) {
+            self.dragging = isDragging;
           },
 
           updatePosition(x: number, y: number) {
@@ -89,10 +94,6 @@ const createPortModel = (
         ) as any;
       },
 
-      hasNewConnection() {
-        return !!self.newConnection;
-      },
-
       requestConnection() {
         getGraph(self).connectionRequest(self as any);
       },
@@ -103,6 +104,11 @@ const createPortModel = (
         } else {
           getGraph(self).removeNewConnection();
         }
+      }
+    }))
+    .views(self => ({
+      get hasNewConnection() {
+        return !!self.newConnection;
       }
     }));
 };

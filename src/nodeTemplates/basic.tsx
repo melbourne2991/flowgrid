@@ -3,9 +3,18 @@ import { NodeTemplateProps, IGraphNodePort } from "../lib/Graph";
 import { observer } from "mobx-react";
 import * as classnames from "classnames";
 import { withStyles, Theme, WithStyles } from "@material-ui/core";
-import { Port, PortInternalProps } from "../lib/Graph/components/Port";
+import {
+  makePort,
+  PortInternalProps,
+  PortProps
+} from "../lib/Graph/components/Port";
 import { SVGRenderContext } from "../lib/Graph/SvgRenderContext";
 import * as Color from "color";
+import {
+  DraggableInnerProps,
+  DraggableProps,
+  makeDraggable
+} from "../lib/Graph/makeDraggable";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 50;
@@ -96,9 +105,65 @@ const injectStyles = withStyles<ClassNames>((theme: Theme) => {
   };
 });
 
+export type BasicTemplatePortProps = {
+  portDimensions: PortPositionData;
+};
+
+export type BasicTemplatePortInternalProps = PortInternalProps<
+  WithStyles<ClassNames>
+> &
+  BasicTemplatePortProps;
+
+@observer
+class BasicTemplatePortComponent extends React.Component<
+  BasicTemplatePortInternalProps
+> {
+  render() {
+    const { port, classes, portDimensions } = this.props;
+
+    let fillOverride = "#ccc";
+
+    if (
+      port.newConnectionProximity !== false &&
+      port.newConnectionProximity < 100
+    ) {
+      fillOverride = Color("#424242")
+        .lighten(port.newConnectionProximity / 100)
+        .hex();
+    }
+
+    return (
+      <React.Fragment>
+        <rect
+          fill={fillOverride}
+          shapeRendering="crispEdges"
+          className={classes!.port}
+          x={portDimensions.x}
+          y={portDimensions.y}
+          onMouseDown={e => {
+            e.stopPropagation();
+            this.props.startDragging(e);
+          }}
+          onMouseUp={e => {
+            this.props.requestConnection(e);
+          }}
+        />
+
+        <text className={classes!.portLabel} {...portDimensions.text}>
+          {port.data.label || "s"}
+        </text>
+      </React.Fragment>
+    );
+  }
+}
+
+const BasicTemplatePort = makePort<BasicTemplatePortProps>(
+  injectStyles<BasicTemplatePortInternalProps>(BasicTemplatePortComponent)
+);
+
 @observer
 class BasicTemplateComponent extends React.Component<
-  NodeTemplateProps & WithStyles<ClassNames>
+  DraggableInnerProps<NodeTemplateProps & WithStyles<ClassNames>>
 > {
   onMouseDown = (e: React.MouseEvent<SVGRectElement>) => {
     this.props.node.select();
@@ -109,54 +174,22 @@ class BasicTemplateComponent extends React.Component<
     const { classes } = this.props;
 
     return ports.map((port: IGraphNodePort, i: number) => {
-      let fillOverride = "#ccc";
-
-      if (
-        port.newConnectionProximity !== false &&
-        port.newConnectionProximity < 100
-      ) {
-        fillOverride = Color("#424242")
-          .lighten(port.newConnectionProximity / 100)
-          .hex();
-      }
+      const portDimensions = dimensionCalculations[
+        port.data.type as keyof InputOutputPortPositionDataMap
+      ](i);
 
       return (
-        <Port port={port} key={port.id}>
-          {(props: PortInternalProps) => {
-            const portDimensions = dimensionCalculations[
-              port.data.type as keyof InputOutputPortPositionDataMap
-            ](i);
-
-            return (
-              <React.Fragment>
-                <rect
-                  fill={fillOverride}
-                  shapeRendering="crispEdges"
-                  className={classes!.port}
-                  x={portDimensions.x}
-                  y={portDimensions.y}
-                  onMouseDown={e => {
-                    e.stopPropagation();
-                    props.startDragging(e);
-                  }}
-                  onMouseUp={e => {
-                    props.requestConnection(e);
-                  }}
-                />
-
-                <text className={classes!.portLabel} {...portDimensions.text}>
-                  {port.data.label || "s"}
-                </text>
-              </React.Fragment>
-            );
-          }}
-        </Port>
+        <BasicTemplatePort
+          key={port.id}
+          port={port}
+          portDimensions={portDimensions}
+        />
       );
     });
   };
 
   render() {
-    const { node, classes, dragging } = this.props;
+    const { node, classes } = this.props;
 
     const inPorts = node.ports.filter(port => port.data.type === "input");
     const outPorts = node.ports.filter(port => port.data.type === "output");
@@ -175,7 +208,7 @@ class BasicTemplateComponent extends React.Component<
           height={verticalPortCount * nodeRowHeight}
           className={classnames(classes!.node, {
             [classes!.nodeSelected!]: node.selected,
-            [classes!.nodeDragging!]: dragging
+            [classes!.nodeDragging!]: node.dragging
           })}
         />
 
@@ -194,7 +227,9 @@ class BasicTemplateComponent extends React.Component<
   }
 }
 
-const BasicTemplate = injectStyles<NodeTemplateProps>(BasicTemplateComponent);
+const BasicTemplate = makeDraggable<NodeTemplateProps>(
+  injectStyles<DraggableInnerProps<NodeTemplateProps>>(BasicTemplateComponent)
+);
 
 export const basic = {
   renderNode: BasicTemplate,

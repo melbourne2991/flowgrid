@@ -1,7 +1,6 @@
 import * as React from "react";
 import { observer } from "mobx-react";
 import { IGraphNode, NodeTemplate } from "../types";
-import { Draggable } from "../makeDraggable";
 import { GraphStore } from "../GraphStore";
 
 import { undoManager } from "../../setUndoManager";
@@ -20,6 +19,7 @@ export interface GraphNodeProps {
 @observer
 export class GraphNode extends React.Component<GraphNodeProps> {
   onStart = () => {
+    this.props.node.updateDragging(true);
     this.props.graphStore.lockCanvas();
   };
 
@@ -36,8 +36,9 @@ export class GraphNode extends React.Component<GraphNodeProps> {
   };
 
   onStop = () => {
-    undoManager.stopGroup();
+    this.props.node.updateDragging(false);
 
+    undoManager.stopGroup();
     this.props.graphStore.unlockCanvas();
   };
 
@@ -45,19 +46,13 @@ export class GraphNode extends React.Component<GraphNodeProps> {
     const { node, template } = this.props;
 
     return (
-      <Draggable
+      <template.renderNode
+        node={node}
         onStart={this.onStart}
-        onDrag={this.onDrag}
         onStop={this.onStop}
-      >
-        {({ dragging, startDragging }) => (
-          <template.renderNode
-            node={node}
-            dragging={dragging}
-            startDragging={startDragging}
-          />
-        )}
-      </Draggable>
+        onDrag={this.onDrag}
+        dragging={node.dragging}
+      />
     );
   }
 }

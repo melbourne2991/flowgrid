@@ -1,6 +1,7 @@
 import * as React from "react";
-import { DraggableProps } from "./makeDraggable";
+import { DraggableProps, DraggableInnerProps } from "./makeDraggable";
 import { Snapbox } from "./components/FlexLine";
+import { BlockOverflowProperty } from "csstype";
 
 export interface IGraphObject {
   id: string;
@@ -14,10 +15,10 @@ export interface IGraphSelectableObject extends IGraphObject {
 export interface IGraphNodePort<T = any> {
   id: string;
   connectedPorts: IGraphNodePort<T>[];
+  hasNewConnection: boolean;
   newConnection: IGraphNewConnection;
   newConnectionProximity: number | false;
   cancelNewConnection(): void;
-  hasNewConnection(): boolean;
   beginNewConnection(): void;
   requestConnection(): void;
   updateNewConnectionProximity(distance: number | false): void;
@@ -32,9 +33,13 @@ export interface IGraphNode<T = any> extends IGraphSelectableObject {
   x: number;
   y: number;
 
+  dragging: boolean;
+
   data: T;
   template: NodeTemplate;
+
   updatePosition(x: number, y: number): void;
+  updateDragging(isDragging: boolean): void;
   addPort(port: IGraphNodePort<any>): void;
 }
 
@@ -77,7 +82,7 @@ export interface IGraph {
 }
 
 export interface NodeTemplate {
-  renderNode: React.ComponentType<NodeTemplateProps>;
+  renderNode: React.ComponentType<DraggableProps<NodeTemplateProps>>;
 
   getPortBounds(
     port: any
@@ -94,9 +99,9 @@ export interface NodeTemplates {
   [name: string]: NodeTemplate;
 }
 
-export type NodeTemplateProps<T = any> = DraggableProps<{
+export type NodeTemplateProps<T = any> = {
   node: IGraphNode<T>;
-}>;
+};
 
 export interface Point {
   x: number;

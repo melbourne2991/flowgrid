@@ -1,40 +1,42 @@
 import * as React from "react";
-import { Draggable } from "../makeDraggable";
+import { DraggableInnerProps, makeDraggable } from "../makeDraggable";
 import { IGraphNodePort } from "../types";
 import { observer, inject } from "mobx-react";
-import { GraphStore } from "../GraphStore";
 import { undoManager } from "../../setUndoManager";
 import { action } from "mobx";
 
-export interface PortProps {
-  children: (props: PortInternalProps) => React.ReactElement<any>;
+export type PortProps<T> = T & {
   port: IGraphNodePort<any>;
-}
+};
 
-export interface PortInjectedProps {
-  graphStore: GraphStore;
-}
+export type PortInternalProps<P> = P &
+  DraggableInnerProps<PortInternalPropsNoDraggable>;
 
-export interface PortInternalProps {
+export type PortInternalPropsNoDraggable = {
   dragging: boolean;
-  startDragging: (e: React.MouseEvent) => void;
   port: IGraphNodePort<any>;
   requestConnection: (e: React.MouseEvent) => void;
-}
+};
 
-@inject("graphStore")
-@observer
-export class Port extends React.Component<
-  PortProps & { children: (props: PortInternalProps) => React.ReactChild }
-> {
-  onStart = (e: React.MouseEvent) => {
-    e.stopPropagation();
+export function makePort<T>(
+  Component: React.ComponentType<DraggableInnerProps<PortInternalProps<T>>>
+): React.ComponentType<PortProps<T>> {
+  const DraggableComponent = observer(makeDraggable(Component));
 
-    this.props.port.beginNewConnection();
-  };
+  @observer
+  class Port extends React.Component<PortInternalProps<T>> {
+    onStart = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      console.log("on start received");
+      this.props.port.beginNewConnection();
+    };
 
-  onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
-    if (this.props.port.hasNewConnection()) {
+    onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
+      console.log("on drag received");
+
+      const isDraggable = this.props.port.hasNewConnection;
+      console.log(isDraggable);
+
       const svgDelta = (this.props as any).graphStore.clientToSvgPos(x, y);
 
       undoManager.startGroup(() => {
@@ -43,36 +45,33 @@ export class Port extends React.Component<
           y: svgDelta.y
         });
       });
+    };
+
+    onStop = () => {
+      undoManager.stopGroup();
+    };
+
+    @action
+    requestConnection = () => {
+      this.props.port.requestConnection();
+    };
+
+    render() {
+      const { port, ...rest } = this.props as any;
+
+      return (
+        <DraggableComponent
+          requestConnection={this.requestConnection}
+          onStart={this.onStart}
+          onDrag={this.onDrag}
+          onStop={this.onStop}
+          port={port}
+          dragging={port.hasNewConnection}
+          {...rest}
+        />
+      );
     }
-  };
-
-  onStop = () => {
-    undoManager.stopGroup();
-  };
-
-  @action
-  requestConnection = () => {
-    this.props.port.requestConnection();
-  };
-
-  render() {
-    const { children, port } = this.props;
-
-    return (
-      <Draggable
-        onStart={this.onStart}
-        onDrag={this.onDrag}
-        onStop={this.onStop}
-      >
-        {({ dragging, startDragging }) => {
-          return children({
-            dragging,
-            startDragging,
-            port,
-            requestConnection: this.requestConnection
-          });
-        }}
-      </Draggable>
-    );
   }
+
+  return inject("graphStore")(Port);
 }

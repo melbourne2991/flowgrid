@@ -94,7 +94,8 @@ export class GraphStore {
         template,
         data,
         x: 0,
-        y: 0
+        y: 0,
+        dragging: false
       },
       this
     );
