@@ -3,10 +3,7 @@ import { Canvas } from "./Canvas";
 import { observer, Provider } from "mobx-react";
 import { GraphStore } from "../GraphStore";
 import { NewConnection } from "./NewConnection";
-
-import { IGraphNodePort, IGraphConnection } from "../types";
-
-import { Snapbox } from "./FlexLine";
+import { IGraphConnection } from "../types";
 import { Connection } from "./Connection";
 
 export interface GraphProps {
@@ -17,6 +14,10 @@ export interface GraphProps {
 
 @observer
 export class Graph extends React.Component<GraphProps> {
+  get graph() {
+    return this.props.store.graph;
+  }
+
   onMouseUp = () => {
     if (this.props.store.graph.newConnection) {
       if (this.props.store.graph.newConnection.closestPort) {
@@ -28,8 +29,20 @@ export class Graph extends React.Component<GraphProps> {
   };
 
   mapNodes() {
-    return this.props.store.graph.nodes.map(node => {
+    return this.graph.nodes.map(node => {
       return <node.template.renderNode key={node.id} node={node} />;
+    });
+  }
+
+  mapConnections() {
+    return this.graph.connections.map((connection: IGraphConnection) => {
+      return (
+        <Connection
+          key={connection.id}
+          getPortBounds={this.props.store.getPortBounds}
+          connection={connection}
+        />
+      );
     });
   }
 
@@ -41,36 +54,15 @@ export class Graph extends React.Component<GraphProps> {
         <Canvas
           {...rest}
           onMouseUp={this.onMouseUp}
-          setSvgMatrix={ctm => {
-            store.svgMatrix = ctm.matrix;
-            store.svgPoint = ctm.point;
-          }}
+          setSvgMatrix={this.props.store.setSvgMatrix}
           locked={store.canvasLocked}
         >
-          {this.mapNodes()}
-
           <NewConnection store={store} />
-          {connectionsToFlexLine(
-            this.props.store.graph.connections,
-            this.props.store.getPortBounds
-          )}
+
+          {this.mapNodes()}
+          {this.mapConnections()}
         </Canvas>
       </Provider>
     );
   }
-}
-
-function connectionsToFlexLine(
-  connections: IGraphConnection[],
-  getPortBounds: (port: IGraphNodePort) => Snapbox
-) {
-  return connections.map((connection: IGraphConnection) => {
-    return (
-      <Connection
-        key={connection.id}
-        getPortBounds={getPortBounds}
-        connection={connection}
-      />
-    );
-  });
 }

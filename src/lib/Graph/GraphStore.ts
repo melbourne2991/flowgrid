@@ -2,13 +2,13 @@ import { observable, action } from "mobx";
 import { types } from "mobx-state-tree";
 import * as uniqid from "uniqid";
 
-import {
-  createGraphModel,
-  createNodeModel,
-  createPortModel,
-  createConnectionModel,
-  createNewConnectionModel
-} from "./models";
+// import {
+//   createGraphModel,
+//   createNodeModel,
+//   createPortModel,
+//   createConnectionModel,
+//   createNewConnectionModel
+// } from "./models";
 
 import {
   IGraph,
@@ -21,28 +21,36 @@ import {
 import { setUndoManager } from "../setUndoManager";
 import { pointDistance } from "./util";
 
-let GraphModel: any;
-let NodeModel: any;
-let PortModel: any;
-let ConnectionModel: any;
-let NewConnectionModel: any;
+// let GraphModel: any;
+// let NodeModel: any;
+// let PortModel: any;
+// let ConnectionModel: any;
+// let NewConnectionModel: any;
 
-PortModel = createPortModel(
-  types.late(() => NodeModel),
-  types.late(() => PortModel),
-  types.late(() => NewConnectionModel)
-);
+// PortModel = createPortModel(
+//   types.late(() => NodeModel),
+//   types.late(() => PortModel),
+//   types.late(() => NewConnectionModel)
+// );
 
-NodeModel = createNodeModel(PortModel);
-NewConnectionModel = createNewConnectionModel(PortModel);
-ConnectionModel = createConnectionModel(PortModel);
+// NodeModel = createNodeModel(PortModel);
+// NewConnectionModel = createNewConnectionModel(PortModel);
+// ConnectionModel = createConnectionModel(PortModel);
 
-GraphModel = createGraphModel(
+// GraphModel = createGraphModel(
+//   NodeModel,
+//   PortModel,
+//   ConnectionModel,
+//   NewConnectionModel
+// );
+
+import {
   NodeModel,
-  PortModel,
+  NewConnectionModel,
   ConnectionModel,
-  NewConnectionModel
-);
+  GraphModel,
+  PortModel
+} from "./models";
 
 export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
@@ -211,4 +219,9 @@ export class GraphStore {
       y: deltaY / this.svgMatrix.d
     };
   }
+
+  setSvgMatrix = (ctm: { matrix: SVGMatrix; point: SVGPoint }) => {
+    this.svgMatrix = ctm.matrix;
+    this.svgPoint = ctm.point;
+  };
 }
