@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { IGraphNode, NodeTemplate } from "../types";
+import { IGraphNode, NodeTemplate, IGraphNodePort } from "../types";
 import { GraphStore } from "../GraphStore";
 
 import { undoManager } from "../../setUndoManager";
@@ -15,16 +15,20 @@ export interface GraphNodeProps {
   node: IGraphNode<any>;
 }
 
-export type GraphNodeInternalProps = DraggableInnerProps<GraphNodeProps>;
+export type GraphNodeInternalProps = DraggableInnerProps<
+  GraphNodeProps & {
+    selectNode(): void;
+  }
+>;
 
 export function makeNode(
-  Component: React.ComponentType<DraggableInnerProps<GraphNodeProps>>
+  Component: React.ComponentType<GraphNodeInternalProps>
 ): React.ComponentType<GraphNodeProps> {
   const DraggableComponent = makeDraggable(Component);
 
   @observer
   class GraphNode extends React.Component<
-    GraphNodeInternalProps & { graphStore: GraphStore }
+    GraphNodeProps & { graphStore: GraphStore }
   > {
     onStart = () => {
       // Not sure why start / stop dragging are not captured as part of the
@@ -58,6 +62,10 @@ export function makeNode(
       this.props.graphStore.unlockCanvas();
     };
 
+    onSelect = () => {
+      this.props.node.select();
+    };
+
     render() {
       const { node } = this.props;
 
@@ -68,6 +76,7 @@ export function makeNode(
           onStop={this.onStop}
           onDrag={this.onDrag}
           dragging={node.dragging}
+          selectNode={this.onSelect}
         />
       );
     }

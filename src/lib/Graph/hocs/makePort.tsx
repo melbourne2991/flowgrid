@@ -35,7 +35,6 @@ export function makePort<T>(
     };
 
     onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
-      console.log("port drag");
       const svgDelta = this.props.graphStore.clientToSvgPos(x, y);
 
       this.props.port.newConnection.setPosition({

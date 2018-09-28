@@ -100,10 +100,6 @@ export interface NodeTemplates {
   [name: string]: NodeTemplate;
 }
 
-export type NodeTemplateProps<T = any> = {
-  node: IGraphNode<T>;
-};
-
 export interface Point {
   x: number;
   y: number;

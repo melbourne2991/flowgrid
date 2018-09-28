@@ -69,20 +69,6 @@ export class Connection extends React.Component<ConnectionProps> {
           b={getPortBounds(connection.target)}
           {...combinedStyles}
         />
-
-        {/* <FlexLine
-          onMouseDown={() => connection.select()}
-          onMouseOver={() => this.setActiveStyle("mouseOver")}
-          onMouseOut={() => this.setActiveStyle("default")}
-          key={connection.id + "-shadow"}
-          a={getPortBounds(connection.source)}
-          b={getPortBounds(connection.target)}
-          style={{
-            stroke: combinedStyles.stroke,
-            strokeWidth: 10,
-            opacity: 0.05
-          }}
-        /> */}
       </React.Fragment>
     );
   }

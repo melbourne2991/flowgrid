@@ -16,7 +16,7 @@ import {
   makeDraggable
 } from "../lib/Graph/hocs/makeDraggable";
 
-import { makeNode } from "../lib/Graph/hocs/makeNode";
+import { makeNode, GraphNodeInternalProps } from "../lib/Graph/hocs/makeNode";
 
 const nodeRowWidth = 200;
 const nodeRowHeight = 50;
@@ -165,16 +165,14 @@ const BasicTemplatePort = makePort<BasicTemplatePortProps>(
 
 @observer
 class BasicTemplateComponent extends React.Component<
-  DraggableInnerProps<NodeTemplateProps & WithStyles<ClassNames>>
+  GraphNodeInternalProps & WithStyles<ClassNames>
 > {
   onMouseDown = (e: React.MouseEvent<SVGRectElement>) => {
-    this.props.node.select();
+    this.props.selectNode();
     this.props.startDragging(e);
   };
 
   mapPorts = (ports: IGraphNodePort[], offset: number) => {
-    const { classes } = this.props;
-
     return ports.map((port: IGraphNodePort, i: number) => {
       const portDimensions = dimensionCalculations[
         port.data.type as keyof InputOutputPortPositionDataMap
@@ -208,9 +206,9 @@ class BasicTemplateComponent extends React.Component<
           x={0}
           width={nodeRowWidth}
           height={verticalPortCount * nodeRowHeight}
-          className={classnames(classes!.node, {
-            [classes!.nodeSelected!]: node.selected,
-            [classes!.nodeDragging!]: node.dragging
+          className={classnames(classes.node, {
+            [classes.nodeSelected!]: node.selected,
+            [classes.nodeDragging!]: node.dragging
           })}
         />
 
@@ -230,7 +228,7 @@ class BasicTemplateComponent extends React.Component<
 }
 
 const BasicTemplate = makeNode(
-  injectStyles<DraggableInnerProps<NodeTemplateProps>>(BasicTemplateComponent)
+  injectStyles<GraphNodeInternalProps>(BasicTemplateComponent)
 );
 
 export const basic = {
