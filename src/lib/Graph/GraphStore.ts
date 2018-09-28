@@ -1,48 +1,17 @@
 import { observable, action } from "mobx";
-import { types } from "mobx-state-tree";
 import * as uniqid from "uniqid";
-
-// import {
-//   createGraphModel,
-//   createNodeModel,
-//   createPortModel,
-//   createConnectionModel,
-//   createNewConnectionModel
-// } from "./models";
+import { onPatch } from "mobx-state-tree";
 
 import {
   IGraph,
   IGraphNode,
   Point,
-  NodeTemplates,
   IGraphNodePort,
   NodeTemplate
 } from "./types";
+
 import { setUndoManager } from "../setUndoManager";
 import { pointDistance } from "./util";
-
-// let GraphModel: any;
-// let NodeModel: any;
-// let PortModel: any;
-// let ConnectionModel: any;
-// let NewConnectionModel: any;
-
-// PortModel = createPortModel(
-//   types.late(() => NodeModel),
-//   types.late(() => PortModel),
-//   types.late(() => NewConnectionModel)
-// );
-
-// NodeModel = createNodeModel(PortModel);
-// NewConnectionModel = createNewConnectionModel(PortModel);
-// ConnectionModel = createConnectionModel(PortModel);
-
-// GraphModel = createGraphModel(
-//   NodeModel,
-//   PortModel,
-//   ConnectionModel,
-//   NewConnectionModel
-// );
 
 import {
   NodeModel,
@@ -59,15 +28,15 @@ export interface GraphStoreParams {}
 export class GraphStore {
   @observable
   graph: IGraph;
+
   @observable
   canvasLocked: boolean = false;
 
   @observable
   svgMatrix: SVGMatrix;
+
   @observable
   svgPoint: SVGPoint;
-
-  nodeTemplates: NodeTemplates;
 
   constructor(params: GraphStoreParams) {
     this.graph = GraphModel.create(
@@ -81,6 +50,10 @@ export class GraphStore {
     );
 
     setUndoManager(this.graph);
+
+    onPatch(this.graph as any, patch => {
+      console.log(patch);
+    });
   }
 
   @action

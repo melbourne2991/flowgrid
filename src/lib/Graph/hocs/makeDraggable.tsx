@@ -79,7 +79,6 @@ export function makeDraggable<P>(
     mouseMoveListener = (e: MouseEvent) => {
       e.stopPropagation();
 
-      console.log(this.props.dragging);
       if (!this.props.dragging) return;
 
       this.lastX = this.x;

@@ -1,11 +1,10 @@
 import { types, destroy, getEnv } from "mobx-state-tree";
 import * as uniqid from "uniqid";
-import { IGraphNodePort, IGraphNode, IGraphConnection } from "../types";
-
 import { NodeModel } from "./NodeModel";
 import { NewConnectionModel } from "./NewConnectionModel";
 import { ConnectionModel } from "./ConnectionModel";
 import { PortModel } from "./PortModel";
+import { IGraphNodePort, IGraphNode, IGraphConnection } from "../types";
 
 const Selectables = types.union(NodeModel, ConnectionModel);
 

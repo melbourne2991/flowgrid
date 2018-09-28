@@ -37,8 +37,10 @@ export interface IGraphNode<T = any> extends IGraphSelectableObject {
   data: T;
   template: NodeTemplate;
 
+  startDragging(): void;
+  stopDragging(): void;
+
   updatePosition(x: number, y: number): void;
-  updateDragging(isDragging: boolean): void;
   addPort(port: IGraphNodePort<any>): void;
 }
 

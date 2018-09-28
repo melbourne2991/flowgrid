@@ -20,8 +20,12 @@ export const NodeModel: any = types
           self.ports.push(port);
         },
 
-        updateDragging(isDragging: boolean) {
-          self.dragging = isDragging;
+        startDragging() {
+          self.dragging = true;
+        },
+
+        stopDragging() {
+          self.dragging = false;
         },
 
         updatePosition(x: number, y: number) {

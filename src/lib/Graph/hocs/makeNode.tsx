@@ -27,7 +27,12 @@ export function makeNode(
     GraphNodeInternalProps & { graphStore: GraphStore }
   > {
     onStart = () => {
-      this.props.node.updateDragging(true);
+      // Not sure why start / stop dragging are not captured as part of the
+      // group, this seems to work as an alternative however.
+      undoManager.withoutUndo(() => {
+        this.props.node.startDragging();
+      });
+
       this.props.graphStore.lockCanvas();
     };
 
@@ -44,9 +49,12 @@ export function makeNode(
     };
 
     onStop = () => {
-      this.props.node.updateDragging(false);
-
       undoManager.stopGroup();
+
+      undoManager.withoutUndo(() => {
+        this.props.node.stopDragging();
+      });
+
       this.props.graphStore.unlockCanvas();
     };
 

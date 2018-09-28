@@ -29,17 +29,18 @@ export function makePort<T>(
   class Port extends React.Component<PortInternalProps<T>> {
     onStart = (e: React.MouseEvent) => {
       e.stopPropagation();
+
+      undoManager.startGroup(() => {});
       this.props.port.beginNewConnection();
     };
 
     onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
+      console.log("port drag");
       const svgDelta = this.props.graphStore.clientToSvgPos(x, y);
 
-      undoManager.startGroup(() => {
-        this.props.port.newConnection.setPosition({
-          x: svgDelta.x,
-          y: svgDelta.y
-        });
+      this.props.port.newConnection.setPosition({
+        x: svgDelta.x,
+        y: svgDelta.y
       });
     };
 
@@ -47,7 +48,6 @@ export function makePort<T>(
       undoManager.stopGroup();
     };
 
-    @action
     requestConnection = () => {
       this.props.port.requestConnection();
     };
