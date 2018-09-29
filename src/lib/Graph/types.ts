@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Snapbox } from "./components/FlexLine";
+import { PositionWithExtents } from "./components/FlexLine";
 import { GraphNodeProps } from "./hocs/makeNode";
 
 export interface IGraphObject {
@@ -105,4 +105,4 @@ export interface Point {
   y: number;
 }
 
-export type GetPortBoundsFn = (port: IGraphNodePort) => Snapbox;
+export type GetPortBoundsFn = (port: IGraphNodePort) => PositionWithExtents;

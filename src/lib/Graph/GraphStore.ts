@@ -46,7 +46,6 @@ export class GraphStore {
   svgPoint: SVGPoint;
 
   engine: GraphEngine;
-
   undoManager: any;
 
   constructor(params: GraphStoreParams = defaultParams) {
@@ -126,18 +125,15 @@ export class GraphStore {
   }
 
   findClosestPortToPoint(ports: IGraphNodePort[], point: Point) {
-    const sortedPorts = ports
-      .filter(port => port.connectedPorts.length === 0)
-      .slice()
-      .sort((a, b) => {
-        const boundsA = this.getPortBounds(a);
-        const boundsB = this.getPortBounds(b);
+    const sortedPorts = ports.slice().sort((a, b) => {
+      const boundsA = this.getPortBounds(a);
+      const boundsB = this.getPortBounds(b);
 
-        return (
-          pointDistance(boundsA.position, point) -
-          pointDistance(boundsB.position, point)
-        );
-      });
+      return (
+        pointDistance(boundsA.position, point) -
+        pointDistance(boundsB.position, point)
+      );
+    });
 
     const closestPort = sortedPorts[0];
 

@@ -22,14 +22,14 @@ export class CubicBezier extends React.PureComponent<CubicBezierProps> {
   }
 }
 
-export interface Snapbox {
+export interface PositionWithExtents {
   position: Point;
   extents: number;
 }
 
 export interface FlexLineProps extends React.SVGProps<SVGPathElement> {
-  a: Point | Snapbox;
-  b: Point | Snapbox;
+  a: Point | PositionWithExtents;
+  b: Point | PositionWithExtents;
 }
 
 export class FlexLine extends React.PureComponent<FlexLineProps> {
@@ -42,11 +42,15 @@ export class FlexLine extends React.PureComponent<FlexLineProps> {
   calculateCurve() {
     const { a, b } = this.props;
 
-    const aIsSnapbox = isSnapbox(a);
-    const bIsSnapbox = isSnapbox(b);
+    const aIsSnapbox = hasPositionAndExtents(a);
+    const bIsSnapbox = hasPositionAndExtents(b);
 
-    const pointA = aIsSnapbox ? (a as Snapbox).position : (a as Point);
-    const pointB = bIsSnapbox ? (b as Snapbox).position : (b as Point);
+    const pointA = aIsSnapbox
+      ? (a as PositionWithExtents).position
+      : (a as Point);
+    const pointB = bIsSnapbox
+      ? (b as PositionWithExtents).position
+      : (b as Point);
 
     const diff = difference(pointB, pointA);
 
@@ -74,7 +78,7 @@ export class FlexLine extends React.PureComponent<FlexLineProps> {
     let finalPosAX, finalPosAY, finalPosBX, finalPosBY;
 
     if (aIsSnapbox) {
-      const extentsA = (a as Snapbox).extents;
+      const extentsA = (a as PositionWithExtents).extents;
       finalPosAX = pointA.x + extentsA * posSideX;
       finalPosAY = pointA.y + extentsA * posSideY;
     } else {
@@ -83,7 +87,7 @@ export class FlexLine extends React.PureComponent<FlexLineProps> {
     }
 
     if (bIsSnapbox) {
-      const extentsB = (b as Snapbox).extents;
+      const extentsB = (b as PositionWithExtents).extents;
       finalPosBX = pointB.x + extentsB * -posSideX;
       finalPosBY = pointB.y + extentsB * -posSideY;
     } else {
@@ -135,6 +139,6 @@ function difference(b: Point, a: Point) {
   };
 }
 
-export function isSnapbox(obj: any) {
+export function hasPositionAndExtents(obj: any) {
   return obj.extents !== undefined && obj.position !== undefined;
 }
