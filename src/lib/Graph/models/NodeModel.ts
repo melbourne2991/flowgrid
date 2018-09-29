@@ -7,6 +7,7 @@ export const NodeModel: any = types
     SelectableModel,
     types
       .model({
+        type: "node",
         id: types.identifier,
         template: types.frozen(),
         ports: types.array(types.reference(types.late(() => PortModel))),

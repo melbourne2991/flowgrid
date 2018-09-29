@@ -2,12 +2,16 @@ import * as React from "react";
 import { PositionWithExtents } from "./components/FlexLine";
 import { GraphNodeProps } from "./hocs/makeNode";
 
+export type GraphObjectType = "node" | "connection" | "newconnection" | "port";
+
 export interface IGraphObject {
   id: string;
+  type: GraphObjectType;
 }
 
 export interface IGraphSelectableObject extends IGraphObject {
   select(): void;
+  deselect(): void;
   selected: boolean;
 }
 
@@ -62,6 +66,8 @@ export interface IGraphNewConnection extends IGraphObject {
   setPosition(point: Point): void;
 }
 
+export type SelectionMode = "single" | "multi";
+
 export interface IGraph {
   nodes: IGraphNode<any>[];
   connections: IGraphConnection[];
@@ -76,7 +82,13 @@ export interface IGraph {
   connectionRequest(port: IGraphNodePort): void;
   removeNode(node: any): void;
   removePort(port: any): void;
-  select(obj: any): void;
+  removeConnection(connection: IGraphConnection): void;
+
+  select(obj: IGraphSelectableObject): void;
+  deselect(obj: IGraphSelectableObject): void;
+
+  updateSelectionMode(mode: SelectionMode): void;
+  selectionMode: SelectionMode;
 }
 
 export interface NodeTemplate {

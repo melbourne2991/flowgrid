@@ -4,7 +4,12 @@ import { NodeModel } from "./NodeModel";
 import { NewConnectionModel } from "./NewConnectionModel";
 import { ConnectionModel } from "./ConnectionModel";
 import { PortModel } from "./PortModel";
-import { IGraphNodePort, IGraphNode, IGraphConnection } from "../types";
+import {
+  IGraphNodePort,
+  IGraphNode,
+  IGraphConnection,
+  SelectionMode
+} from "../types";
 import { GraphStore } from "..";
 
 const Selectables = types.union(NodeModel, ConnectionModel);
@@ -46,7 +51,7 @@ export const GraphModel: any = types
 
     removeNewConnection() {
       if (self.newConnection) {
-        self.newConnection.source.newConnection = null;
+        (self.newConnection as any).source.newConnection = null;
         destroy(self.newConnection);
         getEnv(self).unlockCanvas();
       }
@@ -61,13 +66,13 @@ export const GraphModel: any = types
         self.connections.push(
           ConnectionModel.create({
             id: uniqid(),
-            source: self.newConnection.source,
+            source: (self.newConnection as any).source,
             target: port
           })
         );
 
-        port.connectedPorts.push(self.newConnection.source);
-        self.newConnection.source.connectedPorts.push(port);
+        port.connectedPorts.push((self.newConnection as any).source);
+        (self.newConnection as any).source.connectedPorts.push(port);
       }
     },
 
@@ -84,10 +89,23 @@ export const GraphModel: any = types
         self.selected.length = 0;
       }
 
-      self.selected.push(obj.id);
+      self.selected.push(obj);
     },
 
-    deselect() {
+    updateSelectionMode(selectionMode: SelectionMode) {
+      self.selectionMode = selectionMode;
+    },
+
+    deselect(obj: any) {
+      // is it obj or obj.id?
+      const index = self.selected.indexOf(obj);
+
+      if (index > -1) {
+        self.selected.splice(index, 1);
+      }
+    },
+
+    deselectAll() {
       self.selected.length = 0;
     }
   }));

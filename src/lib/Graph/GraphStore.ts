@@ -1,12 +1,14 @@
 import { observable, action } from "mobx";
 import * as uniqid from "uniqid";
+import makeInspectable from "mobx-devtools-mst";
 
 import {
   IGraph,
   IGraphNode,
   Point,
   IGraphNodePort,
-  NodeTemplate
+  NodeTemplate,
+  IGraphConnection
 } from "./types";
 
 import { setUndoManager } from "../setUndoManager";
@@ -71,6 +73,8 @@ export class GraphStore {
       this
     );
 
+    makeInspectable(this.graph);
+
     this.undoManager = setUndoManager(this.graph);
 
     bindKeyEvents(this);
@@ -84,6 +88,25 @@ export class GraphStore {
   @action
   unlockCanvas() {
     this.canvasLocked = false;
+  }
+
+  @action
+  removeNode(node: IGraphNode) {
+    // Clear all connections first.
+    this.graph.connections.forEach(connection => {
+      if (connection.source.node === node || connection.target.node === node) {
+        this.removeConnection(connection);
+      }
+    });
+
+    this.graph.deselect(node);
+    this.graph.removeNode(node);
+  }
+
+  @action
+  removeConnection(connection: IGraphConnection) {
+    this.graph.deselect(connection);
+    this.graph.removeConnection(connection);
   }
 
   @action

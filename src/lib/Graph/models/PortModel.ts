@@ -5,6 +5,7 @@ import { getGraph } from "./helpers/getGraph";
 
 export const PortModel: any = types
   .model("Port", {
+    type: "port",
     id: types.identifier,
     node: types.reference(types.late(() => NodeModel)),
     connectedPorts: types.late(() => types.array(types.reference(PortModel))),

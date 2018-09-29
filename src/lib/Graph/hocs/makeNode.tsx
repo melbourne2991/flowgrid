@@ -46,7 +46,7 @@ export function makeNode(
     };
 
     onSelect = () => {
-      this.engine.handleSelectNode(this.props.node);
+      this.engine.handleNodeSelectionChange(this.props.node);
     };
 
     render() {

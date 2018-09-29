@@ -53,6 +53,7 @@ export function createBasicIONodeRenderer(
 
       if (node.dragging) {
         return {
+          ...base,
           cursor: "grabbing"
         };
       }

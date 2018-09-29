@@ -7,6 +7,7 @@ const PortModelRef = types.late(() => types.reference(PortModel));
 
 export const NewConnectionModel: any = types
   .model("NewConnection", {
+    type: "newConnection",
     id: types.identifier,
     source: types.reference(types.late(() => PortModel)),
     x: types.maybeNull(types.number),

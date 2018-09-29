@@ -5,19 +5,30 @@ import {
   IGraphConnection,
   IGraphNodePort,
   IGraphNewConnection,
-  Point
+  Point,
+  IGraphSelectableObject,
+  SelectionMode
 } from "../types";
 
 export class GraphEngine {
   graphStore: GraphStore;
 
-  handleSelectNode = (node: IGraphNode) => {
-    node.select();
+  handleNodeSelectionChange = (node: IGraphNode) => {
+    this.graphStore.undoManager.withoutUndo(() => {
+      if (!node.selected) {
+        node.select();
+      } else if (this.graphStore.graph.selectionMode === "multi") {
+        node.deselect();
+      }
+    });
   };
 
   handleBeginDragNode = (node: IGraphNode) => {
+    this.graphStore.undoManager.withoutUndo(() => {
+      node.startDragging();
+    });
+
     this.graphStore.undoManager.startGroup(() => {});
-    node.startDragging();
 
     this.graphStore.lockCanvas();
   };
@@ -32,14 +43,18 @@ export class GraphEngine {
   };
 
   handleEndDragNode = (node: IGraphNode) => {
-    node.stopDragging();
     this.graphStore.unlockCanvas();
     this.graphStore.undoManager.stopGroup();
+
+    this.graphStore.undoManager.withoutUndo(() => {
+      node.stopDragging();
+    });
   };
 
   handleBeginDragNewConnection = (port: IGraphNodePort) => {
-    this.graphStore.undoManager.startGroup(() => {});
-    port.beginNewConnection();
+    this.graphStore.undoManager.withoutUndo(() => {
+      port.beginNewConnection();
+    });
   };
 
   handleDragNewConnection = (
@@ -48,9 +63,11 @@ export class GraphEngine {
   ) => {
     const svgDelta = this.graphStore.clientToSvgPos(delta.x, delta.y);
 
-    newConnection.setPosition({
-      x: svgDelta.x,
-      y: svgDelta.y
+    this.graphStore.undoManager.withoutUndo(() => {
+      newConnection.setPosition({
+        x: svgDelta.x,
+        y: svgDelta.y
+      });
     });
   };
 
@@ -60,13 +77,35 @@ export class GraphEngine {
       newConnection.closestPort.requestConnection();
     }
 
-    this.graphStore.graph.removeNewConnection();
+    this.graphStore.undoManager.withoutUndo(() => {
+      this.graphStore.graph.removeNewConnection();
+    });
     this.graphStore.undoManager.stopGroup();
   };
 
   handleConnectionRequest = () => {};
 
   handleBeginDragSelect = () => {};
+
+  handleUpdateSelectionMode = (selectionMode: SelectionMode) => {
+    this.graphStore.undoManager.withoutUndo(() => {
+      this.graphStore.graph.updateSelectionMode(selectionMode);
+    });
+  };
+
+  handleDelete = (selected: IGraphSelectableObject[]) => {
+    this.graphStore.undoManager.startGroup(() => {});
+
+    selected.forEach(obj => {
+      if (obj.type === "node") {
+        this.graphStore.removeNode(obj as IGraphNode);
+      } else if (obj.type === "connection") {
+        this.graphStore.removeConnection(obj as IGraphConnection);
+      }
+    });
+
+    this.graphStore.undoManager.stopGroup();
+  };
 
   handleSelectConnection = (connection: IGraphConnection) => {
     connection.select();
