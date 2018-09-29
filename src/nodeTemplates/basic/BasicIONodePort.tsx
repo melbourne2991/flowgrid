@@ -1,6 +1,5 @@
 import * as React from "react";
 import { observer } from "mobx-react";
-import { PortPositionData } from "./";
 import {
   makePort,
   PortInternalProps,
@@ -8,6 +7,7 @@ import {
 } from "../../lib/Graph/hocs/makePort";
 import * as Color from "color";
 import { BasicIONodeTemplate } from "./";
+import { PortPositionData } from "../../lib/PortLayout";
 
 export type BasicIONodePortProps = PortProps<{
   portDimensions: PortPositionData;

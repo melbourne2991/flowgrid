@@ -11,8 +11,7 @@ export interface IGraphSelectableObject extends IGraphObject {
   selected: boolean;
 }
 
-export interface IGraphNodePort<T = any> {
-  id: string;
+export interface IGraphNodePort<T = any> extends IGraphObject {
   connectedPorts: IGraphNodePort<T>[];
   hasNewConnection: boolean;
   newConnection: IGraphNewConnection;
@@ -26,15 +25,13 @@ export interface IGraphNodePort<T = any> {
 }
 
 export interface IGraphNode<T = any> extends IGraphSelectableObject {
-  id: string;
+  data: T;
   ports: IGraphNodePort<any>[];
 
   x: number;
   y: number;
 
   dragging: boolean;
-
-  data: T;
   template: NodeTemplate;
 
   startDragging(): void;
