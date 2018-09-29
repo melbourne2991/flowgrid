@@ -2,13 +2,18 @@ import * as React from "react";
 import { IGraphConnection, GetPortBoundsFn } from "../types";
 import { FlexLine } from "./FlexLine";
 import { observable, action } from "mobx";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import throttle = require("lodash/throttle");
+import { GraphStore } from "../GraphStore";
 
 export interface ConnectionProps {
   connection: IGraphConnection;
   getPortBounds: GetPortBoundsFn;
 }
+
+export type ConnectionInternalProps = {
+  graphStore: GraphStore;
+} & ConnectionProps;
 
 const styles = {
   default: {
@@ -28,8 +33,8 @@ const styles = {
 };
 
 @observer
-export class Connection extends React.Component<ConnectionProps> {
-  constructor(props: ConnectionProps) {
+class ConnectionComponent extends React.Component<ConnectionInternalProps> {
+  constructor(props: ConnectionInternalProps) {
     super(props);
 
     this.setActiveStyle = throttle(this.setActiveStyle, 100);
@@ -42,6 +47,10 @@ export class Connection extends React.Component<ConnectionProps> {
   setActiveStyle(activeStyle: keyof typeof styles) {
     this.activeStyle = activeStyle;
   }
+
+  onSelect = () => {
+    this.props.graphStore.engine.handleSelectConnection(this.props.connection);
+  };
 
   render() {
     const { connection, getPortBounds } = this.props;
@@ -61,7 +70,7 @@ export class Connection extends React.Component<ConnectionProps> {
     return (
       <React.Fragment>
         <FlexLine
-          onMouseDown={() => connection.select()}
+          onMouseDown={this.onSelect}
           onMouseOver={() => this.setActiveStyle("mouseOver")}
           onMouseOut={() => this.setActiveStyle("default")}
           key={connection.id}
@@ -73,3 +82,7 @@ export class Connection extends React.Component<ConnectionProps> {
     );
   }
 }
+
+export const Connection = inject("graphStore")(
+  ConnectionComponent
+) as React.ComponentType<ConnectionProps>;

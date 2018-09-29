@@ -6,17 +6,7 @@ import { basic } from "./nodeTemplates/basic";
 export function init() {
   const rootElement: HTMLElement = document.getElementById("root")!;
 
-  const graphStore = createGraphStore({
-    // handleSelectNode
-    // handleBeginDragNode
-    // handleDragNode
-    // handleEndDragNode
-    // handleSelectPort
-    // handleKeyEvent
-    // handleEndDragConnection
-    // handleStartDragConnection
-    // handleConnectionRequest
-  });
+  const graphStore = createGraphStore();
 
   const visualNode = graphStore.addNode(Math.random().toString(), basic, {});
 

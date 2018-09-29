@@ -2,8 +2,6 @@ import * as React from "react";
 import { DraggableInnerProps, makeDraggable } from "../hocs/makeDraggable";
 import { IGraphNodePort } from "../types";
 import { observer, inject } from "mobx-react";
-import { undoManager } from "../../setUndoManager";
-import { action } from "mobx";
 import { GraphStore } from "..";
 
 export type PortProps<T> = T & {
@@ -27,24 +25,21 @@ export function makePort<T>(
 
   @observer
   class Port extends React.Component<PortInternalProps<T>> {
+    get engine() {
+      return this.props.graphStore.engine;
+    }
+
     onStart = (e: React.MouseEvent) => {
       e.stopPropagation();
-
-      undoManager.startGroup(() => {});
-      this.props.port.beginNewConnection();
+      this.engine.handleBeginDragNewConnection(this.props.port);
     };
 
-    onDrag = (e: MouseEvent, { x, y }: { x: number; y: number }) => {
-      const svgDelta = this.props.graphStore.clientToSvgPos(x, y);
-
-      this.props.port.newConnection.setPosition({
-        x: svgDelta.x,
-        y: svgDelta.y
-      });
+    onDrag = (e: MouseEvent, delta: { x: number; y: number }) => {
+      this.engine.handleDragNewConnection(this.props.port.newConnection, delta);
     };
 
     onStop = () => {
-      undoManager.stopGroup();
+      this.engine.handleEndDragNewConnection(this.props.port.newConnection);
     };
 
     requestConnection = () => {

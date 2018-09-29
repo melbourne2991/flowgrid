@@ -18,16 +18,6 @@ export class Graph extends React.Component<GraphProps> {
     return this.props.store.graph;
   }
 
-  onMouseUp = () => {
-    if (this.props.store.graph.newConnection) {
-      if (this.props.store.graph.newConnection.closestPort) {
-        this.props.store.graph.newConnection.closestPort.requestConnection();
-      }
-
-      this.props.store.graph.removeNewConnection();
-    }
-  };
-
   mapNodes() {
     return this.graph.nodes.map(node => {
       return <node.template.renderNode key={node.id} node={node} />;
@@ -53,7 +43,6 @@ export class Graph extends React.Component<GraphProps> {
       <Provider graphStore={this.props.store}>
         <Canvas
           {...rest}
-          onMouseUp={this.onMouseUp}
           setSvgMatrix={this.props.store.setSvgMatrix}
           locked={store.canvasLocked}
         >

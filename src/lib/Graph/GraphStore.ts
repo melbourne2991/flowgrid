@@ -20,12 +20,20 @@ import {
   GraphModel,
   PortModel
 } from "./models";
+import { GraphEngine } from "./GraphEngine";
 
 export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
-export interface GraphStoreParams {}
+export interface GraphStoreParams {
+  engine: GraphEngine;
+}
+
+const defaultParams = {
+  engine: new GraphEngine()
+};
 
 export class GraphStore {
+  // graph is the actual mst tree
   @observable
   graph: IGraph;
 
@@ -38,7 +46,14 @@ export class GraphStore {
   @observable
   svgPoint: SVGPoint;
 
-  constructor(params: GraphStoreParams) {
+  engine: GraphEngine;
+
+  undoManager: any;
+
+  constructor(params: GraphStoreParams = defaultParams) {
+    params.engine.graphStore = this;
+    this.engine = params.engine;
+
     this.graph = GraphModel.create(
       {
         nodes: [],
@@ -49,11 +64,7 @@ export class GraphStore {
       this
     );
 
-    setUndoManager(this.graph);
-
-    onPatch(this.graph as any, patch => {
-      console.log(patch);
-    });
+    this.undoManager = setUndoManager(this.graph);
   }
 
   @action

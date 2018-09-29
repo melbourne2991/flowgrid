@@ -1,9 +1,8 @@
 import * as React from "react";
 import { observer, inject } from "mobx-react";
-import { IGraphNode, NodeTemplate, IGraphNodePort } from "../types";
+import { IGraphNode } from "../types";
 import { GraphStore } from "../GraphStore";
 
-import { undoManager } from "../../setUndoManager";
 import { makeDraggable, DraggableInnerProps } from "./makeDraggable";
 
 export interface GraphNodesProps {
@@ -30,40 +29,24 @@ export function makeNode(
   class GraphNode extends React.Component<
     GraphNodeProps & { graphStore: GraphStore }
   > {
-    onStart = () => {
-      // Not sure why start / stop dragging are not captured as part of the
-      // group, this seems to work as an alternative however.
-      undoManager.withoutUndo(() => {
-        this.props.node.startDragging();
-      });
+    get engine() {
+      return this.props.graphStore.engine;
+    }
 
-      this.props.graphStore.lockCanvas();
+    onStart = () => {
+      this.engine.handleBeginDragNode(this.props.node);
     };
 
-    onDrag = (
-      e: MouseEvent,
-      { deltaX, deltaY }: { deltaX: number; deltaY: number }
-    ) => {
-      const { node } = this.props;
-      const svgDelta = this.props.graphStore.clientDeltaToSvg(deltaX, deltaY);
-
-      undoManager.startGroup(() => {
-        node.updatePosition(node.x + svgDelta.x, node.y + svgDelta.y);
-      });
+    onDrag = (e: MouseEvent, delta: { deltaX: number; deltaY: number }) => {
+      this.engine.handleDragNode(this.props.node, delta);
     };
 
     onStop = () => {
-      undoManager.stopGroup();
-
-      undoManager.withoutUndo(() => {
-        this.props.node.stopDragging();
-      });
-
-      this.props.graphStore.unlockCanvas();
+      this.engine.handleEndDragNode(this.props.node);
     };
 
     onSelect = () => {
-      this.props.node.select();
+      this.engine.handleSelectNode(this.props.node);
     };
 
     render() {

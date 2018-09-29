@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NodeTemplateProps, IGraphNodePort } from "../lib/Graph";
+import { IGraphNodePort } from "../lib/Graph";
 import { observer } from "mobx-react";
 import * as classnames from "classnames";
 import { withStyles, Theme, WithStyles } from "@material-ui/core";
