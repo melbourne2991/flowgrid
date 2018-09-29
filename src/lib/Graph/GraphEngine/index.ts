@@ -1,4 +1,5 @@
 import { GraphStore } from "../GraphStore";
+
 import {
   IGraphNode,
   IGraphConnection,
@@ -68,4 +69,17 @@ export class GraphEngine {
   handleSelectConnection = (connection: IGraphConnection) => {
     connection.select();
   };
+
+  getConnectablePorts(port: IGraphNodePort) {
+    // Any port that does not belong to this node
+    return this.graphStore.graph.nodes
+      .filter(node => node.id !== port.node.id)
+      .reduce(
+        (acc, node) => {
+          acc.push(...node.ports);
+          return acc;
+        },
+        [] as IGraphNodePort[]
+      );
+  }
 }

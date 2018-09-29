@@ -8,7 +8,7 @@ export function init() {
 
   const graphStore = createGraphStore();
 
-  const visualNode = graphStore.addNode(Math.random().toString(), basic, {});
+  const visualNode = graphStore.addNode(basic, {});
 
   graphStore.addPortToNode(visualNode, {
     type: "input",
@@ -22,7 +22,7 @@ export function init() {
     index: 0
   });
 
-  const visualNode2 = graphStore.addNode(Math.random().toString(), basic, {});
+  const visualNode2 = graphStore.addNode(basic, {});
 
   graphStore.addPortToNode(visualNode2, {
     type: "input",

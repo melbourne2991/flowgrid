@@ -1,6 +1,5 @@
 import { observable, action } from "mobx";
 import * as uniqid from "uniqid";
-import { onPatch } from "mobx-state-tree";
 
 import {
   IGraph,
@@ -78,10 +77,10 @@ export class GraphStore {
   }
 
   @action
-  addNode(id: string, template: NodeTemplate, data: {}): IGraphNode {
+  addNode(template: NodeTemplate, data: {}): IGraphNode {
     const node = NodeModel.create(
       {
-        id,
+        id: uniqid(),
         ports: [],
         template,
         data,
@@ -117,8 +116,8 @@ export class GraphStore {
     return port;
   }
 
-  findClosestNodeToPoint(point: Point) {
-    return this.graph.nodes.slice().sort((a, b) => {
+  findClosestNodeToPoint(nodes: IGraphNode[], point: Point) {
+    return nodes.slice().sort((a, b) => {
       const portADistance = pointDistance(point, a);
       const portBDistance = pointDistance(point, b);
 
@@ -126,10 +125,8 @@ export class GraphStore {
     })[0];
   }
 
-  findClosestPortToPoint(point: Point) {
-    const node = this.findClosestNodeToPoint(point);
-
-    const sortedPorts = node.ports
+  findClosestPortToPoint(ports: IGraphNodePort[], point: Point) {
+    const sortedPorts = ports
       .filter(port => port.connectedPorts.length === 0)
       .slice()
       .sort((a, b) => {

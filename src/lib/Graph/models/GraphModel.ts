@@ -5,6 +5,7 @@ import { NewConnectionModel } from "./NewConnectionModel";
 import { ConnectionModel } from "./ConnectionModel";
 import { PortModel } from "./PortModel";
 import { IGraphNodePort, IGraphNode, IGraphConnection } from "../types";
+import { GraphStore } from "..";
 
 const Selectables = types.union(NodeModel, ConnectionModel);
 
@@ -30,11 +31,13 @@ export const GraphModel: any = types
     },
 
     addNewConnection(source: IGraphNodePort<any>) {
-      getEnv(self).lockCanvas();
+      const graphStore = getEnv(self) as GraphStore;
+      graphStore.lockCanvas();
 
       self.newConnection = NewConnectionModel.create({
         id: uniqid(),
-        source: source
+        source: source,
+        connectablePorts: graphStore.engine.getConnectablePorts(source)
       });
 
       return self.newConnection;
