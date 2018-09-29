@@ -8,6 +8,7 @@ export interface CanvasProps {
   setSvgMatrix?: (svg: { matrix: SVGMatrix; point: SVGPoint }) => void;
   locked?: boolean;
   onMouseUp?: (e: React.MouseEvent) => void;
+  onMouseDown?: (e: React.MouseEvent) => void;
 }
 
 @observer

@@ -15,11 +15,6 @@ export const SelectableModel = types
   }));
 
 function selfIsSelected(self: any): boolean {
-  const selectedItem = getEnv(self).graph.selected;
-
-  if (selectedItem && selectedItem.id === self.id) {
-    return true;
-  }
-
-  return false;
+  const graph = getEnv(self).graph;
+  return graph.selected.includes(self);
 }

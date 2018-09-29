@@ -66,6 +66,8 @@ export class GraphEngine {
 
   handleConnectionRequest = () => {};
 
+  handleBeginDragSelect = () => {};
+
   handleSelectConnection = (connection: IGraphConnection) => {
     connection.select();
   };

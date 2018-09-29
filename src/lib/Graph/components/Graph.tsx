@@ -5,6 +5,7 @@ import { GraphStore } from "../GraphStore";
 import { NewConnection } from "./NewConnection";
 import { IGraphConnection } from "../types";
 import { Connection } from "./Connection";
+import { KeyTracker } from "../KeyTracker/KeyTracker";
 
 export interface GraphProps {
   className?: string;
@@ -17,6 +18,12 @@ export class Graph extends React.Component<GraphProps> {
   get graph() {
     return this.props.store.graph;
   }
+
+  onMouseDown = () => {
+    if (this.props.store.keyTracker.isKeyDown("shift")) {
+      this.props.store.engine.handleBeginDragSelect();
+    }
+  };
 
   mapNodes() {
     return this.graph.nodes.map(node => {
@@ -45,7 +52,9 @@ export class Graph extends React.Component<GraphProps> {
           {...rest}
           setSvgMatrix={this.props.store.setSvgMatrix}
           locked={store.canvasLocked}
+          onMouseDown={this.onMouseDown}
         >
+          <KeyTracker store={this.props.store.keyTracker} />
           <NewConnection store={store} />
 
           {this.mapNodes()}

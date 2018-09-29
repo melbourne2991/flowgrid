@@ -19,7 +19,10 @@ import {
   GraphModel,
   PortModel
 } from "./models";
+
 import { GraphEngine } from "./GraphEngine";
+import { KeyTrackerStore } from "./KeyTracker/KeyTracker";
+import { bindKeyEvents } from "./bindKeyEvents";
 
 export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
@@ -48,21 +51,29 @@ export class GraphStore {
   engine: GraphEngine;
   undoManager: any;
 
+  keyTracker: KeyTrackerStore;
+
   constructor(params: GraphStoreParams = defaultParams) {
     params.engine.graphStore = this;
+
     this.engine = params.engine;
+    this.keyTracker = new KeyTrackerStore();
 
     this.graph = GraphModel.create(
       {
         nodes: [],
         ports: [],
         connections: [],
-        newConnection: null
+        selected: [],
+        newConnection: null,
+        selectionMode: "single"
       },
       this
     );
 
     this.undoManager = setUndoManager(this.graph);
+
+    bindKeyEvents(this);
   }
 
   @action

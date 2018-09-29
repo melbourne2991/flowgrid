@@ -15,7 +15,8 @@ export const GraphModel: any = types
     ports: types.array(PortModel),
     connections: types.array(ConnectionModel),
     newConnection: types.maybeNull(NewConnectionModel),
-    selected: types.maybeNull(types.reference(Selectables))
+    selected: types.array(types.reference(Selectables)),
+    selectionMode: types.union(types.literal("single"), types.literal("multi"))
   })
   .actions(self => ({
     addNode(node: any) {
@@ -79,10 +80,14 @@ export const GraphModel: any = types
     },
 
     select(obj: any) {
-      self.selected = obj;
+      if (self.selectionMode === "single") {
+        self.selected.length = 0;
+      }
+
+      self.selected.push(obj.id);
     },
 
     deselect() {
-      self.selected = null;
+      self.selected.length = 0;
     }
   }));
