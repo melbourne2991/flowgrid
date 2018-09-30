@@ -61,14 +61,34 @@ export function createBasicIONodeRenderer(
       return base;
     }
 
+    calculateWidthAndHeight(inPortCount: number, outPortCount: number) {
+      const { node } = this.props;
+
+      let width = template.templateParams.nodeWidth;
+
+      // if (inPortCount < 1 || outPortCount < 1) {
+      //   width = width / 2;
+      // }
+
+      const verticalPortCount = Math.max(inPortCount, outPortCount);
+      const height = verticalPortCount * template.templateParams.portRowHeight;
+
+      return {
+        width,
+        height
+      };
+    }
+
     render() {
       const { node } = this.props;
 
       const inPorts = node.ports.filter(port => port.data.type === "input");
       const outPorts = node.ports.filter(port => port.data.type === "output");
 
-      const verticalPortCount = Math.max(inPorts.length, outPorts.length);
-      const hasCanvas = node.data.canvas;
+      const { width, height } = this.calculateWidthAndHeight(
+        inPorts.length,
+        outPorts.length
+      );
 
       return (
         <svg xmlns="http://www.w3.org/2000/svg" x={node.x} y={node.y}>
@@ -77,18 +97,18 @@ export function createBasicIONodeRenderer(
             onMouseDown={this.onMouseDown}
             rx={template.templateParams.borderRadius}
             ry={template.templateParams.borderRadius}
-            width={template.templateParams.nodeWidth}
-            height={verticalPortCount * template.templateParams.portRowHeight}
             style={this.getNodeStyle()}
+            width={width}
+            height={height}
           />
 
           {this.mapPorts(inPorts)}
           {this.mapPorts(outPorts)}
 
-          {hasCanvas && (
-            <SVGRenderContext x={node.x} y={node.y}>
+          {node.data.canvas && (
+            <SVGRenderContext x={node.x + width / 2} y={node.y + height}>
               {({ style }) => {
-                return <div style={style}>Hello ello</div>;
+                return <div style={style}>{node.data.canvas(node, style)}</div>;
               }}
             </SVGRenderContext>
           )}

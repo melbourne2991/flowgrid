@@ -3,10 +3,7 @@ import { NodeTemplate, GetPortBoundsFn } from "../../lib/Graph";
 import { GraphNodeProps } from "../../lib/Graph/hocs/makeNode";
 import { createBasicIONodePort } from "./BasicIONodePort";
 
-import {
-  InputOutputPortLayout,
-  GetPortDimensionsFn
-} from "../../lib/PortLayout";
+import { InputOutputPortLayout, GetPortDimensionsFn } from "./PortLayout";
 
 export interface BasicIONodeTemplateParams {
   portSize: number;

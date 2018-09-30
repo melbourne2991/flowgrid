@@ -20,6 +20,6 @@ export const SelectableModel = types
   }));
 
 function selfIsSelected(self: any): boolean {
-  const graph = getEnv(self).graph;
+  const graph = getEnv(self).graphStore().graph;
   return graph.selected.includes(self);
 }

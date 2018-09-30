@@ -26,13 +26,12 @@ export const NewConnectionModel: any = types
       self.x = pos.x;
       self.y = pos.y;
 
-      const result = getEnv<GraphStore>(self).findClosestPortToPoint(
-        self.connectablePorts as any[],
-        {
+      const result = getEnv(self)
+        .graphStore()
+        .findClosestPortToPoint(self.connectablePorts as any[], {
           x: self.x,
           y: self.y
-        }
-      );
+        });
 
       if (
         self.closestPort &&

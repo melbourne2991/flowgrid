@@ -1,4 +1,4 @@
-import { IGraphNodePort } from "./Graph";
+import { IGraphNodePort } from "../../lib/Graph";
 
 export type PortPositionData = {
   x: number;

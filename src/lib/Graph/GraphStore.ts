@@ -30,11 +30,10 @@ export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
 export interface GraphStoreParams {
   engine: GraphEngine;
+  env: {
+    graphStore(): GraphStore;
+  };
 }
-
-const defaultParams = {
-  engine: new GraphEngine()
-};
 
 export class GraphStore {
   // graph is the actual mst tree
@@ -55,11 +54,16 @@ export class GraphStore {
 
   keyTracker: KeyTrackerStore;
 
-  constructor(params: GraphStoreParams = defaultParams) {
+  env: any;
+
+  constructor(params: GraphStoreParams) {
     params.engine.graphStore = this;
 
+    this.env = params.env;
     this.engine = params.engine;
     this.keyTracker = new KeyTrackerStore();
+
+    console.log(params.env);
 
     this.graph = GraphModel.create(
       {
@@ -70,7 +74,7 @@ export class GraphStore {
         newConnection: null,
         selectionMode: "single"
       },
-      this
+      this.env
     );
 
     makeInspectable(this.graph);
@@ -110,10 +114,10 @@ export class GraphStore {
   }
 
   @action
-  addNode(template: NodeTemplate, data: {}): IGraphNode {
+  addNode(template: NodeTemplate, data: {}, id: string): IGraphNode {
     const node = NodeModel.create(
       {
-        id: uniqid(),
+        id: id || uniqid(),
         ports: [],
         template,
         data,
@@ -121,7 +125,7 @@ export class GraphStore {
         y: 0,
         dragging: false
       },
-      this
+      this.env
     );
 
     this.graph.addNode(node);
@@ -141,7 +145,7 @@ export class GraphStore {
         newConnectionProximity: false,
         data
       },
-      this
+      this.env
     );
 
     this.graph.addPortToNode(node, port);

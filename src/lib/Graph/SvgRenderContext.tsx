@@ -28,7 +28,7 @@ export const SVGRenderContext: React.SFC<SVGRenderContextProps> = inject(
 
       const transform = `matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${
         matrix.d
-      }, ${clientPos.x}, ${clientPos.y})`;
+      }, ${clientPos.x}, ${clientPos.y}) translate(-50%)`;
 
       const style = {
         position: "absolute",

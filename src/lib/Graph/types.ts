@@ -43,6 +43,8 @@ export interface IGraphNode<T = any> extends IGraphSelectableObject {
 
   updatePosition(x: number, y: number): void;
   addPort(port: IGraphNodePort<any>): void;
+
+  updateData(data: T): void;
 }
 
 export interface IGraphConnection extends IGraphSelectableObject {

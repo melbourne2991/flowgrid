@@ -37,7 +37,7 @@ export const GraphModel: any = types
     },
 
     addNewConnection(source: IGraphNodePort<any>) {
-      const graphStore = getEnv(self) as GraphStore;
+      const graphStore = getEnv(self).graphStore() as GraphStore;
       graphStore.lockCanvas();
 
       self.newConnection = NewConnectionModel.create({
@@ -53,7 +53,9 @@ export const GraphModel: any = types
       if (self.newConnection) {
         (self.newConnection as any).source.newConnection = null;
         destroy(self.newConnection);
-        getEnv(self).unlockCanvas();
+        getEnv(self)
+          .graphStore()
+          .unlockCanvas();
       }
     },
 

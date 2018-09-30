@@ -32,6 +32,10 @@ export const NodeModel: any = types
         updatePosition(x: number, y: number) {
           self.x = x;
           self.y = y;
+        },
+
+        updateData(data: any) {
+          self.data = data;
         }
       }))
   )

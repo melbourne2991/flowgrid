@@ -7,7 +7,7 @@ import {
 } from "../../lib/Graph/hocs/makePort";
 import * as Color from "color";
 import { BasicIONodeTemplate } from "./";
-import { PortPositionData } from "../../lib/PortLayout";
+import { PortPositionData } from "./PortLayout";
 
 export type BasicIONodePortProps = PortProps<{
   portDimensions: PortPositionData;
