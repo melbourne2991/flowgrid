@@ -15,6 +15,8 @@ export interface NumberInputDefinitionConfig {
 export class NumberInputDefinition extends NodeDefinition<
   NumberInputDefinitionConfig
 > {
+  name = "numberInput";
+
   defaultConfig = {
     value: 150
   };

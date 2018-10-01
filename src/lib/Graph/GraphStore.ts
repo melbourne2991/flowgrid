@@ -29,8 +29,13 @@ import { defaultKeyBindings, KeyBindings } from "./defaultKeyBindings";
 
 export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
+export interface NodeTemplateMap {
+  [templateName: string]: NodeTemplate;
+}
+
 export interface GraphStoreParams {
   engine: GraphEngine;
+  nodeTemplates: NodeTemplateMap;
   env: {
     graphStore(): GraphStore;
   };
@@ -55,6 +60,7 @@ export class GraphStore {
 
   keyTracker: KeyTrackerStore;
   keyBindings: KeyBindings;
+  nodeTemplates: NodeTemplateMap;
 
   env: any;
 
@@ -65,6 +71,7 @@ export class GraphStore {
     this.engine = params.engine;
     this.keyBindings = defaultKeyBindings;
     this.keyTracker = new KeyTrackerStore();
+    this.nodeTemplates = params.nodeTemplates;
 
     this.graph = GraphModel.create(
       {
@@ -115,7 +122,7 @@ export class GraphStore {
   }
 
   @action
-  addNode(template: NodeTemplate, data: {}, id: string): IGraphNode {
+  addNode(template: string, data: {}, id: string): IGraphNode {
     const node = NodeModel.create(
       {
         id: id || uniqid(),
@@ -190,7 +197,7 @@ export class GraphStore {
   }
 
   getPortBounds = (port: IGraphNodePort<any>) => {
-    return port.node.template.getPortBounds(port);
+    return this.nodeTemplates[port.node.template].getPortBounds(port);
   };
 
   svgToClientPos = (

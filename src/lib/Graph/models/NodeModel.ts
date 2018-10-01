@@ -9,7 +9,7 @@ export const NodeModel: any = types
       .model({
         type: "node",
         id: types.identifier,
-        template: types.frozen(),
+        template: types.string,
         ports: types.array(types.reference(types.late(() => PortModel))),
         x: types.number,
         y: types.number,

@@ -36,7 +36,7 @@ export interface IGraphNode<T = any> extends IGraphSelectableObject {
   y: number;
 
   dragging: boolean;
-  template: NodeTemplate;
+  template: string;
 
   startDragging(): void;
   stopDragging(): void;

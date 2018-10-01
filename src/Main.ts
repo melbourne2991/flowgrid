@@ -22,7 +22,8 @@ export class Main {
     });
 
     new GraphChangeInterceptor(this.graphStore.graph, () => {
-      console.log('change');
+      console.log("change");
+      console.log(this.graphStore.graph.nodes[0]);
     });
   }
 
@@ -53,7 +54,7 @@ export class Main {
         });
     }
 
-    graphNode = this.graphStore.addNode(basic, nodeData, id);
+    graphNode = this.graphStore.addNode("basic", nodeData, id);
 
     nodeInstance.updateConfig = updateConfig;
 

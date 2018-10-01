@@ -20,14 +20,20 @@ export class Graph extends React.Component<GraphProps> {
   }
 
   onMouseDown = () => {
-    if (this.props.store.keyTracker.isKeyDown(this.props.store.keyBindings.DRAG_SELECT as KeyName)) {
+    if (
+      this.props.store.keyTracker.isKeyDown(this.props.store.keyBindings
+        .DRAG_SELECT as KeyName)
+    ) {
       this.props.store.engine.handleBeginDragSelect();
     }
   };
 
   mapNodes() {
     return this.graph.nodes.map(node => {
-      return <node.template.renderNode key={node.id} node={node} />;
+      const NodeComponent = this.props.store.nodeTemplates[node.template]
+        .renderNode;
+
+      return <NodeComponent key={node.id} node={node} />;
     });
   }
 

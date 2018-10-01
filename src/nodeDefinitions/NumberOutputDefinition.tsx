@@ -15,6 +15,8 @@ export interface NumberOutputDefinitionConfig {
 export class NumberOutputDefinition extends NodeDefinition<
   NumberOutputDefinitionConfig
 > {
+  name = "numberOutput";
+
   defaultConfig = {
     value: 100
   };
