@@ -16,7 +16,7 @@ export class NumberInputDefinition extends NodeDefinition<
   NumberInputDefinitionConfig
 > {
   defaultConfig = {
-    value: 100
+    value: 150
   };
 
   @Input({ abstract: true })

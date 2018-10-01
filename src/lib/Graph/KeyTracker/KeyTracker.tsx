@@ -33,12 +33,26 @@ export class KeyTrackerStore {
     });
   }
 
-  onKeyDown(key: KeyName, handler: (e: KeyboardEvent) => void) {
-    this.keyDownListeners.push([key, handler]);
+  onKeyDown(keys: KeyName | KeyName[], handler: (e: KeyboardEvent) => void) {
+    this.addKeyListener('keyUpListeners', keys, handler);
   }
 
-  onKeyUp(key: KeyName, handler: (e: KeyboardEvent) => void) {
-    this.keyUpListeners.push([key, handler]);
+  onKeyUp(keys: KeyName | KeyName[], handler: (e: KeyboardEvent) => void) {
+    this.addKeyListener('keyDownListeners', keys, handler);
+  }
+
+  addKeyListener(
+    type: 'keyUpListeners' | 'keyDownListeners', 
+    keys: KeyName | KeyName[], 
+    handler: (e: KeyboardEvent
+  ) => void) {
+    keys = Array.isArray(keys) ? keys : [keys];
+    
+    const bindings = keys.map((key) => {
+      return [key, handler]
+    });
+    
+    this[type].push(...bindings as any);
   }
 
   @action

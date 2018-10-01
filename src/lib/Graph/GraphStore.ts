@@ -25,6 +25,7 @@ import {
 import { GraphEngine } from "./GraphEngine";
 import { KeyTrackerStore } from "./KeyTracker/KeyTracker";
 import { bindKeyEvents } from "./bindKeyEvents";
+import { defaultKeyBindings, KeyBindings } from "./defaultKeyBindings";
 
 export { NodeModel, NewConnectionModel, ConnectionModel, GraphModel };
 
@@ -53,6 +54,7 @@ export class GraphStore {
   undoManager: any;
 
   keyTracker: KeyTrackerStore;
+  keyBindings: KeyBindings;
 
   env: any;
 
@@ -61,9 +63,8 @@ export class GraphStore {
 
     this.env = params.env;
     this.engine = params.engine;
+    this.keyBindings = defaultKeyBindings;
     this.keyTracker = new KeyTrackerStore();
-
-    console.log(params.env);
 
     this.graph = GraphModel.create(
       {

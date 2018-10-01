@@ -3,7 +3,7 @@ import { NodeDefinition, UpdateConfigFn } from "./core/NodeDefinition";
 import { BasicIONodeTemplate } from "./nodeTemplates/basic";
 import * as uniqid from "uniqid";
 import { produce } from "immer";
-import { getSnapshot } from "mobx-state-tree";
+import { GraphChangeInterceptor } from "./GraphChangeInterceptor";
 
 const basic = new BasicIONodeTemplate();
 
@@ -21,8 +21,9 @@ export class Main {
       env: this.env
     });
 
-    (window as any).showSnapshot = () =>
-      getSnapshot(this.graphStore.graph as any);
+    new GraphChangeInterceptor(this.graphStore.graph, () => {
+      console.log('change');
+    });
   }
 
   createNodeFromDefinition(NodeDef: new () => NodeDefinition<any>) {
@@ -62,8 +63,6 @@ export class Main {
     Object.keys(nodeInstance).map(key => {
       const inputMetadata = Reflect.getMetadata("__input", nodeInstance, key);
       const outputMetadata = Reflect.getMetadata("__output", nodeInstance, key);
-
-      console.log(key, inputMetadata, outputMetadata);
 
       if (inputMetadata && !inputMetadata.abstract) {
         this.graphStore.addPortToNode(graphNode, {

@@ -5,7 +5,7 @@ import { GraphStore } from "../GraphStore";
 import { NewConnection } from "./NewConnection";
 import { IGraphConnection } from "../types";
 import { Connection } from "./Connection";
-import { KeyTracker } from "../KeyTracker/KeyTracker";
+import { KeyTracker, KeyName } from "../KeyTracker/KeyTracker";
 
 export interface GraphProps {
   className?: string;
@@ -20,7 +20,7 @@ export class Graph extends React.Component<GraphProps> {
   }
 
   onMouseDown = () => {
-    if (this.props.store.keyTracker.isKeyDown("shift")) {
+    if (this.props.store.keyTracker.isKeyDown(this.props.store.keyBindings.DRAG_SELECT as KeyName)) {
       this.props.store.engine.handleBeginDragSelect();
     }
   };
