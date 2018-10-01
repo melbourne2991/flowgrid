@@ -88,6 +88,8 @@ export function createBasicIONodeRenderer(
         outPorts.length
       );
 
+      const canvas = template.templateParams.renderCanvas(node);
+
       return (
         <svg xmlns="http://www.w3.org/2000/svg" x={node.x} y={node.y}>
           <rect
@@ -103,10 +105,10 @@ export function createBasicIONodeRenderer(
           {this.mapPorts(inPorts)}
           {this.mapPorts(outPorts)}
 
-          {node.data.canvas && (
+          {canvas && (
             <SVGRenderContext x={node.x + width / 2} y={node.y + height}>
               {({ style }) => {
-                return <div style={style}>{node.data.canvas(node, style)}</div>;
+                return <div style={style}>{canvas}</div>;
               }}
             </SVGRenderContext>
           )}

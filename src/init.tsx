@@ -10,10 +10,15 @@ import { NumberOutputDefinition } from "./nodeDefinitions/NumberOutputDefinition
 export function init() {
   const rootElement: HTMLElement = document.getElementById("root")!;
 
-  const main = new Main();
+  const main = new Main({
+    nodeDefinitions: [
+      new NumberInputDefinition(),
+      new NumberOutputDefinition()
+    ]
+  });
 
-  main.createNodeFromDefinition(NumberInputDefinition);
-  main.createNodeFromDefinition(NumberOutputDefinition);
+  main.createNodeFromDefinition('numberInput');
+  main.createNodeFromDefinition('numberOutput');
 
   ReactDOM.render(
     <div

@@ -1,5 +1,5 @@
 import { createBasicIONodeRenderer } from "./BasicIONode";
-import { NodeTemplate, GetPortBoundsFn } from "../../lib/Graph";
+import { NodeTemplate, GetPortBoundsFn, IGraphNode } from "../../lib/Graph";
 import { GraphNodeProps } from "../../lib/Graph/hocs/makeNode";
 import { createBasicIONodePort } from "./BasicIONodePort";
 
@@ -10,6 +10,7 @@ export interface BasicIONodeTemplateParams {
   nodeWidth: number;
   portRowHeight: number;
   borderRadius: number;
+  renderCanvas: (node: IGraphNode) => React.ReactNode;
 }
 
 const nodeWidth = 200;
@@ -21,7 +22,8 @@ const defaultBasicIONodeTemplateParams = {
   portSize,
   nodeWidth,
   portRowHeight,
-  borderRadius
+  borderRadius,
+  renderCanvas: () => null
 };
 
 export class BasicIONodeTemplate implements NodeTemplate {
@@ -31,9 +33,16 @@ export class BasicIONodeTemplate implements NodeTemplate {
   getPortDimensions: GetPortDimensionsFn;
 
   constructor(
-    templateParams: BasicIONodeTemplateParams = defaultBasicIONodeTemplateParams
+    templateParams: Partial<BasicIONodeTemplateParams> = defaultBasicIONodeTemplateParams
   ) {
-    this.templateParams = templateParams;
+    templateParams = templateParams || {};
+    templateParams.portSize = templateParams.portSize || defaultBasicIONodeTemplateParams.portSize;
+    templateParams.borderRadius = templateParams.borderRadius || defaultBasicIONodeTemplateParams.borderRadius;
+    templateParams.nodeWidth = templateParams.nodeWidth || defaultBasicIONodeTemplateParams.nodeWidth;
+    templateParams.portRowHeight = templateParams.portRowHeight || defaultBasicIONodeTemplateParams.portRowHeight;
+    templateParams.renderCanvas = templateParams.renderCanvas || defaultBasicIONodeTemplateParams.renderCanvas;
+
+    this.templateParams = templateParams as BasicIONodeTemplateParams;
 
     this.renderNode = createBasicIONodeRenderer(
       this,
@@ -41,7 +50,7 @@ export class BasicIONodeTemplate implements NodeTemplate {
     );
 
     const { getPortBounds, getPortDimensions } = new InputOutputPortLayout(
-      templateParams
+      this.templateParams
     );
 
     this.getPortDimensions = getPortDimensions;

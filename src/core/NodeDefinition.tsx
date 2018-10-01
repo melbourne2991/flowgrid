@@ -34,6 +34,7 @@ export function Output<T extends NodeDefinition<any>>(
 
 export abstract class NodeDefinition<C extends any> {
   id: string;
+  abstract name: string;
   abstract defaultConfig: C;
   canvas?: (props: NodeDefinitionCanvasProps<C>) => React.ReactNode;
   updateConfig: (callback: UpdateConfigFn<C>) => void;
