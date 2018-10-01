@@ -1,11 +1,9 @@
 import { createGraphStore, GraphStore, IGraphNode } from "./lib/Graph";
 import { NodeDefinition, UpdateConfigFn } from "./core/NodeDefinition";
-import { BasicIONodeTemplate } from "./nodeTemplates/basic";
+
 import * as uniqid from "uniqid";
 import { produce } from "immer";
 import { GraphChangeInterceptor } from "./GraphChangeInterceptor";
-
-const basic = new BasicIONodeTemplate();
 
 export class Main {
   graphStore: GraphStore;
