@@ -62,8 +62,6 @@ export function createBasicIONodeRenderer(
     }
 
     calculateWidthAndHeight(inPortCount: number, outPortCount: number) {
-      const { node } = this.props;
-
       let width = template.templateParams.nodeWidth;
 
       // if (inPortCount < 1 || outPortCount < 1) {

@@ -5,6 +5,7 @@ import { BasicIONodeTemplate } from "./nodeTemplates/basic";
 import { NumberInputDefinition } from "./nodeDefinitions/NumberInputDefinition";
 
 import { Main } from "./Main";
+import { NumberOutputDefinition } from "./nodeDefinitions/NumberOutputDefinition";
 
 export function init() {
   const rootElement: HTMLElement = document.getElementById("root")!;
@@ -12,6 +13,7 @@ export function init() {
   const main = new Main();
 
   main.createNodeFromDefinition(NumberInputDefinition);
+  main.createNodeFromDefinition(NumberOutputDefinition);
 
   ReactDOM.render(
     <div

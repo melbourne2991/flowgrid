@@ -1,5 +1,5 @@
 import { createGraphStore, GraphStore, IGraphNode } from "./lib/Graph";
-import { NodeDefinition } from "./core/NodeDefinition";
+import { NodeDefinition, UpdateConfigFn } from "./core/NodeDefinition";
 import { BasicIONodeTemplate } from "./nodeTemplates/basic";
 import * as uniqid from "uniqid";
 import { produce } from "immer";
@@ -25,39 +25,61 @@ export class Main {
       getSnapshot(this.graphStore.graph as any);
   }
 
-  createNodeFromDefinition(NodeDef: new () => NodeDefinition<any, any, any>) {
-    const nodeInstance = new NodeDef();
-    const id = uniqid();
+  createNodeFromDefinition(NodeDef: new () => NodeDefinition<any>) {
+    let graphNode: IGraphNode;
 
+    const nodeInstance = new NodeDef();
+
+    const id = uniqid();
     const nodeData: any = {
       config: nodeInstance.defaultConfig
+    };
+
+    const updateConfig = (callback: UpdateConfigFn<any>) => {
+      const newConfig = produce(graphNode.data.config, callback);
+
+      graphNode.updateData({
+        ...graphNode.data,
+        config: newConfig
+      });
     };
 
     if (nodeInstance.canvas) {
       nodeData.canvas = (graphNode: IGraphNode) =>
         nodeInstance.canvas!({
           config: graphNode.data.config,
-          updateConfig: callback => {
-            const newConfig = produce(graphNode.data.config, callback);
-
-            graphNode.updateData({
-              ...graphNode.data,
-              config: newConfig
-            });
-          }
+          updateConfig
         });
     }
 
-    const visualNode = this.graphStore.addNode(basic, nodeData, id);
+    graphNode = this.graphStore.addNode(basic, nodeData, id);
 
-    this.graphStore.addPortToNode(visualNode, {
-      type: "output",
-      label: "Some output",
-      index: 0
+    nodeInstance.updateConfig = updateConfig;
+
+    let inputCount = 0;
+    let outputCount = 0;
+
+    Object.keys(nodeInstance).map(key => {
+      const inputMetadata = Reflect.getMetadata("__input", nodeInstance, key);
+      const outputMetadata = Reflect.getMetadata("__output", nodeInstance, key);
+
+      console.log(key, inputMetadata, outputMetadata);
+
+      if (inputMetadata && !inputMetadata.abstract) {
+        this.graphStore.addPortToNode(graphNode, {
+          type: "input",
+          label: inputMetadata.name,
+          index: inputCount++
+        });
+      }
+
+      if (outputMetadata && !outputMetadata.abstract) {
+        this.graphStore.addPortToNode(graphNode, {
+          type: "output",
+          label: outputMetadata.name,
+          index: outputCount++
+        });
+      }
     });
-  }
-
-  getConfig(id: string) {
-    return this.rootModel.configMap.get(id);
   }
 }

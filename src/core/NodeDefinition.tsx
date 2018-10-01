@@ -14,13 +14,29 @@ export interface NodeDefinitionCanvasProps<C> {
   updateConfig(callback: UpdateConfigFn<C>): void;
 }
 
-export abstract class NodeDefinition<I, O, C extends any> {
+export function Input<T extends NodeDefinition<any>>(
+  name: string | { abstract: boolean }
+) {
+  return (target: T, method: string) => {
+    const data = typeof name === "string" ? { name } : name;
+    Reflect.defineMetadata("__input", data, target, method);
+  };
+}
+
+export function Output<T extends NodeDefinition<any>>(
+  name: string | { abstract: boolean }
+) {
+  return (target: T, method: string) => {
+    const data = typeof name === "string" ? { name } : name;
+    Reflect.defineMetadata("__output", data, target, method);
+  };
+}
+
+export abstract class NodeDefinition<C extends any> {
   id: string;
-
   abstract defaultConfig: C;
-  abstract output: (config: C) => OperatorFunction<I, O>;
-
   canvas?: (props: NodeDefinitionCanvasProps<C>) => React.ReactNode;
+  updateConfig: (callback: UpdateConfigFn<C>) => void;
 }
 
 // class NodeDefinition {

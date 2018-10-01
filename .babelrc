@@ -1,4 +1,0 @@
-{
-  "presets": ["react", "mobx"],
-  "plugins": ["transform-object-rest-spread"]
-}

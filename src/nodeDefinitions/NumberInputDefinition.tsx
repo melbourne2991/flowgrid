@@ -1,24 +1,30 @@
 import * as React from "react";
 import {
   NodeDefinition,
-  NodeDefinitionCanvasProps
+  NodeDefinitionCanvasProps,
+  Output,
+  Input
 } from "../core/NodeDefinition";
 import { mapTo } from "rxjs/operators";
+import { Observable } from "rxjs";
 
 export interface NumberInputDefinitionConfig {
   value: number;
 }
 
 export class NumberInputDefinition extends NodeDefinition<
-  never,
-  number,
   NumberInputDefinitionConfig
 > {
-  output = (config: NumberInputDefinitionConfig) => mapTo(config.value);
-
   defaultConfig = {
     value: 100
   };
+
+  @Input({ abstract: true })
+  input: Observable<never> = new Observable();
+
+  @Output("value")
+  output = (config: NumberInputDefinitionConfig) =>
+    this.input.pipe(mapTo(config.value));
 
   canvas = (props: NodeDefinitionCanvasProps<NumberInputDefinitionConfig>) => {
     return (
